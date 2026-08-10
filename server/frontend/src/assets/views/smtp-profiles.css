@@ -1,0 +1,459 @@
+/* ==================== LAYOUT ==================== */
+.sending-profiles-view {
+  padding: var(--page-padding);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* ==================== STATS CARDS ==================== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  transition: border-color var(--duration-normal) var(--ease-standard);
+}
+
+.stat-card:hover {
+  border-color: var(--border-strong);
+}
+
+.stat-card :deep(.p-card-body) {
+  padding: 1.125rem;
+}
+
+.stat-card :deep(.p-card-content) {
+  padding: 0;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-content i {
+  font-size: 2.5rem;
+  color: var(--color-text-mute);
+}
+
+.stat-text {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.375rem;
+  color: var(--color-heading);
+}
+
+.stat-label {
+  color: var(--color-text-mute);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ==================== TABLE CARD ==================== */
+.profiles-table-card :deep(.p-card-body) {
+  padding: 0;
+}
+
+.profiles-table-card :deep(.p-card-content) {
+  padding: 0;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  margin: 0;
+}
+
+.section-title i {
+  color: var(--color-text-mute);
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  background-color: var(--color-background-mute);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-mute);
+}
+
+.table-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.search-input {
+  width: 250px;
+}
+
+.field-hint,
+.security-warning {
+  display: block;
+  line-height: 1.35;
+  margin-top: 0.5rem;
+}
+
+.field-hint {
+  color: var(--color-text-mute);
+}
+
+.certificate-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--control-height);
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+.certificate-option label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.certificate-option.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.certificate-option.is-disabled label {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.security-warning {
+  color: var(--warning);
+}
+
+/* ==================== DATA TABLE ==================== */
+/* .data-table {
+  border-radius: 0;
+}
+
+.data-table :deep(.p-datatable-wrapper) {
+  border-radius: 0;
+}
+
+.data-table :deep(.p-datatable-thead > tr > th) {
+  background-color: var(--color-background-soft);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-heading);
+}
+
+.data-table :deep(.p-datatable-tbody > tr) {
+  background-color: var(--color-background-soft) !important;
+  transition: background-color 0.2s ease;
+}
+
+.data-table :deep(.p-datatable-tbody > tr:hover) {
+  background-color: var(--color-background-mute) !important;
+}
+
+.data-table :deep(.p-datatable-tbody > tr > td) {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+} */
+
+/* ==================== PROFILE CELL ==================== */
+.profile-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profile-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: var(--transition-interactive);
+}
+
+.data-table :deep(tr:hover) .profile-icon {
+  background: transparent;
+  transform: none;
+}
+
+.profile-icon i {
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+
+/* ==================== USAGE BADGE ==================== */
+.usage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background-color: var(--color-background-mute);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: var(--transition-interactive);
+}
+
+.data-table :deep(tr:hover) .usage-badge {
+  background-color: var(--color-background-soft);
+}
+
+.usage-badge i {
+  font-size: 0.75rem;
+  color: var(--color-text-mute);
+}
+
+/* ==================== TIME AGO ==================== */
+.time-ago {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--color-text-mute);
+}
+
+.time-ago i {
+  font-size: 0.75rem;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  color: var(--color-text-mute);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ==================== FORMS ==================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-heading);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.p-error {
+  color: var(--red-500);
+  font-size: 0.85rem;
+}
+
+.required {
+  color: var(--red-500);
+}
+
+/* ==================== TEST DIALOG ==================== */
+.test-content {
+  padding: 2rem;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.testing-state,
+.test-result {
+  text-align: center;
+  width: 100%;
+}
+
+.testing-state p {
+  margin-top: 1rem;
+  color: var(--color-text-mute);
+}
+
+.success-result,
+.error-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.result-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.result-icon.success {
+  background-color: var(--success-subtle);
+  color: var(--success);
+}
+
+.result-icon.error {
+  background-color: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.success-result h3,
+.error-result h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.success-result p,
+.error-result p {
+  margin: 0;
+  color: var(--color-text-mute);
+}
+
+/* ==================== DELETE DIALOG ==================== */
+
+:deep(.p-password-toggle-icon) {
+  color: var(--color-text-mute);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+:deep(.p-password-toggle-icon:hover) {
+  color: var(--color-text);
+}
+
+/* Container del Password component */
+:deep(.p-password) {
+  width: 100%;
+}
+
+:deep(.p-password-input) {
+  width: 100%;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1200px) {
+  .table-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sending-profiles-view {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-controls {
+    flex-direction: column;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .stat-content i {
+    font-size: 2rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}

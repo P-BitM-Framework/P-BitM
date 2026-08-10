@@ -1,0 +1,16 @@
+{
+    "manifest_version": 2,
+    "name": "Intercept Downloads",
+    "version": "2.0.0",
+    "description": "Persists completed downloads and registers them as collected artifacts.",
+    "permissions": ["downloads", "<all_urls>"],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": true
+    },
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "intercept-downloads@bitm.poc"
+      }
+    }
+  }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0c0f">
+    <script>
+      (() => {
+        const saved = localStorage.getItem('bitm-theme')
+        const mode = saved === 'light' || saved === 'dark' ? saved : 'system'
+        const resolved = mode === 'system'
+          ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : mode
+        document.documentElement.classList.add(`${resolved}-mode`)
+        document.documentElement.dataset.theme = resolved
+        document.documentElement.style.colorScheme = resolved
+        const accents = {
+          red: { light: ['#dc2626', '#e02d2d', '#b91c1c', '#ffffff'], dark: ['#dc2626', '#e02d2d', '#b91c1c', '#ffffff'] },
+          orange: { light: ['#ee492a', '#f45f3d', '#e03f24', '#0c0c0f'], dark: ['#ee492a', '#f45f3d', '#e03f24', '#0c0c0f'] },
+          emerald: { light: ['#10b981', '#34d399', '#0ea875', '#0c0c0f'], dark: ['#10b981', '#34d399', '#0ea875', '#0c0c0f'] },
+          blue: { light: ['#3b82f6', '#60a5fa', '#387fee', '#0c0c0f'], dark: ['#3b82f6', '#60a5fa', '#387fee', '#0c0c0f'] },
+          violet: { light: ['#8b5cf6', '#a78bfa', '#8a5bf2', '#0c0c0f'], dark: ['#8b5cf6', '#a78bfa', '#8a5bf2', '#0c0c0f'] }
+        }
+        const legacyAccents = { cobalt: 'blue', indigo: 'blue', sky: 'blue', cyan: 'emerald', teal: 'emerald', green: 'emerald', mint: 'emerald', purple: 'violet', pink: 'violet', rose: 'violet', steel: 'violet', graphite: 'violet', amber: 'orange', peach: 'orange' }
+        const savedAccent = legacyAccents[localStorage.getItem('bitm-accent')] || localStorage.getItem('bitm-accent')
+        const accentId = accents[savedAccent] ? savedAccent : 'violet'
+        const [primary, hover, active, onPrimary] = accents[accentId][resolved]
+        const rootStyle = document.documentElement.style
+        rootStyle.setProperty('--primary', primary)
+        rootStyle.setProperty('--primary-hover', hover)
+        rootStyle.setProperty('--primary-active', active)
+        rootStyle.setProperty('--primary-on', onPrimary)
+        document.documentElement.dataset.accent = accentId
+      })()
+    </script>
+    <title>P-BitM Dashboard</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

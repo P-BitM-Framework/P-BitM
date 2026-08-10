@@ -1,0 +1,149 @@
+services:
+  frontend:
+    container_name: bitm-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8443:8443"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - BACKEND_URL=http://backend:8443
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - --fail
+        - --silent
+        - --show-error
+        - --insecure
+        - https://127.0.0.1:8443/
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - bitm-dashboard
+
+  backend:
+    container_name: bitm-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "8443"
+    env_file:
+      - .env
+    environment:
+      - SEED_DATA=true
+      - DOCKER_HOST=tcp://docker-proxy:2375
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8443/health', timeout=3).read()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    depends_on:
+      - docker-proxy
+    volumes:
+      - ../storage:/storage
+      - ../modules:/modules:ro
+    networks:
+      - bitm-network
+      - bitm-dashboard
+      - docker-control
+
+  traefik:
+    image: traefik:v3.6.7
+    container_name: traefik-proxy
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+      # - --certificatesresolvers.letsencrypt.acme.email=admin@pbitm.local
+      # - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      # - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+    env_file:
+      - .traefik-dns.env
+    depends_on:
+      - traefik-docker-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../certs/letsencrypt:/letsencrypt
+      - ./.secrets/dns:/run/secrets/dns:ro
+      - ./traefik/traefik.prod.runtime.yml:/etc/traefik/traefik.yml:ro
+    networks:
+      - bitm-network
+      - traefik-control
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  traefik-docker-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: traefik-docker-proxy
+    environment:
+      - CONTAINERS=1
+      - EVENTS=1
+      - INFO=1
+      - NETWORKS=1
+      - PING=1
+      - VERSION=1
+      - POST=0
+      - DELETE=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-control
+    restart: unless-stopped
+
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: docker-proxy
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
+      - VOLUMES=1
+      - POST=1
+      - DELETE=1
+      - EXEC=1
+      - BUILD=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - docker-control
+    restart: unless-stopped
+
+networks:
+  bitm-network:
+    driver: bridge
+  bitm-dashboard:
+    driver: bridge
+  docker-control:
+    driver: bridge
+    internal: true
+  traefik-control:
+    driver: bridge
+    internal: true

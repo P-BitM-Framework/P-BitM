@@ -1,0 +1,27 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          permanent: true
+  websecure:
+    address: ":443"
+    forwardedHeaders:
+      insecure: false
+
+log:
+  level: DEBUG
+
+ping: {}
+
+providers:
+  docker:
+    network: "server_bitm-network"
+    exposedByDefault: false
+    watch: true
+    endpoint: "tcp://traefik-docker-proxy:2375"
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true

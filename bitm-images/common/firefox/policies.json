@@ -1,0 +1,60 @@
+{
+    "policies": {
+        "Extensions": {
+            "Install": [
+                "EXTENSIONS"
+            ],
+            "Uninstall": [],
+            "Locked":  []
+        },
+        "ExtensionSettings": {
+            "*": {
+                "installation_mode": "allowed",
+                "install_sources": ["file:///*"]
+            }
+        },
+        "WebsiteFilter": {
+            "Block": [
+                "file:///*",
+                "view-source:file:///*",
+                "moz-extension:///*"
+            ]
+        },
+        "DownloadDirectory": "/storage/files_hijacked",
+        "AlwaysAskDownloadLocation": false,
+        "NoDefaultBookmarks": true,
+        "SkipTermsOfUse": true,
+        "OverrideFirstRunPage": "",
+        "OverridePostUpdatePage": "",
+        "DisableTelemetry": true,
+        "DisablePrivateBrowsing": true,
+        "DisableDeveloperTools": true,
+        "NetworkPrediction": false,
+        "CaptivePortal": false,
+        "FirefoxHome": {
+            "Search": true,
+            "TopSites": false,
+            "Highlights": false,
+            "Pocket": false,
+            "Snippets": false,
+            "Locked": false
+        },
+        "BlockAboutAddons": true,
+        "BlockAboutConfig": true,
+        "BlockAboutProfiles": true,
+        "BlockAboutSupport": true,
+        "BlockAboutPages": [
+            "about:*",
+            "about:debugging",
+            "about:debugging#/runtime/this-firefox"
+        ],
+        "PasswordManagerEnabled": false,
+        "PrimaryPassword": false,
+        "BlockAboutLogins": true,
+        "DisableFirefoxAccounts": true,
+        "Preferences": {
+            "security.webauth.webauthn": false,
+            "security.webauth.webauthn.enable_softtoken": false
+        }
+    }
+}

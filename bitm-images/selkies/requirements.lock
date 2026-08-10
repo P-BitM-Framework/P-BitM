@@ -1,0 +1,11 @@
+# Runtime dependencies for /bitm/app/keylogger/keylogger.py.
+# Keep every direct and transitive dependency pinned for deterministic installs.
+certifi==2026.7.22
+charset-normalizer==3.4.9
+evdev==1.9.3
+idna==3.18
+pynput==1.8.2
+python-xlib==0.33
+requests==2.34.2
+six==1.17.0
+urllib3==2.7.0
