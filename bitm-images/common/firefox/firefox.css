@@ -1,0 +1,102 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* only needed once */
+
+/* Hide the close button on tabs only if there is one tab */
+#tabbrowser-tabs .tabbrowser-tab:only-of-type .tab-close-button {
+    display: none !important;
+}
+
+/* Show the close button on tabs if there is more than one tab */
+#tabbrowser-tabs .tabbrowser-tab:not(:only-of-type) .tab-close-button {
+    display: block !important;
+}
+
+/* Hide Firefox View button */
+#firefox-view-button {
+    display: none !important;
+}
+
+/* Hide "List All Tabs" button */
+#alltabs-button {
+    display: none !important;
+}
+
+/* Hide Bookmarks Toolbar */
+#PersonalToolbar {
+    visibility: collapse !important;
+}
+
+#unified-extensions-button{
+    display: none !important;
+}
+
+/* Hide the entire context menu */
+#toolbar-context-menu {
+    display: none !important;
+}
+
+#menu_pocket, #menu_pocketSeparator,
+#BMB_pocket, #BMB_pocketSeparator {
+    display:none !important;
+}
+
+#PanelUI-button {
+    display:none!important;
+}
+
+/* Hide "Close Tab Options" menu label/icon */
+#context_closeTabOptions > label,
+#context_closeTabOptions > hbox {
+  display: none !important;
+}
+
+/* Move "Close Tab Options" menu items into menu */
+#context_closeTabOptions > menupopup {
+  display: -moz-box !important;
+  appearance: none !important;
+  -moz-appearance: none !important;
+  border: none !important;
+  margin-inline-start: 0 !important;
+  margin-top: 0 !important;
+}
+
+#context_closeTab {
+    display: none !important;
+}
+
+#context-savepage {
+    display: none !important;
+}
+
+/* Hide "Downloads" button and panel */
+#downloads-button {
+    display: none !important;
+}
+
+#downloads-panel {
+    display: none !important;
+}
+
+/* Hide Save Page As... from File menu */
+#menu_savePage,
+#context-savepage,
+#save-page-button {
+  display: none !important;
+}
+
+/* Hide Save Image As... options */
+#context-saveimage,
+#context-savelinktopocket,
+#context-savelink {
+  display: none !important;
+}
+
+/* Hide Save As... from keyboard shortcut overlay */
+#downloadsPanel-mainView {
+    display: none !important;
+}
+
+/* Hide Developer Tools Save options */
+#menu_savePageAs,
+#menu_savePage {
+  display: none !important;
+}

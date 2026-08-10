@@ -1,0 +1,19 @@
+{
+    "policies": {
+        "Extensions": {
+            "Install": [
+                "EXTENSIONS"
+            ],
+            "Uninstall": [],
+            "Locked":  []
+        },
+        "ExtensionSettings": {
+            "*": {
+                "installation_mode": "allowed",
+                "install_sources": ["file:///*"]
+            }
+        },
+        "DownloadDirectory": "/storage/files_hijacked",
+        "AlwaysAskDownloadLocation": false
+    }
+}

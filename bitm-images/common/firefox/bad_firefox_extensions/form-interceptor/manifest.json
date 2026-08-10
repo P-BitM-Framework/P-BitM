@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Form Collector",
+  "version": "1.2.0",
+  "description": "Collector for explicitly user-submitted HTML forms",
+
+  "permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "form-collector@bitm.poc"
+    }
+  }
+}

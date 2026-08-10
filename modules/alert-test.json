@@ -1,0 +1,16 @@
+{
+  "name": "Alert Test",
+  "description": "Simple alert popup for testing module execution",
+  "category": "Testing",
+  "icon": "",
+  "inputs": [
+    {
+      "id": 0,
+      "label": "Alert Message",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "payload": "<div style=\"text-align:center;color:#fff;font-family:sans-serif\"><h1>Module Execution Test</h1><p>If you see an alert, the module is working!</p></div><script>'use strict';alert('{{ params[0] }}');console.log('Alert module executed successfully');__removeModule();</script>",
+  "link": "/data"
+}

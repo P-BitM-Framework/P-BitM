@@ -1,0 +1,181 @@
+# ============================================================================
+# P-BitM Configuration File
+# ============================================================================
+
+# ============================================================================
+# APPLICATION
+# ============================================================================
+app:
+  name: "P-BitM"
+  version: "0.1.0"
+  dashboard_url: "https://127.0.0.1:8443/"
+  environment: "development"  # Options: development, production
+
+# ============================================================================
+# PATHS
+# ============================================================================
+paths:
+  # Docker Compose
+  docker_compose: "./server/docker-compose.yml"
+  docker_compose_dev: "./server/docker-compose-dev.yml"
+  env_file: "./server/.env"
+  dns_secrets_dir: "./server/.secrets/dns"
+  traefik_dns_env_file: "./server/.traefik-dns.env"
+  traefik_prod_template: "./server/traefik/traefik.prod.template.yml"
+  traefik_prod_runtime: "./server/traefik/traefik.prod.runtime.yml"
+
+  # Storage directories
+  storage_dir: "./storage"
+  database: "./storage/p-bitm.db"
+  campaigns_dir: "./storage/campaigns"
+
+  # SSL Certificates
+  certs_dir: "./certs"
+
+# ============================================================================
+# DOCKER CONFIGURATION
+# ============================================================================
+docker:
+  # Docker socket path
+  socket: "/var/run/docker.sock"
+
+  # Timeout for Docker operations (seconds)
+  timeout: 30
+
+  # Custom images to build (before docker-compose up)
+  images:
+    # BitM VNC Container
+    vnc:
+      name: "bitm-vnc:latest"
+      dockerfile: "bitm-images/vnc/Dockerfile"
+      context: "bitm-images"
+      enabled: true
+
+    # BitM Selkies Container (multi-arch)
+    selkies:
+      name: "bitm-selkies:latest"
+      dockerfile: "bitm-images/selkies/Dockerfile"
+      context: "bitm-images"
+      enabled: true
+
+    # Backend Phishing Container
+    backend_phishing:
+      name: "p-bitm:latest"
+      dockerfile: "server/backend-phishing/Dockerfile"
+      context: "server/backend-phishing"
+      enabled: true
+
+    egress_proxy:
+      name: "p-bitm-egress:latest"
+      dockerfile: "server/egress-proxy/Dockerfile"
+      context: "server/egress-proxy"
+      enabled: true
+
+  # Images built by docker-compose
+  compose_images:
+    - "server-frontend"
+    - "server-backend"
+
+# ============================================================================
+# SSL/TLS CONFIGURATION
+# ============================================================================
+ssl:
+  # Automatically generate self-signed certificate if missing
+  auto_generate: true
+
+  # Certificate details
+  country: "IT"
+  state: "Lombardy"
+  city: "Milan"
+  organization: "P-BitM"
+  common_name: "pbitm.local"
+  validity_days: 365
+  acme_email: "GiacoLenzo2109@proton.me"
+  dns_challenge:
+    # Traefik/lego provider name.
+    provider: "duckdns"
+    # Environment variable names required by the selected provider. Their
+    # values are prompted securely and stored as separate local secret files.
+    credentials:
+      - "DUCKDNS_TOKEN"
+    # Optional non-secret provider variables, for example AWS_REGION.
+    environment: {}
+
+# ============================================================================
+# DATABASE
+# ============================================================================
+database:
+  type: "sqlite"
+  path: "./storage/p-bitm.db"
+
+# ============================================================================
+# DEFAULT ADMIN USER
+# ============================================================================
+admin:
+  username: "admin"
+  email: "admin@pbitm.local"
+  # Revocable dashboard sessions stored server-side. The browser receives only
+  # an opaque Secure, HttpOnly, SameSite=Strict cookie.
+  session_ttl_hours: 12
+  max_sessions_per_user: 5
+
+# ============================================================================
+# NETWORK CONFIGURATION
+# ============================================================================
+network:
+  # Automatically detect local IP address
+  auto_detect_ip: true
+
+  # Docker networks
+  dashboard_network: "bitm-dashboard"
+  campaign_network: "bitm-network"
+
+# ============================================================================
+# PUBLIC SESSION ADMISSION
+# ============================================================================
+sessions:
+  # Maximum concurrent browser containers for a single campaign.
+  max_active: 20
+
+  # The landing page exchanges its tracking ID for a short-lived signed token.
+  token_ttl_seconds: 300
+  handshake_timeout_seconds: 10
+  startup_timeout_seconds: 45
+
+  # In-memory admission limits, applied independently by each campaign service.
+  rate_limit_window_seconds: 60
+  max_attempts_per_client: 10
+  max_attempts_global: 200
+
+# ============================================================================
+# CONTAINER NAMING PATTERNS
+# ============================================================================
+containers:
+  campaign_pattern: "p-bitm-"
+  victim_pattern: "p-bitm-"
+
+  protocols:
+    - vnc
+    - selkies
+
+# ============================================================================
+# CLEANUP POLICIES
+# ============================================================================
+cleanup:
+  auto_cleanup_enabled: true
+
+  timeouts:
+    vnc: 30
+    selkies: 45
+    default: 30
+
+  keep_campaign_dumps: true
+
+# ============================================================================
+# CLI SETTINGS
+# ============================================================================
+cli:
+  colors_enabled: true
+  banner_enabled: true
+  banner_commands: "all"
+  confirm_destructive: true
