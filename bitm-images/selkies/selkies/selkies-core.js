@@ -30,7 +30,7 @@ window.currentAudioBufferSize = 0;
 let videoFrameBuffer = [];
 let jpegStripeRenderQueue = [];
 let triggerInitializeDecoder = () => {
-  console.error("initializeDecoder function not yet assigned!");
+  void 0 /* console.error("initializeDecoder function not yet assigned!") */;
 };
 let isVideoPipelineActive = true;
 let isAudioPipelineActive = true;
@@ -90,7 +90,7 @@ function applyEffectiveCursorSetting() {
     const isMultiMonitorActive = (displayId === 'display2' || (displayId === 'primary' && isSecondaryDisplayConnected));
     const finalSetting = isMultiMonitorActive ? true : userPreference;
     if (window.webrtcInput && typeof window.webrtcInput.setUseBrowserCursors === 'function') {
-        console.log(`Applying effective cursor setting. Multi-monitor: ${isMultiMonitorActive}, User Pref: ${userPreference}, Final: ${finalSetting}`);
+        void 0 /* console.log(`Applying effective cursor setting. Multi-monitor: ${isMultiMonitorActive}, User Pref: ${userPreference}, Final: ${finalSetting}`) */;
         window.webrtcInput.setUseBrowserCursors(finalSetting);
     }
     setBoolParam('useCssScaling', false);
@@ -122,7 +122,7 @@ const authToken = urlParams.get('token') || fragmentParams.get('token');
 
 if (authToken) {
     isTokenAuthMode = true;
-    console.log("Client is running in Token Authentication mode.");
+    void 0 /* console.log("Client is running in Token Authentication mode.") */;
 } else {
     const hash = window.location.hash;
     if (hash === '#shared') {
@@ -158,10 +158,10 @@ let isSharedMode = detectedSharedModeType !== null;
 let sharedClientHasReceivedKeyframe = false;
 
 if (isSharedMode) {
-  console.log(`Client is running in ${detectedSharedModeType} mode.`);
+  void 0 /* console.log(`Client is running in ${detectedSharedModeType} mode.`) */;
 }
 if (displayId === 'display2') {
-    console.log("Client is running in Secondary Display mode.");
+    void 0 /* console.log("Client is running in Secondary Display mode.") */;
 }
 window.onload = () => {
   'use strict';
@@ -296,7 +296,7 @@ const setStringParam = (key, value) => {
   }
 };
 function sanitizeAndStoreSettings(serverSettings) {
-  console.log("Sanitizing and storing settings based on server payload.");
+  void 0 /* console.log("Sanitizing and storing settings based on server payload.") */;
   const changes = {};
 
   for (const key in serverSettings) {
@@ -307,7 +307,7 @@ function sanitizeAndStoreSettings(serverSettings) {
       const clientValue = getIntParam(key, setting.default);
       if (clientValue < setting.min || clientValue > setting.max) {
         sanitizedValue = setting.default;
-        console.log(`Sanitizing '${key}': value ${clientValue} is out of range [${setting.min}-${setting.max}]. Resetting to default ${sanitizedValue}.`);
+        void 0 /* console.log(`Sanitizing '${key}': value ${clientValue} is out of range [${setting.min}-${setting.max}]. Resetting to default ${sanitizedValue}.`) */;
         changes[key] = sanitizedValue;
       } else {
         sanitizedValue = clientValue;
@@ -327,7 +327,7 @@ function sanitizeAndStoreSettings(serverSettings) {
 
       if (!setting.allowed.includes(clientValueStr)) {
         sanitizedValue = setting.value;
-        console.log(`Sanitizing '${key}': value "${clientValueStr}" is not in allowed list [${setting.allowed.join(', ')}]. Resetting to default "${sanitizedValue}".`);
+        void 0 /* console.log(`Sanitizing '${key}': value "${clientValueStr}" is not in allowed list [${setting.allowed.join(', ')}]. Resetting to default "${sanitizedValue}".`) */;
         changes[key] = sanitizedValue;
       } else {
         sanitizedValue = clientValueStr;
@@ -348,7 +348,7 @@ function sanitizeAndStoreSettings(serverSettings) {
       if (isLocked) {
         const clientValue = getBoolParam(key, !serverValue);
         if (clientValue !== serverValue) {
-          console.log(`Sanitizing '${key}': setting is locked by server. Client value ${clientValue} is being overwritten with ${serverValue}.`);
+          void 0 /* console.log(`Sanitizing '${key}': setting is locked by server. Client value ${clientValue} is being overwritten with ${serverValue}.`) */;
           changes[key] = serverValue;
         }
         window[key] = serverValue;
@@ -358,7 +358,7 @@ function sanitizeAndStoreSettings(serverSettings) {
         const wasUnset = window.localStorage.getItem(prefixedKey) === null;
         const clientValue = getBoolParam(key, serverValue);
         if (wasUnset) {
-          console.log(`Initializing unlocked setting '${key}' for the first time with server default: ${serverValue}. Flagging as a change.`);
+          void 0 /* console.log(`Initializing unlocked setting '${key}' for the first time with server default: ${serverValue}. Flagging as a change.`) */;
           changes[key] = serverValue;
         }
         window[key] = clientValue;
@@ -406,7 +406,7 @@ setIntParam('scaling_dpi', scalingDPI);
 if (isSharedMode) {
     manual_width = 1280;
     manual_height = 720;
-    console.log(`Shared mode: Initialized manual_width/Height to ${manual_width}x${manual_height}`);
+    void 0 /* console.log(`Shared mode: Initialized manual_width/Height to ${manual_width}x${manual_height}`) */;
 } else {
     manual_width = getIntParam('manual_width', null);
     setIntParam('manual_width', manual_width);
@@ -425,17 +425,17 @@ const playStream = () => {
   if (playButtonElement) playButtonElement.classList.add('hidden');
   if (statusDisplayElement) statusDisplayElement.classList.add('hidden');
   requestWakeLock();
-  console.log("playStream called in WebSocket mode - UI elements hidden.");
+  void 0 /* console.log("playStream called in WebSocket mode - UI elements hidden.") */;
 };
 
 const enableClipboard = () => {
   navigator.clipboard
     .readText()
     .then((text) => {
-      console.log("Clipboard API read access confirmed.");
+      void 0 /* console.log("Clipboard API read access confirmed.") */;
     })
     .catch((err) => {
-      console.error(`Failed to read clipboard contents: ${err}`);
+      void 0 /* console.error(`Failed to read clipboard contents: ${err}`) */;
     });
 };
 
@@ -459,7 +459,7 @@ const updateCanvasImageRendering = () => {
   if (!canvas) return;
   if (!antiAliasingEnabled) {
     if (canvas.style.imageRendering !== 'pixelated') {
-      console.log("Anti-aliasing disabled by setting. Forcing 'pixelated' rendering.");
+      void 0 /* console.log("Anti-aliasing disabled by setting. Forcing 'pixelated' rendering.") */;
       canvas.style.imageRendering = 'pixelated';
       canvas.style.setProperty('image-rendering', 'crisp-edges', '');
     }
@@ -468,12 +468,12 @@ const updateCanvasImageRendering = () => {
   const dpr = window.devicePixelRatio || 1;
   if (isSharedMode || window.is_manual_resolution_mode || (useCssScaling && dpr > 1)) {
     if (canvas.style.imageRendering !== 'auto') {
-      console.log("Smoothing enabled for manual resolution, high-DPR scaling, or shared mode.");
+      void 0 /* console.log("Smoothing enabled for manual resolution, high-DPR scaling, or shared mode.") */;
       canvas.style.imageRendering = 'auto';
     }
   } else {
     if (canvas.style.imageRendering !== 'pixelated') {
-      console.log("Setting canvas rendering to 'pixelated' for 1:1 display.");
+      void 0 /* console.log("Setting canvas rendering to 'pixelated' for 1:1 display.") */;
       canvas.style.imageRendering = 'pixelated';
       canvas.style.setProperty('image-rendering', 'crisp-edges', '');
     }
@@ -587,9 +587,9 @@ function sendFullSettingsUpdateToServer(reason) {
         const settingsJson = JSON.stringify(settingsToSend);
         const message = `SETTINGS,${settingsJson}`;
         websocket.send(message);
-        console.log(`[websockets] Sent full settings update. Reason: ${reason}`);
+        void 0 /* console.log(`[websockets] Sent full settings update. Reason: ${reason}`) */;
     } else {
-        console.warn(`[websockets] Cannot send full settings update. Reason: ${reason}. WebSocket not open.`);
+        void 0 /* console.warn(`[websockets] Cannot send full settings update. Reason: ${reason}. WebSocket not open.`) */;
     }
 }
 
@@ -650,7 +650,7 @@ function updateToggleButtonAppearance(buttonElement, isActive) {
 
 function sendResolutionToServer(width, height) {
   if (isSharedMode) {
-    console.log("Shared mode: Resolution sending to server is blocked.");
+    void 0 /* console.log("Shared mode: Resolution sending to server is blocked.") */;
     return;
   }
 
@@ -667,22 +667,22 @@ function sendResolutionToServer(width, height) {
   }
 
   const resString = `${realWidth}x${realHeight}`;
-  console.log(`Sending resolution to server: ${resString}, DisplayID: ${displayId}, Manual Mode: ${window.is_manual_resolution_mode}, Pixel Ratio Used: ${dprUsed}, useCssScaling: ${useCssScaling}`);
+  void 0 /* console.log(`Sending resolution to server: ${resString}, DisplayID: ${displayId}, Manual Mode: ${window.is_manual_resolution_mode}, Pixel Ratio Used: ${dprUsed}, useCssScaling: ${useCssScaling}`) */;
 
   if (websocket && websocket.readyState === WebSocket.OPEN) {
     websocket.send(`r,${resString},${displayId}`);
   } else {
-    console.warn("Cannot send resolution via WebSocket: Connection not open.");
+    void 0 /* console.warn("Cannot send resolution via WebSocket: Connection not open.") */;
   }
 }
 
 function applyManualCanvasStyle(targetWidth, targetHeight, scaleToFit) {
   if (!canvas || !canvas.parentElement) {
-    console.error("Cannot apply manual canvas style: Canvas or parent container not found.");
+    void 0 /* console.error("Cannot apply manual canvas style: Canvas or parent container not found.") */;
     return;
   }
   if (targetWidth <=0 || targetHeight <=0) {
-    console.warn(`Cannot apply manual canvas style: Invalid target dimensions ${targetWidth}x${targetHeight}`);
+    void 0 /* console.warn(`Cannot apply manual canvas style: Invalid target dimensions ${targetWidth}x${targetHeight}`) */;
     return;
   }
 
@@ -693,7 +693,7 @@ function applyManualCanvasStyle(targetWidth, targetHeight, scaleToFit) {
   if (canvas.width !== internalBufferWidth || canvas.height !== internalBufferHeight) {
     canvas.width = internalBufferWidth;
     canvas.height = internalBufferHeight;
-    console.log(`Canvas internal buffer set to: ${internalBufferWidth}x${internalBufferHeight}`);
+    void 0 /* console.log(`Canvas internal buffer set to: ${internalBufferWidth}x${internalBufferHeight}`) */;
   }
   const container = canvas.parentElement;
   const containerWidth = container.clientWidth;
@@ -717,7 +717,7 @@ function applyManualCanvasStyle(targetWidth, targetHeight, scaleToFit) {
     canvas.style.top = `${topOffset}px`;
     canvas.style.left = `${leftOffset}px`;
     canvas.style.objectFit = 'contain'; // Should be 'fill' if CSS handles aspect ratio
-    console.log(`Applied manual style (Scaled): CSS ${cssWidth.toFixed(2)}x${cssHeight.toFixed(2)}, Buffer ${internalBufferWidth}x${internalBufferHeight}, Pos ${leftOffset.toFixed(2)},${topOffset.toFixed(2)}`);
+    void 0 /* console.log(`Applied manual style (Scaled): CSS ${cssWidth.toFixed(2)}x${cssHeight.toFixed(2)}, Buffer ${internalBufferWidth}x${internalBufferHeight}, Pos ${leftOffset.toFixed(2)},${topOffset.toFixed(2)}`) */;
   } else {
     canvas.style.position = 'absolute';
     canvas.style.width = `${targetWidth}px`; // CSS size is logical
@@ -725,7 +725,7 @@ function applyManualCanvasStyle(targetWidth, targetHeight, scaleToFit) {
     canvas.style.top = '0px';
     canvas.style.left = '0px';
     canvas.style.objectFit = 'fill';
-    console.log(`Applied manual style (Exact): CSS ${targetWidth}x${targetHeight}, Buffer ${internalBufferWidth}x${internalBufferHeight}, Pos 0,0`);
+    void 0 /* console.log(`Applied manual style (Exact): CSS ${targetWidth}x${targetHeight}, Buffer ${internalBufferWidth}x${internalBufferHeight}, Pos 0,0`) */;
   }
   canvas.style.display = 'block';
   updateCanvasImageRendering();
@@ -734,7 +734,7 @@ function applyManualCanvasStyle(targetWidth, targetHeight, scaleToFit) {
 function resetCanvasStyle(streamWidth, streamHeight) {
   if (!canvas) return;
   if (streamWidth <= 0 || streamHeight <= 0) {
-    console.warn(`Cannot reset canvas style: Invalid stream dimensions ${streamWidth}x${streamHeight}`);
+    void 0 /* console.warn(`Cannot reset canvas style: Invalid stream dimensions ${streamWidth}x${streamHeight}`) */;
     return;
   }
 
@@ -746,7 +746,7 @@ function resetCanvasStyle(streamWidth, streamHeight) {
   if (canvas.width !== internalBufferWidth || canvas.height !== internalBufferHeight) {
     canvas.width = internalBufferWidth;
     canvas.height = internalBufferHeight;
-    console.log(`Canvas internal buffer reset to: ${internalBufferWidth}x${internalBufferHeight}`);
+    void 0 /* console.log(`Canvas internal buffer reset to: ${internalBufferWidth}x${internalBufferHeight}`) */;
   }
 
   // Set canvas CSS display size to explicitly match the logical stream size
@@ -764,12 +764,12 @@ function resetCanvasStyle(streamWidth, streamHeight) {
     canvas.style.position = 'absolute'; // Ensure position is absolute for top/left to work
     canvas.style.top = `${topOffset}px`;
     canvas.style.left = `${leftOffset}px`;
-    console.log(`Reset canvas CSS to ${streamWidth}px x ${streamHeight}px, Pos ${leftOffset},${topOffset}, object-fit: fill. Buffer: ${internalBufferWidth}x${internalBufferHeight}`);
+    void 0 /* console.log(`Reset canvas CSS to ${streamWidth}px x ${streamHeight}px, Pos ${leftOffset},${topOffset}, object-fit: fill. Buffer: ${internalBufferWidth}x${internalBufferHeight}`) */;
   } else {
     canvas.style.position = 'absolute';
     canvas.style.top = '0px';
     canvas.style.left = '0px';
-    console.log(`Reset canvas CSS to ${streamWidth}px x ${streamHeight}px, Pos 0,0 (no parent metrics), object-fit: fill. Buffer: ${internalBufferWidth}x${internalBufferHeight}`);
+    void 0 /* console.log(`Reset canvas CSS to ${streamWidth}px x ${streamHeight}px, Pos 0,0 (no parent metrics), object-fit: fill. Buffer: ${internalBufferWidth}x${internalBufferHeight}`) */;
   }
 
   canvas.style.objectFit = 'fill';
@@ -779,21 +779,21 @@ function resetCanvasStyle(streamWidth, streamHeight) {
 
 function enableAutoResize() {
   if (directManualLocalScalingHandler) {
-    console.log("Switching to Auto Mode: Removing direct manual local scaling listener.");
+    void 0 /* console.log("Switching to Auto Mode: Removing direct manual local scaling listener.") */;
     window.removeEventListener('resize', directManualLocalScalingHandler);
   }
   if (originalWindowResizeHandler) {
-    console.log("Switching to Auto Mode: Adding original (auto) debounced resize listener.");
+    void 0 /* console.log("Switching to Auto Mode: Adding original (auto) debounced resize listener.") */;
     window.removeEventListener('resize', originalWindowResizeHandler); // Ensure no duplicates
     window.addEventListener('resize', originalWindowResizeHandler);
     if (typeof handleResizeUI_globalRef === 'function') {
-      console.log("Triggering immediate auto-resize calculation for auto mode.");
+      void 0 /* console.log("Triggering immediate auto-resize calculation for auto mode.") */;
       handleResizeUI_globalRef();
     } else {
-      console.warn("handleResizeUI function not directly callable from enableAutoResize. Auto-resize will occur on next event.");
+      void 0 /* console.warn("handleResizeUI function not directly callable from enableAutoResize. Auto-resize will occur on next event.") */;
     }
   } else {
-    console.warn("Cannot enable auto-resize: originalWindowResizeHandler not found.");
+    void 0 /* console.warn("Cannot enable auto-resize: originalWindowResizeHandler not found.") */;
   }
 }
 
@@ -807,14 +807,14 @@ const directManualLocalScalingHandler = () => {
 function disableAutoResize() {
   // This is primarily for non-shared manual mode.
   if (originalWindowResizeHandler) {
-    console.log("Switching to Manual Mode Local Scaling: Removing original (auto) resize listener.");
+    void 0 /* console.log("Switching to Manual Mode Local Scaling: Removing original (auto) resize listener.") */;
     window.removeEventListener('resize', originalWindowResizeHandler);
   }
-  console.log("Switching to Manual Mode Local Scaling: Adding direct manual scaling listener.");
+  void 0 /* console.log("Switching to Manual Mode Local Scaling: Adding direct manual scaling listener.") */;
   window.removeEventListener('resize', directManualLocalScalingHandler); // Defensive removal
   window.addEventListener('resize', directManualLocalScalingHandler);
   if (window.is_manual_resolution_mode && !isSharedMode && manual_width != null && manual_height != null && manual_width > 0 && manual_height > 0) {
-    console.log("Applying current manual canvas style after enabling direct manual resize handler.");
+    void 0 /* console.log("Applying current manual canvas style after enabling direct manual resize handler.") */;
     applyManualCanvasStyle(manual_width, manual_height, scaleLocallyManual);
   }
 }
@@ -825,13 +825,13 @@ function updateUIForSharedMode() {
     const videoContainer = document.querySelector('.video-container');
     if (videoContainer) {
         videoContainer.classList.add('shared-user-mode');
-        console.log("Shared mode: Added 'shared-user-mode' class to video container.");
+        void 0 /* console.log("Shared mode: Added 'shared-user-mode' class to video container.") */;
     }
 
     const globalFileInput = document.getElementById('globalFileInput');
     if (globalFileInput) {
         globalFileInput.disabled = true;
-        console.log("Shared mode: Disabled globalFileInput.");
+        void 0 /* console.log("Shared mode: Disabled globalFileInput.") */;
     }
 }
 
@@ -843,7 +843,7 @@ const initializeUI = () => {
   window.addEventListener('requestFileUpload', handleRequestFileUpload);
   const appDiv = document.getElementById('app');
   if (!appDiv) {
-    console.error("FATAL: Could not find #app element.");
+    void 0 /* console.error("FATAL: Could not find #app element.") */;
     return;
   }
   const videoContainer = document.createElement('div');
@@ -877,20 +877,20 @@ const initializeUI = () => {
               applyManualCanvasStyle(manual_width, manual_height, true);
           }
       });
-      console.log(`Initialized UI in Shared Mode: Canvas buffer target ${manual_width}x${manual_height} (logical), will scale to fit viewport.`);
+      void 0 /* console.log(`Initialized UI in Shared Mode: Canvas buffer target ${manual_width}x${manual_height} (logical), will scale to fit viewport.`) */;
   } else if (is_manual_resolution_mode && manual_width != null && manual_height != null && manual_width > 0 && manual_height > 0) {
     applyManualCanvasStyle(manual_width, manual_height, scaleLocallyManual);
     disableAutoResize(); // Sets up directManualLocalScalingHandler for non-shared manual
-    console.log(`Initialized UI in Manual Resolution Mode: ${manual_width}x${manual_height} (logical), ScaleLocally: ${scaleLocallyManual}`);
+    void 0 /* console.log(`Initialized UI in Manual Resolution Mode: ${manual_width}x${manual_height} (logical), ScaleLocally: ${scaleLocallyManual}`) */;
   } else {
     const initialStreamWidth = 1024;
     const initialStreamHeight = 768;
     resetCanvasStyle(initialStreamWidth, initialStreamHeight);
-    console.log("Initialized UI in Auto Resolution Mode (defaulting to 1024x768 logical for now)");
+    void 0 /* console.log("Initialized UI in Auto Resolution Mode (defaulting to 1024x768 logical for now)") */;
   }
   canvasContext = canvas.getContext('2d');
   if (!canvasContext) {
-    console.error('Failed to get 2D rendering context');
+    void 0 /* console.error('Failed to get 2D rendering context') */;
   }
 
   playButtonElement = document.createElement('button');
@@ -928,7 +928,7 @@ const initializeUI = () => {
     keyboardInputAssist.setAttribute('autocapitalize', 'off');
     keyboardInputAssist.setAttribute('spellcheck', 'false');
     document.body.appendChild(keyboardInputAssist);
-    console.log("Dynamically added #keyboard-input-assist element.");
+    void 0 /* console.log("Dynamically added #keyboard-input-assist element.") */;
   }
   appDiv.appendChild(videoContainer);
   updateStatusDisplay();
@@ -940,22 +940,22 @@ const initializeUI = () => {
 };
 
 function clearAllVncStripeDecoders() {
-  console.log("Clearing all VNC stripe decoders.");
+  void 0 /* console.log("Clearing all VNC stripe decoders.") */;
   for (const yPos in vncStripeDecoders) {
     if (vncStripeDecoders.hasOwnProperty(yPos)) {
       const decoderInfo = vncStripeDecoders[yPos];
       if (decoderInfo.decoder && decoderInfo.decoder.state !== "closed") {
         try {
           decoderInfo.decoder.close();
-          console.log(`Closed VNC stripe decoder for Y=${yPos}`);
+          void 0 /* console.log(`Closed VNC stripe decoder for Y=${yPos}`) */;
         } catch (e) {
-          console.error(`Error closing VNC stripe decoder for Y=${yPos}:`, e);
+          void 0 /* console.error(`Error closing VNC stripe decoder for Y=${yPos}:`, e) */;
         }
       }
     }
   }
   vncStripeDecoders = {};
-  console.log("All VNC stripe decoders and metadata cleared.");
+  void 0 /* console.log("All VNC stripe decoders and metadata cleared.") */;
 }
 
 function processPendingChunksForStripe(stripe_y_start) {
@@ -963,7 +963,7 @@ function processPendingChunksForStripe(stripe_y_start) {
   if (!decoderInfo || decoderInfo.decoder.state !== "configured" || !decoderInfo.pendingChunks) {
     return;
   }
-  console.log(`Processing ${decoderInfo.pendingChunks.length} pending chunks for stripe Y=${stripe_y_start}`);
+  void 0 /* console.log(`Processing ${decoderInfo.pendingChunks.length} pending chunks for stripe Y=${stripe_y_start}`) */;
   while (decoderInfo.pendingChunks.length > 0) {
     const pending = decoderInfo.pendingChunks.shift();
     const chunk = new EncodedVideoChunk({
@@ -974,7 +974,7 @@ function processPendingChunksForStripe(stripe_y_start) {
     try {
       decoderInfo.decoder.decode(chunk);
     } catch (e) {
-      console.error(`Error decoding pending chunk for stripe Y=${stripe_y_start}:`, e, chunk);
+      void 0 /* console.error(`Error decoding pending chunk for stripe Y=${stripe_y_start}:`, e, chunk) */;
     }
   }
 }
@@ -990,18 +990,18 @@ function handleDecodedVncStripeFrame(yPos, vncFrameID, frame) {
 }
 
 async function handleAdvancedAudioClick() {
-  console.log("Advanced Audio Settings button clicked.");
+  void 0 /* console.log("Advanced Audio Settings button clicked.") */;
   if (!audioDeviceSettingsDivElement || !audioInputSelectElement || !audioOutputSelectElement) {
-    console.error("Audio device UI elements not found in dev sidebar.");
+    void 0 /* console.error("Audio device UI elements not found in dev sidebar.") */;
     return;
   }
   const isHidden = audioDeviceSettingsDivElement.classList.contains('hidden');
   if (isHidden) {
-    console.log("Settings are hidden, attempting to show and populate...");
+    void 0 /* console.log("Settings are hidden, attempting to show and populate...") */;
     const supportsSinkId = typeof AudioContext !== 'undefined' && 'setSinkId' in AudioContext.prototype;
     const outputLabel = document.getElementById('audioOutputLabel');
     if (!supportsSinkId) {
-      console.warn('Browser does not support selecting audio output device (setSinkId). Hiding output selection.');
+      void 0 /* console.warn('Browser does not support selecting audio output device (setSinkId). Hiding output selection.') */;
       if (outputLabel) outputLabel.classList.add('hidden');
       audioOutputSelectElement.classList.add('hidden');
     } else {
@@ -1009,15 +1009,15 @@ async function handleAdvancedAudioClick() {
       audioOutputSelectElement.classList.remove('hidden');
     }
     try {
-      console.log("Requesting microphone permission for device listing...");
+      void 0 /* console.log("Requesting microphone permission for device listing...") */;
       const tempStream = await navigator.mediaDevices.getUserMedia({
         audio: true
       });
       tempStream.getTracks().forEach(track => track.stop());
-      console.log("Microphone permission granted or already available (temporary stream stopped).");
-      console.log("Enumerating media devices...");
+      void 0 /* console.log("Microphone permission granted or already available (temporary stream stopped).") */;
+      void 0 /* console.log("Enumerating media devices...") */;
       const devices = await navigator.mediaDevices.enumerateDevices();
-      console.log("Devices found:", devices);
+      void 0 /* console.log("Devices found:", devices) */;
       audioInputSelectElement.innerHTML = '';
       audioOutputSelectElement.innerHTML = '';
       let inputCount = 0;
@@ -1037,15 +1037,15 @@ async function handleAdvancedAudioClick() {
           audioOutputSelectElement.appendChild(option);
         }
       });
-      console.log(`Populated ${inputCount} input devices and ${outputCount} output devices.`);
+      void 0 /* console.log(`Populated ${inputCount} input devices and ${outputCount} output devices.`) */;
       audioDeviceSettingsDivElement.classList.remove('hidden');
     } catch (err) {
-      console.error('Error getting media devices or permissions:', err);
+      void 0 /* console.error('Error getting media devices or permissions:', err) */;
       audioDeviceSettingsDivElement.classList.add('hidden');
       alert(`Could not list audio devices. Please ensure microphone permissions are granted.\nError: ${err.message || err.name}`);
     }
   } else {
-    console.log("Settings are visible, hiding...");
+    void 0 /* console.log("Settings are visible, hiding...") */;
     audioDeviceSettingsDivElement.classList.add('hidden');
   }
 }
@@ -1054,7 +1054,7 @@ function handleAudioDeviceChange(event) {
   const selectedDeviceId = event.target.value;
   const isInput = event.target.id === 'audioInputSelect';
   const contextType = isInput ? 'input' : 'output';
-  console.log(`Dev Sidebar: Audio device selected - Type: ${contextType}, ID: ${selectedDeviceId}. Posting message...`);
+  void 0 /* console.log(`Dev Sidebar: Audio device selected - Type: ${contextType}, ID: ${selectedDeviceId}. Posting message...`) */;
   window.postMessage({
     type: 'audioDeviceSelected',
     context: contextType,
@@ -1064,25 +1064,25 @@ function handleAudioDeviceChange(event) {
 
 function handleRequestFileUpload() {
   if (isSharedMode) {
-    console.log("Shared mode: File upload via requestFileUpload blocked.");
+    void 0 /* console.log("Shared mode: File upload via requestFileUpload blocked.") */;
     return;
   }
   const hiddenInput = document.getElementById('globalFileInput');
   if (!hiddenInput) {
-    console.error("Global file input not found!");
+    void 0 /* console.error("Global file input not found!") */;
     return;
   }
   if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-    console.warn("WebSocket is not open. File upload cannot be initiated.");
+    void 0 /* console.warn("WebSocket is not open. File upload cannot be initiated.") */;
     return;
   }
-  console.log("Triggering click on hidden file input.");
+  void 0 /* console.log("Triggering click on hidden file input.") */;
   hiddenInput.click();
 }
 
 async function handleFileInputChange(event) {
   if (isSharedMode) {
-    console.log("Shared mode: File upload via fileInputChange blocked.");
+    void 0 /* console.log("Shared mode: File upload via fileInputChange blocked.") */;
     event.target.value = null; // Clear the input
     return;
   }
@@ -1091,9 +1091,9 @@ async function handleFileInputChange(event) {
     event.target.value = null;
     return;
   }
-  console.log(`File input changed, processing ${files.length} files sequentially.`);
+  void 0 /* console.log(`File input changed, processing ${files.length} files sequentially.`) */;
   if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-    console.error("WebSocket is not open. Cannot upload selected files.");
+    void 0 /* console.error("WebSocket is not open. Cannot upload selected files.") */;
     window.postMessage({
       type: 'fileUpload',
       payload: {
@@ -1109,13 +1109,13 @@ async function handleFileInputChange(event) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const pathToSend = file.name;
-      console.log(`Uploading file ${i + 1}/${files.length}: ${pathToSend}`);
+      void 0 /* console.log(`Uploading file ${i + 1}/${files.length}: ${pathToSend}`) */;
       await uploadFileObject(file, pathToSend);
     }
-    console.log("Finished processing all files from input.");
+    void 0 /* console.log("Finished processing all files from input.") */;
   } catch (error) {
     const errorMsg = `An error occurred during the file input upload process: ${error.message || error}`;
-    console.error(errorMsg);
+    void 0 /* console.error(errorMsg) */;
     window.postMessage({
       type: 'fileUpload',
       payload: {
@@ -1143,15 +1143,15 @@ const requestWakeLock = async () => {
     try {
       wakeLockSentinel = await navigator.wakeLock.request('screen');
       wakeLockSentinel.addEventListener('release', () => {
-        console.log('Screen Wake Lock was released automatically.');
+        void 0 /* console.log('Screen Wake Lock was released automatically.') */;
         wakeLockSentinel = null;
       });
-      console.log('Screen Wake Lock is active.');
+      void 0 /* console.log('Screen Wake Lock is active.') */;
     } catch (err) {
-      console.error(`Could not acquire Wake Lock: ${err.name}, ${err.message}`);
+      void 0 /* console.error(`Could not acquire Wake Lock: ${err.name}, ${err.message}`) */;
     }
   } else {
-    console.warn('Wake Lock API is not supported by this browser.');
+    void 0 /* console.warn('Wake Lock API is not supported by this browser.') */;
   }
 };
 
@@ -1180,34 +1180,34 @@ const startStream = () => {
   streamStarted = true;
   if (statusDisplayElement) statusDisplayElement.classList.add('hidden');
   if (playButtonElement) playButtonElement.classList.add('hidden');
-  console.log("Stream started (UI elements hidden).");
+  void 0 /* console.log("Stream started (UI elements hidden).") */;
 };
 
 const initializeInput = () => {
   if (inputInitialized) {
-    console.log("Input already initialized. Skipping.");
+    void 0 /* console.log("Input already initialized. Skipping.") */;
     return;
   }
   if (clientSlot !== null && clientSlot > 0) {
     playerInputTargetIndex = clientSlot - 1;
-    console.log(`Input Initialization: Applying server-provided slot ${clientSlot}. Gamepad will target index ${playerInputTargetIndex}.`);
+    void 0 /* console.log(`Input Initialization: Applying server-provided slot ${clientSlot}. Gamepad will target index ${playerInputTargetIndex}.`) */;
   }
   inputInitialized = true;
-  console.log("Initializing Input system...");
+  void 0 /* console.log("Initializing Input system...") */;
 
   let inputInstance;
   const websocketSendInput = (message) => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(message);
     } else {
-      console.warn("initializeInput: WebSocket not open, cannot send input message:", message);
+      void 0 /* console.warn("initializeInput: WebSocket not open, cannot send input message:", message) */;
     }
   };
 
   const sendInputFunction = websocketSendInput;
 
   if (!overlayInput) {
-    console.error("initializeInput: overlayInput element not found. Cannot initialize input handling.");
+    void 0 /* console.error("initializeInput: overlayInput element not found. Cannot initialize input handling.") */;
     inputInitialized = false;
     return;
   }
@@ -1218,7 +1218,7 @@ const initializeInput = () => {
   inputInstance.getWindowResolution = () => {
     const videoContainer = document.querySelector('.video-container');
     if (!videoContainer) {
-      console.warn('initializeInput: .video-container not found, using window inner dimensions for resolution calculation.');
+      void 0 /* console.warn('initializeInput: .video-container not found, using window inner dimensions for resolution calculation.') */;
       return [window.innerWidth, window.innerHeight];
     }
     const videoContainerRect = videoContainer.getBoundingClientRect();
@@ -1228,35 +1228,35 @@ const initializeInput = () => {
   inputInstance.ongamepadconnected = (gamepad_id) => {
     gamepad.gamepadState = 'connected';
     gamepad.gamepadName = gamepad_id;
-    console.log(`Client: Gamepad "${gamepad_id}" connected. isSharedMode: ${isSharedMode}, isGamepadEnabled (global toggle): ${isGamepadEnabled}`);
+    void 0 /* console.log(`Client: Gamepad "${gamepad_id}" connected. isSharedMode: ${isSharedMode}, isGamepadEnabled (global toggle): ${isGamepadEnabled}`) */;
     if (window.webrtcInput && window.webrtcInput.gamepadManager) {
         if (isSharedMode) {
             window.webrtcInput.gamepadManager.enable();
-            console.log("Shared mode: Gamepad connected, ensuring its GamepadManager is active for polling.");
+            void 0 /* console.log("Shared mode: Gamepad connected, ensuring its GamepadManager is active for polling.") */;
         } else {
             if (!isGamepadEnabled) {
                 window.webrtcInput.gamepadManager.disable();
-                console.log("Primary mode: Gamepad connected, but master gamepad toggle is OFF. Disabling its GamepadManager.");
+                void 0 /* console.log("Primary mode: Gamepad connected, but master gamepad toggle is OFF. Disabling its GamepadManager.") */;
             } else {
                 window.webrtcInput.gamepadManager.enable();
-                console.log("Primary mode: Gamepad connected, master gamepad toggle is ON. Ensuring its GamepadManager is active.");
+                void 0 /* console.log("Primary mode: Gamepad connected, master gamepad toggle is ON. Ensuring its GamepadManager is active.") */;
             }
         }
     } else {
-        console.warn("Client: window.webrtcInput.gamepadManager not found in ongamepadconnected. Cannot control its polling state.");
+        void 0 /* console.warn("Client: window.webrtcInput.gamepadManager not found in ongamepadconnected. Cannot control its polling state.") */;
     }
   };
 
   inputInstance.ongamepaddisconnected = () => {
     gamepad.gamepadState = 'disconnected';
     gamepad.gamepadName = 'none';
-    console.log("Gamepad disconnected.");
+    void 0 /* console.log("Gamepad disconnected.") */;
   };
 
   inputInstance.attach();
   if (clientRole === 'viewer') {
       const reason = clientSlot !== null ? `(gamepad-only slot ${clientSlot})` : "(no slot)";
-      console.log(`Role is 'viewer' ${reason}. Detaching context to disable mouse/keyboard/touch.`);
+      void 0 /* console.log(`Role is 'viewer' ${reason}. Detaching context to disable mouse/keyboard/touch.`) */;
       inputInstance.detach_context();
   }
   window.webrtcInput = inputInstance;
@@ -1278,24 +1278,24 @@ const initializeInput = () => {
         return;
     }
     if (isSharedMode) {
-        console.log("Shared mode: handleResizeUI (auto-resize logic) skipped.");
+        void 0 /* console.log("Shared mode: handleResizeUI (auto-resize logic) skipped.") */;
         if (manual_width && manual_height && manual_width > 0 && manual_height > 0) {
             applyManualCanvasStyle(manual_width, manual_height, true);
         }
         return;
     }
     if (window.is_manual_resolution_mode) {
-      console.log("handleResizeUI: Auto-resize skipped, manual resolution mode is active.");
+      void 0 /* console.log("handleResizeUI: Auto-resize skipped, manual resolution mode is active.") */;
       return;
     }
 
-    console.log("handleResizeUI: Auto-resize triggered (e.g., by window resize event).");
+    void 0 /* console.log("handleResizeUI: Auto-resize triggered (e.g., by window resize event).") */;
     const windowResolution = inputInstance.getWindowResolution();
     const evenWidth = roundDownToEven(windowResolution[0]);
     const evenHeight = roundDownToEven(windowResolution[1]);
 
     if (evenWidth <= 0 || evenHeight <= 0) {
-      console.warn(`handleResizeUI: Calculated invalid dimensions (${evenWidth}x${evenHeight}). Skipping resize send.`);
+      void 0 /* console.warn(`handleResizeUI: Calculated invalid dimensions (${evenWidth}x${evenHeight}). Skipping resize send.`) */;
       return;
     }
 
@@ -1307,9 +1307,9 @@ const initializeInput = () => {
   originalWindowResizeHandler = debounce(handleResizeUI, 500);
 
   if (isSharedMode) {
-    console.log("Shared mode: Auto-resize event listener (originalWindowResizeHandler) NOT attached.");
+    void 0 /* console.log("Shared mode: Auto-resize event listener (originalWindowResizeHandler) NOT attached.") */;
   } else if (!window.is_manual_resolution_mode) {
-    console.log("initializeInput: Auto-resolution mode. Attaching 'resize' event listener for subsequent changes.");
+    void 0 /* console.log("initializeInput: Auto-resolution mode. Attaching 'resize' event listener for subsequent changes.") */;
     window.addEventListener('resize', originalWindowResizeHandler);
     const videoContainer = document.querySelector('.video-container');
     let currentAutoWidth, currentAutoHeight;
@@ -1322,18 +1322,18 @@ const initializeInput = () => {
       currentAutoHeight = roundDownToEven(window.innerHeight);
     }
     if (currentAutoWidth <= 0 || currentAutoHeight <= 0) {
-      console.warn(`initializeInput: Current auto-calculated dimensions are invalid (${currentAutoWidth}x${currentAutoHeight}). Defaulting canvas style to 1024x768 (logical) for initial setup. The resolution sent by onopen should prevail on the server.`);
+      void 0 /* console.warn(`initializeInput: Current auto-calculated dimensions are invalid (${currentAutoWidth}x${currentAutoHeight}). Defaulting canvas style to 1024x768 (logical) for initial setup. The resolution sent by onopen should prevail on the server.`) */;
       currentAutoWidth = 1024;
       currentAutoHeight = 768;
     }
     resetCanvasStyle(currentAutoWidth, currentAutoHeight);
-    console.log(`initializeInput: Canvas style reset to reflect current auto-dimensions: ${currentAutoWidth}x${currentAutoHeight} (logical). Initial resolution was already sent by onopen.`);
+    void 0 /* console.log(`initializeInput: Canvas style reset to reflect current auto-dimensions: ${currentAutoWidth}x${currentAutoHeight} (logical). Initial resolution was already sent by onopen.`) */;
   } else {
-    console.log("initializeInput: Manual resolution mode active. Initial resolution already sent by onopen.");
+    void 0 /* console.log("initializeInput: Manual resolution mode active. Initial resolution already sent by onopen.") */;
     if (manual_width != null && manual_height != null && manual_width > 0 && manual_height > 0) {
       disableAutoResize();
     } else {
-      console.warn("initializeInput: Manual mode is set, but manual_width/Height are invalid. Canvas might not display correctly.");
+      void 0 /* console.warn("initializeInput: Manual mode is set, but manual_width/Height are invalid. Canvas might not display correctly.") */;
     }
   }
 
@@ -1341,9 +1341,9 @@ const initializeInput = () => {
     overlayInput.addEventListener('dragover', handleDragOver);
     overlayInput.addEventListener('drop', handleDrop);
   } else if (overlayInput && isSharedMode) {
-    console.log("Shared mode: Drag/drop file upload listeners NOT attached to overlayInput.");
+    void 0 /* console.log("Shared mode: Drag/drop file upload listeners NOT attached to overlayInput.") */;
   } else {
-    console.warn("initializeInput: overlayInput not found, cannot attach drag/drop listeners.");
+    void 0 /* console.warn("initializeInput: overlayInput not found, cannot attach drag/drop listeners.") */;
   }
 
   const keyboardInputAssist = document.getElementById('keyboard-input-assist');
@@ -1369,24 +1369,24 @@ const initializeInput = () => {
         event.preventDefault();
       }
     });
-    console.log("initializeInput: Added 'input' and 'keydown' listeners to #keyboard-input-assist.");
+    void 0 /* console.log("initializeInput: Added 'input' and 'keydown' listeners to #keyboard-input-assist.") */;
   } else if (isSharedMode) {
-    console.log("Shared mode: Keyboard input assist listeners NOT attached.");
+    void 0 /* console.log("Shared mode: Keyboard input assist listeners NOT attached.") */;
   } else {
-    console.error("initializeInput: Could not add listeners to keyboard assist: Element or Input handler instance not found.");
+    void 0 /* console.error("initializeInput: Could not add listeners to keyboard assist: Element or Input handler instance not found.") */;
   }
-  console.log("Input system initialized.");
+  void 0 /* console.log("Input system initialized.") */;
 };
 
 async function applyOutputDevice() {
   if (!preferredOutputDeviceId) {
-    console.log("No preferred output device set, using default.");
+    void 0 /* console.log("No preferred output device set, using default.") */;
     return;
   }
   const supportsSinkId = (typeof AudioContext !== 'undefined' && 'setSinkId' in AudioContext.prototype) ||
     (audioElement && typeof audioElement.setSinkId === 'function');
   if (!supportsSinkId) {
-    console.warn("Browser does not support setSinkId, cannot apply output device preference.");
+    void 0 /* console.warn("Browser does not support setSinkId, cannot apply output device preference.") */;
     if (audioOutputSelectElement) audioOutputSelectElement.classList.add('hidden');
     const outputLabel = document.getElementById('audioOutputLabel');
     if (outputLabel) outputLabel.classList.add('hidden');
@@ -1396,15 +1396,15 @@ async function applyOutputDevice() {
     if (audioContext.state === 'running') {
       try {
         await audioContext.setSinkId(preferredOutputDeviceId);
-        console.log(`Playback AudioContext output set to device: ${preferredOutputDeviceId}`);
+        void 0 /* console.log(`Playback AudioContext output set to device: ${preferredOutputDeviceId}`) */;
       } catch (err) {
-        console.error(`Error setting sinkId on Playback AudioContext (ID: ${preferredOutputDeviceId}): ${err.name}`, err);
+        void 0 /* console.error(`Error setting sinkId on Playback AudioContext (ID: ${preferredOutputDeviceId}): ${err.name}`, err) */;
       }
     } else {
-      console.warn(`Playback AudioContext not running (state: ${audioContext.state}), cannot set sinkId yet.`);
+      void 0 /* console.warn(`Playback AudioContext not running (state: ${audioContext.state}), cannot set sinkId yet.`) */;
     }
   } else {
-    console.log("Playback AudioContext doesn't exist yet, sinkId will be applied on initialization.");
+    void 0 /* console.log("Playback AudioContext doesn't exist yet, sinkId will be applied on initialization.") */;
   }
 }
 
@@ -1418,22 +1418,22 @@ function postSidebarButtonUpdate() {
     microphone: isMicrophoneActive,
     gamepad: isGamepadEnabled
   };
-  console.log('Posting sidebarButtonStatusUpdate:', updatePayload);
+  void 0 /* console.log('Posting sidebarButtonStatusUpdate:', updatePayload) */;
   window.postMessage(updatePayload, window.location.origin);
 }
 
 function receiveMessage(event) {
   if (event.origin !== window.location.origin) {
-    console.warn(`Received message from unexpected origin: ${event.origin}. Expected ${window.location.origin}. Ignoring.`);
+    void 0 /* console.warn(`Received message from unexpected origin: ${event.origin}. Expected ${window.location.origin}. Ignoring.`) */;
     return;
   }
   const message = event.data;
   if (typeof message !== 'object' || message === null) {
-    console.warn('Received non-object message via window.postMessage:', message);
+    void 0 /* console.warn('Received non-object message via window.postMessage:', message) */;
     return;
   }
   if (!message.type) {
-    console.warn('Received message without a type property:', message);
+    void 0 /* console.warn('Received message without a type property:', message) */;
     return;
   }
   switch (message.type) {
@@ -1457,19 +1457,19 @@ function receiveMessage(event) {
       break;
     case 'setScaleLocally':
       if (isSharedMode) {
-        console.log("Shared mode: setScaleLocally message ignored (forced true behavior).");
+        void 0 /* console.log("Shared mode: setScaleLocally message ignored (forced true behavior).") */;
         break;
       }
       if (typeof message.value === 'boolean') {
         scaleLocallyManual = message.value;
         setBoolParam('scaleLocallyManual', scaleLocallyManual);
-        console.log(`Set scaleLocallyManual to ${scaleLocallyManual} and persisted.`);
+        void 0 /* console.log(`Set scaleLocallyManual to ${scaleLocallyManual} and persisted.`) */;
         if (window.is_manual_resolution_mode && manual_width !== null && manual_height !== null) {
-          console.log("Applying new scaling style in manual mode.");
+          void 0 /* console.log("Applying new scaling style in manual mode.") */;
           applyManualCanvasStyle(manual_width, manual_height, scaleLocallyManual);
         }
       } else {
-        console.warn("Invalid value received for setScaleLocally:", message.value);
+        void 0 /* console.warn("Invalid value received for setScaleLocally:", message.value) */;
       }
       break;
     case 'setSynth':
@@ -1479,16 +1479,16 @@ function receiveMessage(event) {
       break;
     case 'showVirtualKeyboard':
       if (isSharedMode) {
-        console.log("Shared mode: showVirtualKeyboard message ignored.");
+        void 0 /* console.log("Shared mode: showVirtualKeyboard message ignored.") */;
         break;
       }
-      console.log("Received 'showVirtualKeyboard' message.");
+      void 0 /* console.log("Received 'showVirtualKeyboard' message.") */;
       const kbdAssistInput = document.getElementById('keyboard-input-assist');
       const mainInteractionOverlay = document.getElementById('overlayInput');
       if (kbdAssistInput) {
         kbdAssistInput.value = '';
         kbdAssistInput.focus();
-        console.log("Focused #keyboard-input-assist element.");
+        void 0 /* console.log("Focused #keyboard-input-assist element.") */;
         mainInteractionOverlay.addEventListener(
           "touchstart",
           () => {
@@ -1501,7 +1501,7 @@ function receiveMessage(event) {
           }
         );
       } else {
-        console.error("Could not find #keyboard-input-assist element to focus.");
+        void 0 /* console.error("Could not find #keyboard-input-assist element to focus.") */;
       }
       break;
     case 'setUseCssScaling':
@@ -1509,7 +1509,7 @@ function receiveMessage(event) {
         const changed = useCssScaling !== message.value;
         useCssScaling = message.value;
         setBoolParam('useCssScaling', useCssScaling);
-        console.log(`Set useCssScaling to ${useCssScaling} and persisted.`);
+        void 0 /* console.log(`Set useCssScaling to ${useCssScaling} and persisted.`) */;
 
         if (window.webrtcInput && typeof window.webrtcInput.updateCssScaling === 'function') {
           window.webrtcInput.updateCssScaling(useCssScaling);
@@ -1535,7 +1535,7 @@ function receiveMessage(event) {
           }
         }
       } else {
-        console.warn("Invalid value received for setUseCssScaling:", message.value);
+        void 0 /* console.warn("Invalid value received for setUseCssScaling:", message.value) */;
       }
       break;
     case 'setAntiAliasing':
@@ -1543,40 +1543,40 @@ function receiveMessage(event) {
         const changed = antiAliasingEnabled !== message.value;
         antiAliasingEnabled = message.value;
         setBoolParam('antiAliasingEnabled', antiAliasingEnabled);
-        console.log(`Set antiAliasingEnabled to ${antiAliasingEnabled} and persisted.`);
+        void 0 /* console.log(`Set antiAliasingEnabled to ${antiAliasingEnabled} and persisted.`) */;
         if (changed) {
           updateCanvasImageRendering();
         }
       } else {
-        console.warn("Invalid value received for setAntiAliasing:", message.value);
+        void 0 /* console.warn("Invalid value received for setAntiAliasing:", message.value) */;
       }
       break;
     case 'setUseBrowserCursors':
       if (typeof message.value === 'boolean') {
         use_browser_cursors = message.value;
         setBoolParam('use_browser_cursors', use_browser_cursors);
-        console.log(`Set use_browser_cursors to ${use_browser_cursors} and persisted.`);
+        void 0 /* console.log(`Set use_browser_cursors to ${use_browser_cursors} and persisted.`) */;
         applyEffectiveCursorSetting();
       } else {
-        console.warn("Invalid value received for setUseBrowserCursors:", message.value);
+        void 0 /* console.warn("Invalid value received for setUseBrowserCursors:", message.value) */;
       }
       break;
     case 'setManualResolution':
       if (isSharedMode) {
-        console.log("Shared mode: setManualResolution message ignored.");
+        void 0 /* console.log("Shared mode: setManualResolution message ignored.") */;
         break;
       }
       const width = parseInt(message.width, 10);
       const height = parseInt(message.height, 10);
       if (isNaN(width) || width <= 0 || isNaN(height) || height <= 0) {
-        console.error('Received invalid width/height for setManualResolution:', message);
+        void 0 /* console.error('Received invalid width/height for setManualResolution:', message) */;
         break;
       }
-      console.log(`Setting manual resolution: ${width}x${height} (logical)`);
+      void 0 /* console.log(`Setting manual resolution: ${width}x${height} (logical)`) */;
       window.is_manual_resolution_mode = true;
       manual_width = roundDownToEven(width);
       manual_height = roundDownToEven(height);
-      console.log(`Rounded logical resolution to even numbers: ${manual_width}x${manual_height}`);
+      void 0 /* console.log(`Rounded logical resolution to even numbers: ${manual_width}x${manual_height}`) */;
       setIntParam('manual_width', manual_width);
       setIntParam('manual_height', manual_height);
       setBoolParam('is_manual_resolution_mode', true);
@@ -1584,7 +1584,7 @@ function receiveMessage(event) {
       sendResolutionToServer(manual_width, manual_height);
       applyManualCanvasStyle(manual_width, manual_height, scaleLocallyManual);
       if (currentEncoderMode === 'x264enc' || currentEncoderMode === 'x264enc-striped') {
-        console.log("Clearing VNC stripe decoders due to manual resolution change.");
+        void 0 /* console.log("Clearing VNC stripe decoders due to manual resolution change.") */;
         clearAllVncStripeDecoders();
         if (canvasContext) canvasContext.setTransform(1, 0, 0, 1, 0, 0);
         canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -1592,10 +1592,10 @@ function receiveMessage(event) {
       break;
     case 'resetResolutionToWindow':
       if (isSharedMode) {
-        console.log("Shared mode: resetResolutionToWindow message ignored.");
+        void 0 /* console.log("Shared mode: resetResolutionToWindow message ignored.") */;
         break;
       }
-      console.log("Resetting resolution to window size.");
+      void 0 /* console.log("Resetting resolution to window size.") */;
       window.is_manual_resolution_mode = false;
       manual_width = null;
       manual_height = null;
@@ -1607,7 +1607,7 @@ function receiveMessage(event) {
       const autoHeight = roundDownToEven(currentWindowRes[1]);
       resetCanvasStyle(autoWidth, autoHeight);
       if (currentEncoderMode === 'x264enc' || currentEncoderMode === 'x264enc-striped') {
-        console.log("Clearing VNC stripe decoders due to resolution reset to window.");
+        void 0 /* console.log("Clearing VNC stripe decoders due to resolution reset to window.") */;
         clearAllVncStripeDecoders();
         if (canvasContext) canvasContext.setTransform(1, 0, 0, 1, 0, 0);
         canvasContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -1615,24 +1615,24 @@ function receiveMessage(event) {
       enableAutoResize();
       break;
     case 'settings':
-      console.log('Received settings message:', message.settings);
+      void 0 /* console.log('Received settings message:', message.settings) */;
       handleSettingsMessage(message.settings);
       break;
     case 'getStats':
-      console.log('Received getStats message.');
+      void 0 /* console.log('Received getStats message.') */;
       sendStatsMessage();
       break;
     case 'clipboardUpdateFromUI':
-      console.log('Received clipboardUpdateFromUI message.');
+      void 0 /* console.log('Received clipboardUpdateFromUI message.') */;
       if (isSharedMode) {
-        console.log("Shared mode: Clipboard write to server blocked.");
+        void 0 /* console.log("Shared mode: Clipboard write to server blocked.") */;
         break;
       }
       const newClipboardText = message.text;
       sendClipboardData(newClipboardText);
       break;
     case 'pipelineStatusUpdate':
-      console.log('Received pipelineStatusUpdate message:', message);
+      void 0 /* console.log('Received pipelineStatusUpdate message:', message) */;
       let stateChangedFromStatus = false;
       if (message.video !== undefined && isVideoPipelineActive !== message.video) {
         isVideoPipelineActive = message.video;
@@ -1655,7 +1655,7 @@ function receiveMessage(event) {
       }
       break;
     case 'pipelineControl':
-      console.log(`Received pipeline control message: pipeline=${message.pipeline}, enabled=${message.enabled}`);
+      void 0 /* console.log(`Received pipeline control message: pipeline=${message.pipeline}, enabled=${message.enabled}`) */;
       const pipeline = message.pipeline;
       const desiredState = message.enabled;
       let stateChangedFromControl = false;
@@ -1663,7 +1663,7 @@ function receiveMessage(event) {
 
       if (pipeline === 'video') {
         if (isSharedMode) {
-          console.log("Shared mode: Video pipelineControl blocked.");
+          void 0 /* console.log("Shared mode: Video pipelineControl blocked.") */;
           break;
         }
         if (isVideoPipelineActive !== desiredState) {
@@ -1672,26 +1672,26 @@ function receiveMessage(event) {
           wsMessage = desiredState ? 'START_VIDEO' : 'STOP_VIDEO';
 
           if (!desiredState) {
-            console.log("Client: STOP_VIDEO requested via pipelineControl. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.");
+            void 0 /* console.log("Client: STOP_VIDEO requested via pipelineControl. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.") */;
             if (canvasContext && canvas) {
               try {
                 canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                 canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-              } catch (e) { console.error("Error clearing canvas on STOP_VIDEO request:", e); }
+              } catch (e) { void 0 /* console.error("Error clearing canvas on STOP_VIDEO request:", e) */; }
             }
           } else {
-            console.log("Client: START_VIDEO requested via pipelineControl. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.");
+            void 0 /* console.log("Client: START_VIDEO requested via pipelineControl. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.") */;
              if (canvasContext && canvas) {
                 try {
                     canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-                } catch (e) { console.error("Error clearing canvas on START_VIDEO request:", e); }
+                } catch (e) { void 0 /* console.error("Error clearing canvas on START_VIDEO request:", e) */; }
             }
           }
         }
       } else if (pipeline === 'audio') {
         if (displayId !== 'primary') {
-            console.log("Secondary display: Audio control blocked.");
+            void 0 /* console.log("Secondary display: Audio control blocked.") */;
             break;
         }
         if (isAudioPipelineActive !== desiredState) {
@@ -1709,7 +1709,7 @@ function receiveMessage(event) {
         }
       } else if (pipeline === 'microphone') {
         if (isSharedMode) {
-          console.log("Shared mode: Microphone control blocked.");
+          void 0 /* console.log("Shared mode: Microphone control blocked.") */;
           break;
         }
         if (desiredState) {
@@ -1718,29 +1718,29 @@ function receiveMessage(event) {
           stopMicrophoneCapture();
         }
       } else {
-        console.warn(`Received pipelineControl message for unknown pipeline: ${pipeline}`);
+        void 0 /* console.warn(`Received pipelineControl message for unknown pipeline: ${pipeline}`) */;
       }
 
       if (wsMessage && websocket && websocket.readyState === WebSocket.OPEN) {
         try {
           websocket.send(wsMessage);
-          console.log(`Sent command to server via WebSocket: ${wsMessage}`);
+          void 0 /* console.log(`Sent command to server via WebSocket: ${wsMessage}`) */;
         } catch (e) {
-          console.error(`Error sending ${wsMessage} to WebSocket:`, e);
+          void 0 /* console.error(`Error sending ${wsMessage} to WebSocket:`, e) */;
         }
       }
       break;
     case 'audioDeviceSelected':
-      console.log('Received audioDeviceSelected message:', message);
+      void 0 /* console.log('Received audioDeviceSelected message:', message) */;
       if (isSharedMode && message.context === 'input') {
-          console.log("Shared mode: Audio input device selection ignored.");
+          void 0 /* console.log("Shared mode: Audio input device selection ignored.") */;
           break;
       }
       const {
         context, deviceId
       } = message;
       if (!deviceId) {
-        console.warn("Received audioDeviceSelected message without a deviceId.");
+        void 0 /* console.warn("Received audioDeviceSelected message without a deviceId.") */;
         break;
       }
       if (context === 'input') {
@@ -1753,11 +1753,11 @@ function receiveMessage(event) {
         preferredOutputDeviceId = deviceId;
         applyOutputDevice();
       } else {
-        console.warn(`Unknown context in audioDeviceSelected message: ${context}`);
+        void 0 /* console.warn(`Unknown context in audioDeviceSelected message: ${context}`) */;
       }
       break;
     case 'gamepadControl':
-      console.log(`Received gamepad control message: enabled=${message.enabled}`);
+      void 0 /* console.log(`Received gamepad control message: enabled=${message.enabled}`) */;
       const newGamepadState = message.enabled;
       if (isGamepadEnabled !== newGamepadState) {
         isGamepadEnabled = newGamepadState;
@@ -1766,18 +1766,18 @@ function receiveMessage(event) {
         if (window.webrtcInput && window.webrtcInput.gamepadManager) {
             if (isSharedMode) {
                 window.webrtcInput.gamepadManager.enable();
-                console.log("Shared mode: Gamepad control message received, ensuring its GamepadManager remains active for polling.");
+                void 0 /* console.log("Shared mode: Gamepad control message received, ensuring its GamepadManager remains active for polling.") */;
             } else {
                 if (isGamepadEnabled) {
                     window.webrtcInput.gamepadManager.enable();
-                    console.log("Primary mode: Gamepad toggle ON. Enabling GamepadManager polling.");
+                    void 0 /* console.log("Primary mode: Gamepad toggle ON. Enabling GamepadManager polling.") */;
                 } else {
                     window.webrtcInput.gamepadManager.disable();
-                    console.log("Primary mode: Gamepad toggle OFF. Disabling GamepadManager polling.");
+                    void 0 /* console.log("Primary mode: Gamepad toggle OFF. Disabling GamepadManager polling.") */;
                 }
             }
         } else {
-            console.warn("Client: window.webrtcInput.gamepadManager not found in 'gamepadControl' message handler.");
+            void 0 /* console.warn("Client: window.webrtcInput.gamepadManager not found in 'gamepadControl' message handler.") */;
         }
       }
       break;
@@ -1786,24 +1786,24 @@ function receiveMessage(event) {
       break;
     case 'command':
       if (isSharedMode) {
-        console.log("Shared mode: Arbitrary command sending to server blocked.");
+        void 0 /* console.log("Shared mode: Arbitrary command sending to server blocked.") */;
         break;
       }
       if (typeof message.value === 'string') {
         const commandString = message.value;
-        console.log(`Received 'command' message with value: "${commandString}". Forwarding to WebSocket.`);
+        void 0 /* console.log(`Received 'command' message with value: "${commandString}". Forwarding to WebSocket.`) */;
         if (websocket && websocket.readyState === WebSocket.OPEN) {
           try {
             websocket.send(`cmd,${commandString}`);
-            console.log(`Sent command to server via WebSocket: cmd,${commandString}`);
+            void 0 /* console.log(`Sent command to server via WebSocket: cmd,${commandString}`) */;
           } catch (e) {
-            console.error('Failed to send command via WebSocket:', e);
+            void 0 /* console.error('Failed to send command via WebSocket:', e) */;
           }
         } else {
-          console.warn('Cannot send command: WebSocket is not open or not available.');
+          void 0 /* console.warn('Cannot send command: WebSocket is not open or not available.') */;
         }
       } else {
-        console.warn("Received 'command' message without a string value:", message);
+        void 0 /* console.warn("Received 'command' message without a string value:", message) */;
       }
       break;
     case 'touchinput:trackpad':
@@ -1833,7 +1833,7 @@ function receiveMessage(event) {
 
 async function sendClipboardData(data, mimeType = 'text/plain') {
     if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-        console.warn('Cannot send clipboard data: WebSocket is not open.');
+        void 0 /* console.warn('Cannot send clipboard data: WebSocket is not open.') */;
         return;
     }
     const isBinary = data instanceof ArrayBuffer || data instanceof Uint8Array;
@@ -1852,13 +1852,13 @@ async function sendClipboardData(data, mimeType = 'text/plain') {
         const base64Data = btoa(binaryString);
         if (mimeType === 'text/plain') {
             websocket.send(`cw,${base64Data}`);
-            console.log('Sent small clipboard text in single message.');
+            void 0 /* console.log('Sent small clipboard text in single message.') */;
         } else {
             websocket.send(`cb,${mimeType},${base64Data}`);
-            console.log(`Sent small binary clipboard data in single message: ${mimeType}`);
+            void 0 /* console.log(`Sent small binary clipboard data in single message: ${mimeType}`) */;
         }
     } else {
-        console.log(`Sending large clipboard data (${dataBytes.byteLength} bytes) in multiple parts.`);
+        void 0 /* console.log(`Sending large clipboard data (${dataBytes.byteLength} bytes) in multiple parts.`) */;
         const totalSize = dataBytes.byteLength;
         if (mimeType === 'text/plain') {
             websocket.send(`cws,${totalSize}`);
@@ -1886,12 +1886,12 @@ async function sendClipboardData(data, mimeType = 'text/plain') {
         } else {
             websocket.send('cbe');
         }
-        console.log('Finished sending multi-part clipboard data.');
+        void 0 /* console.log('Finished sending multi-part clipboard data.') */;
     }
 }
 
 function handleSettingsMessage(settings) {
-  console.log('Applying settings:', settings);
+  void 0 /* console.log('Applying settings:', settings) */;
   let settingsChanged = false;
   if (settings.framerate !== undefined) {
     framerate = parseInt(settings.framerate);
@@ -1906,7 +1906,7 @@ function handleSettingsMessage(settings) {
         settingsChanged = true;
         if (newEncoderSetting === 'jpeg' || newEncoderSetting === 'x264enc' || newEncoderSetting === 'x264enc-striped') {
             if (decoder && decoder.state !== 'closed') {
-                console.log(`Switching to ${newEncoderSetting}, closing main video decoder.`);
+                void 0 /* console.log(`Switching to ${newEncoderSetting}, closing main video decoder.`) */;
                 decoder.close();
                 decoder = null;
             }
@@ -1983,7 +1983,7 @@ function handleSettingsMessage(settings) {
   if (settings.debug !== undefined) {
     debug = settings.debug;
     setBoolParam('debug', debug);
-    console.log(`Applied debug setting: ${debug}. Reloading...`);
+    void 0 /* console.log(`Applied debug setting: ${debug}. Reloading...`) */;
     setTimeout(() => { window.location.reload(); }, 700);
     return;
   }
@@ -2011,32 +2011,32 @@ function sendStatsMessage() {
     type: 'stats',
     data: stats
   }, window.location.origin);
-  console.log('Sent stats message via window.postMessage:', stats);
+  void 0 /* console.log('Sent stats message via window.postMessage:', stats) */;
 }
 
 function startSharedModeProbingTimeout() {
     clearTimeout(sharedProbingTimeoutId);
     sharedProbingTimeoutId = setTimeout(() => {
-        console.warn(`Shared mode (${detectedSharedModeType}): Timeout waiting for video identification packet (attempt ${sharedProbingAttempts + 1}/${MAX_SHARED_PROBING_ATTEMPTS}).`);
+        void 0 /* console.warn(`Shared mode (${detectedSharedModeType}): Timeout waiting for video identification packet (attempt ${sharedProbingAttempts + 1}/${MAX_SHARED_PROBING_ATTEMPTS}).`) */;
         sharedProbingAttempts++;
         if (sharedProbingAttempts < MAX_SHARED_PROBING_ATTEMPTS) {
             if (sharedClientState === 'awaiting_identification') {
-                console.log(`Shared mode (${detectedSharedModeType}): Probing timeout. Attempting to re-trigger stream with STOP/START_VIDEO.`);
+                void 0 /* console.log(`Shared mode (${detectedSharedModeType}): Probing timeout. Attempting to re-trigger stream with STOP/START_VIDEO.`) */;
                 if (websocket && websocket.readyState === WebSocket.OPEN) {
                     websocket.send('STOP_VIDEO');
                     setTimeout(() => {
                         if (websocket && websocket.readyState === WebSocket.OPEN) {
                             websocket.send('START_VIDEO');
-                            console.log(`Shared mode (${detectedSharedModeType}): Sent START_VIDEO after probing timeout.`);
+                            void 0 /* console.log(`Shared mode (${detectedSharedModeType}): Sent START_VIDEO after probing timeout.`) */;
                         }
                     }, 250);
                 }
                 startSharedModeProbingTimeout();
             } else {
-                 console.log(`Shared mode: Probing timeout fired but state is ${sharedClientState}. Not retrying automatically.`);
+                 void 0 /* console.log(`Shared mode: Probing timeout fired but state is ${sharedClientState}. Not retrying automatically.`) */;
             }
         } else {
-            console.error("Shared mode: Failed to identify video type after multiple attempts. Entering error state. Stream may not be active or correctly configured on server/primary client.");
+            void 0 /* console.error("Shared mode: Failed to identify video type after multiple attempts. Entering error state. Stream may not be active or correctly configured on server/primary client.") */;
             sharedClientState = 'error';
             if (statusDisplayElement) {
                 statusDisplayElement.textContent = 'Error: Could not identify video stream.';
@@ -2056,7 +2056,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initializeDecoder() {
     mainDecoderHasKeyframe = false;
     if (decoder && decoder.state !== 'closed') {
-      console.warn("VideoDecoder already exists, closing before re-initializing.");
+      void 0 /* console.warn("VideoDecoder already exists, closing before re-initializing.") */;
       decoder.close();
     }
     let targetWidth = 1024;
@@ -2100,7 +2100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(`Configuration not supported: ${JSON.stringify(decoderConfig)}`);
       }
       await decoder.configure(decoderConfig);
-      console.log('Main VideoDecoder configured successfully with config:', decoderConfig);
+      void 0 /* console.log('Main VideoDecoder configured successfully with config:', decoderConfig) */;
       return true;
     } catch (e) {
       initiateFallback(e, 'main_decoder_configure');
@@ -2126,11 +2126,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .then((text) => {
           if (!text) return;
           sendClipboardData(text);
-          console.log("Sent clipboard text on focus via sendClipboardData");
+          void 0 /* console.log("Sent clipboard text on focus via sendClipboardData") */;
         })
         .catch((err) => {
           if (err.name !== 'NotFoundError' && !err.message.includes('not focused')) {
-             console.warn(`Could not read text clipboard on focus: ${err.name} - ${err.message}`);
+             void 0 /* console.warn(`Could not read text clipboard on focus: ${err.name} - ${err.message}`) */;
           }
         });
     } else {
@@ -2146,17 +2146,17 @@ document.addEventListener('DOMContentLoaded', () => {
           const blob = await clipboardItem.getType(imageType);
           const arrayBuffer = await blob.arrayBuffer();
           sendClipboardData(arrayBuffer, imageType);
-          console.log(`Sent binary clipboard on focus via sendClipboardData: ${imageType}, size: ${blob.size} bytes`);
+          void 0 /* console.log(`Sent binary clipboard on focus via sendClipboardData: ${imageType}, size: ${blob.size} bytes`) */;
         } else if (clipboardItem.types.includes('text/plain')) {
           const blob = await clipboardItem.getType('text/plain');
           const text = await blob.text();
           if (!text) return;
           sendClipboardData(text);
-          console.log("Sent clipboard text (from binary-enabled path) on focus via sendClipboardData");
+          void 0 /* console.log("Sent clipboard text (from binary-enabled path) on focus via sendClipboardData") */;
         }
       } catch (err) {
         if (err.name !== 'NotFoundError' && !err.message.includes('not focused')) {
-          console.warn(`Could not read clipboard using advanced API on focus: ${err.name} - ${err.message}`);
+          void 0 /* console.warn(`Could not read clipboard using advanced API on focus: ${err.name} - ${err.message}`) */;
         }
       }
     }
@@ -2164,42 +2164,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('visibilitychange', async () => {
     if (isSharedMode) {
-      console.log("Shared mode: Tab visibility changed, stream control bypassed. Current state:", document.hidden ? "hidden" : "visible");
+      void 0 /* console.log("Shared mode: Tab visibility changed, stream control bypassed. Current state:", document.hidden ? "hidden" : "visible") */;
       return;
     }
     if (document.hidden) {
-      console.log('Tab is hidden, stopping video pipeline if active.');
+      void 0 /* console.log('Tab is hidden, stopping video pipeline if active.') */;
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         if (isVideoPipelineActive) {
           websocket.send('STOP_VIDEO');
           isVideoPipelineActive = false;
           window.postMessage({ type: 'pipelineStatusUpdate', video: false }, window.location.origin);
-          console.log("Tab hidden: Sent STOP_VIDEO. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.");
+          void 0 /* console.log("Tab hidden: Sent STOP_VIDEO. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.") */;
           if (canvasContext && canvas) {
               try {
                   canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                   canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-              } catch (e) { console.error("Error clearing canvas on tab hidden:", e); }
+              } catch (e) { void 0 /* console.error("Error clearing canvas on tab hidden:", e) */; }
           }
         }
       }
     } else {
-      console.log('Tab is visible, requesting video pipeline start if it was inactive.');
+      void 0 /* console.log('Tab is visible, requesting video pipeline start if it was inactive.') */;
       if (websocket && websocket.readyState === WebSocket.OPEN) {
         if (!isVideoPipelineActive) {
           websocket.send('START_VIDEO');
           if (wakeLockSentinel === null) {
-            console.log('Tab is visible again, re-acquiring Wake Lock.');
+            void 0 /* console.log('Tab is visible again, re-acquiring Wake Lock.') */;
             await requestWakeLock();
           }
           isVideoPipelineActive = true;
           window.postMessage({ type: 'pipelineStatusUpdate', video: true }, window.location.origin);
-          console.log("Tab visible: Sent START_VIDEO. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.");
+          void 0 /* console.log("Tab visible: Sent START_VIDEO. Clearing canvas visually. Server will send PIPELINE_RESETTING for full state reset.") */;
           if (canvasContext && canvas) {
             try {
                 canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                 canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-            } catch (e) { console.error("Error clearing canvas on tab visible/start:", e); }
+            } catch (e) { void 0 /* console.error("Error clearing canvas on tab visible/start:", e) */; }
           }
         }
       }
@@ -2208,7 +2208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function decodeAndQueueJpegStripe(startY, jpegData) {
     if (typeof ImageDecoder === 'undefined') {
-      console.warn('ImageDecoder API not supported. Cannot decode JPEG stripes.');
+      void 0 /* console.warn('ImageDecoder API not supported. Cannot decode JPEG stripes.') */;
       return;
     }
     try {
@@ -2223,7 +2223,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       imageDecoder.close();
     } catch (error) {
-      console.error('Error decoding JPEG stripe:', error, 'startY:', startY, 'dataLength:', jpegData.byteLength);
+      void 0 /* console.error('Error decoding JPEG stripe:', error, 'startY:', startY, 'dataLength:', jpegData.byteLength) */;
     }
   }
 
@@ -2253,7 +2253,7 @@ function handleDecodedFrame(frame) {
         if ((manual_width !== logicalFrameWidth || manual_height !== logicalFrameHeight) && logicalFrameWidth > 0 && logicalFrameHeight > 0) {
             manual_width = logicalFrameWidth;
             manual_height = logicalFrameHeight;
-            console.log(`Shared mode (decoded H264): Updated manual (logical) dimensions from H.264 frame to ${manual_width.toFixed(2)}x${manual_height.toFixed(2)} (Physical: ${physicalFrameWidth}x${physicalFrameHeight})`);
+            void 0 /* console.log(`Shared mode (decoded H264): Updated manual (logical) dimensions from H.264 frame to ${manual_width.toFixed(2)}x${manual_height.toFixed(2)} (Physical: ${physicalFrameWidth}x${physicalFrameHeight})`) */;
             applyManualCanvasStyle(manual_width, manual_height, true);
         }
     }
@@ -2261,13 +2261,13 @@ function handleDecodedFrame(frame) {
     if (isGStreamerH264Mode) {
         videoFrameBuffer.push(frame);
     } else {
-        console.warn(`[handleDecodedFrame] Frame received but not for a GStreamer H.264 mode that uses videoFrameBuffer. isSharedMode: ${isSharedMode}, currentEncoderMode: ${currentEncoderMode}, identifiedEncoderModeForShared: ${identifiedEncoderModeForShared}. Closing frame to be safe.`);
+        void 0 /* console.warn(`[handleDecodedFrame] Frame received but not for a GStreamer H.264 mode that uses videoFrameBuffer. isSharedMode: ${isSharedMode}, currentEncoderMode: ${currentEncoderMode}, identifiedEncoderModeForShared: ${identifiedEncoderModeForShared}. Closing frame to be safe.`) */;
         frame.close();
     }
 }
 
   triggerInitializeDecoder = initializeDecoder;
-  console.log("initializeDecoder function assigned to triggerInitializeDecoder.");
+  void 0 /* console.log("initializeDecoder function assigned to triggerInitializeDecoder.") */;
 
   function paintVideoFrame() {
     if (!canvas || !canvasContext) {
@@ -2283,7 +2283,7 @@ function handleDecodedFrame(frame) {
           const expectedPhysicalCanvasWidth = roundDownToEven(manual_width * dpr);
           const expectedPhysicalCanvasHeight = roundDownToEven(manual_height * dpr);
           if (canvas.width !== expectedPhysicalCanvasWidth || canvas.height !== expectedPhysicalCanvasHeight) {
-            console.log(`Shared mode (paintVideoFrame): Canvas buffer ${canvas.width}x${canvas.height} out of sync with expected physical ${expectedPhysicalCanvasWidth}x${expectedPhysicalCanvasHeight} (logical: ${manual_width}x${manual_height}). Re-applying style.`);
+            void 0 /* console.log(`Shared mode (paintVideoFrame): Canvas buffer ${canvas.width}x${canvas.height} out of sync with expected physical ${expectedPhysicalCanvasWidth}x${expectedPhysicalCanvasHeight} (logical: ${manual_width}x${manual_height}). Re-applying style.`) */;
             applyManualCanvasStyle(manual_width, manual_height, true);
           }
       }
@@ -2304,7 +2304,7 @@ function handleDecodedFrame(frame) {
                       manual_height = roundDownToEven(manual_height * ratio);
                   }
                   manual_width = logicalStripeCodedWidth;
-                  console.log(`Shared mode (VNC stripe paint): Updated manual (logical) Width from VNC stripe to ${manual_width.toFixed(2)} (Stripe Coded: ${physicalStripeCodedWidth}, DPR for conversion: ${dpr_for_conversion})`);
+                  void 0 /* console.log(`Shared mode (VNC stripe paint): Updated manual (logical) Width from VNC stripe to ${manual_width.toFixed(2)} (Stripe Coded: ${physicalStripeCodedWidth}, DPR for conversion: ${dpr_for_conversion})`) */;
                   if (manual_height && manual_width > 0 && manual_height > 0) {
                       applyManualCanvasStyle(manual_width, manual_height, true);
                   }
@@ -2336,7 +2336,7 @@ function handleDecodedFrame(frame) {
                         manual_height = roundDownToEven(manual_height * ratio);
                     }
                     manual_width = logicalImageCodedWidth;
-                    console.log(`Shared mode (JPEG stripe paint): Updated manual (logical) Width from JPEG stripe to ${manual_width.toFixed(2)} (Image Coded: ${physicalImageCodedWidth}, DPR for conversion: ${dpr_for_conversion})`);
+                    void 0 /* console.log(`Shared mode (JPEG stripe paint): Updated manual (logical) Width from JPEG stripe to ${manual_width.toFixed(2)} (Image Coded: ${physicalImageCodedWidth}, DPR for conversion: ${dpr_for_conversion})`) */;
                     if (manual_height && manual_width > 0 && manual_height > 0) {
                         applyManualCanvasStyle(manual_width, manual_height, true);
                     }
@@ -2346,7 +2346,7 @@ function handleDecodedFrame(frame) {
         if ((canvas.width === 0 || canvas.height === 0) || (canvas.width === 300 && canvas.height === 150)) {
           const firstStripe = jpegStripeRenderQueue[0];
           if (firstStripe && firstStripe.image && (firstStripe.startY + firstStripe.image.height > canvas.height || firstStripe.image.width > canvas.width)) {
-            console.warn(`[paintVideoFrame] Canvas dimensions (${canvas.width}x${canvas.height}) may be too small for JPEG stripes.`);
+            void 0 /* console.warn(`[paintVideoFrame] Canvas dimensions (${canvas.width}x${canvas.height}) may be too small for JPEG stripes.`) */;
           }
         }
         while (jpegStripeRenderQueue.length > 0) {
@@ -2359,7 +2359,7 @@ function handleDecodedFrame(frame) {
               segment.image.close();
               jpegPaintedThisFrame = true;
             } catch (e) {
-              console.error("[paintVideoFrame] Error drawing JPEG segment:", e, segment);
+              void 0 /* console.error("[paintVideoFrame] Error drawing JPEG segment:", e, segment) */;
               if (segment.image && typeof segment.image.close === 'function') {
                 try { segment.image.close(); } catch (closeError) { /* ignore */ }
               }
@@ -2402,7 +2402,7 @@ function handleDecodedFrame(frame) {
 
   async function initializeAudio() {
     if (displayId !== 'primary') {
-        console.log("Secondary display: Audio pipeline initialization skipped.");
+        void 0 /* console.log("Secondary display: Audio pipeline initialization skipped.") */;
         return;
     }
     if (!audioContext) {
@@ -2410,9 +2410,9 @@ function handleDecodedFrame(frame) {
         sampleRate: 48000
       };
       audioContext = new(window.AudioContext || window.webkitAudioContext)(contextOptions);
-      console.log('Playback AudioContext initialized. Actual sampleRate:', audioContext.sampleRate, 'Initial state:', audioContext.state);
+      void 0 /* console.log('Playback AudioContext initialized. Actual sampleRate:', audioContext.sampleRate, 'Initial state:', audioContext.state) */;
       audioContext.onstatechange = () => {
-        console.log(`Playback AudioContext state changed to: ${audioContext.state}`);
+        void 0 /* console.log(`Playback AudioContext state changed to: ${audioContext.state}`) */;
         if (audioContext.state === 'running') {
           applyOutputDevice();
         }
@@ -2522,12 +2522,12 @@ function handleDecodedFrame(frame) {
       audioGainNode.gain.value = currentVolume;
       audioWorkletNode.connect(audioGainNode);
       audioGainNode.connect(audioContext.destination);
-      console.log('Playback AudioWorkletProcessor initialized and connected through a GainNode for volume control.');
+      void 0 /* console.log('Playback AudioWorkletProcessor initialized and connected through a GainNode for volume control.') */;
       await applyOutputDevice();
       await applyOutputDevice();
 
       if (audioDecoderWorker) {
-        console.warn("[Main] Terminating existing audio decoder worker before creating a new one.");
+        void 0 /* console.warn("[Main] Terminating existing audio decoder worker before creating a new one.") */;
         audioDecoderWorker.postMessage({
           type: 'close'
         });
@@ -2548,11 +2548,11 @@ function handleDecodedFrame(frame) {
           message
         } = event.data;
         if (type === 'decoderInitFailed') {
-          console.error(`[Main] Audio Decoder Worker failed to initialize: ${reason}`);
+          void 0 /* console.error(`[Main] Audio Decoder Worker failed to initialize: ${reason}`) */;
         } else if (type === 'decoderError') {
-          console.error(`[Main] Audio Decoder Worker reported error: ${message}`);
+          void 0 /* console.error(`[Main] Audio Decoder Worker reported error: ${message}`) */;
         } else if (type === 'decoderInitialized') {
-          console.log('[Main] Audio Decoder Worker confirmed its decoder is initialized.');
+          void 0 /* console.log('[Main] Audio Decoder Worker confirmed its decoder is initialized.') */;
         } else if (type === 'decodedAudioData') {
           const pcmBufferFromWorker = event.data.pcmBuffer;
           if (pcmBufferFromWorker && audioWorkletProcessorPort && audioContext && audioContext.state === 'running') {
@@ -2565,7 +2565,7 @@ function handleDecodedFrame(frame) {
         }
       };
       audioDecoderWorker.onerror = (error) => {
-        console.error('[Main] Uncaught error in Audio Decoder Worker:', error.message, error);
+        void 0 /* console.error('[Main] Uncaught error in Audio Decoder Worker:', error.message, error) */;
         if (audioDecoderWorker) {
           audioDecoderWorker.terminate();
           audioDecoderWorker = null;
@@ -2578,12 +2578,12 @@ function handleDecodedFrame(frame) {
             initialPipelineStatus: isAudioPipelineActive
           }
         });
-        console.log('[Main] Audio Decoder Worker created and init message sent.');
+        void 0 /* console.log('[Main] Audio Decoder Worker created and init message sent.') */;
       } else {
-        console.error("[Main] audioWorkletProcessorPort is null, cannot initialize audioDecoderWorker correctly.");
+        void 0 /* console.error("[Main] audioWorkletProcessorPort is null, cannot initialize audioDecoderWorker correctly.") */;
       }
     } catch (error) {
-      console.error('Error initializing Playback AudioWorklet:', error);
+      void 0 /* console.error('Error initializing Playback AudioWorklet:', error) */;
       if (audioContext && audioContext.state !== 'closed') {
         audioContext.close();
       }
@@ -2595,14 +2595,14 @@ function handleDecodedFrame(frame) {
 
   async function initializeDecoderAudio() {
     if (audioDecoderWorker) {
-      console.log('[Main] Requesting Audio Decoder Worker to reinitialize its decoder.');
+      void 0 /* console.log('[Main] Requesting Audio Decoder Worker to reinitialize its decoder.') */;
       audioDecoderWorker.postMessage({
         type: 'reinitialize'
       });
     } else {
-      console.warn('[Main] Cannot initialize decoder audio: Audio Decoder Worker not available. Call initializeAudio() first.');
+      void 0 /* console.warn('[Main] Cannot initialize decoder audio: Audio Decoder Worker not available. Call initializeAudio() first.') */;
       if (clientMode === 'websockets' && !audioContext) {
-        console.log('[Main] Audio context missing, attempting to initialize full audio pipeline for websockets.');
+        void 0 /* console.log('[Main] Audio context missing, attempting to initialize full audio pipeline for websockets.') */;
         await initializeAudio();
       }
     }
@@ -2625,7 +2625,7 @@ function handleDecodedFrame(frame) {
           websocket.send(`CLIENT_FRAME_ACK ${lastReceivedVideoFrameId}`);
         }
       } catch (error) {
-        console.error('[Backpressure] Error sending frame ACK:', error);
+        void 0 /* console.error('[Backpressure] Error sending frame ACK:', error) */;
       }
     }
   };
@@ -2673,7 +2673,7 @@ function handleDecodedFrame(frame) {
   };
 
   websocket.onopen = () => {
-    console.log('[websockets] Connection opened!');
+    void 0 /* console.log('[websockets] Connection opened!') */;
     status = 'connected_waiting_mode';
     loadingText = 'Connection established. Waiting for server mode...';
     updateStatusDisplay();
@@ -2755,19 +2755,19 @@ function handleDecodedFrame(frame) {
         const settingsJson = JSON.stringify(settingsToSend);
         const message = `SETTINGS,${settingsJson}`;
         websocket.send(message);
-        console.log('[websockets] Sent initial settings (resolutions are physical) to server:', settingsToSend);
+        void 0 /* console.log('[websockets] Sent initial settings (resolutions are physical) to server:', settingsToSend) */;
       } catch (e) {
-        console.error('[websockets] Error constructing or sending initial settings:', e);
+        void 0 /* console.error('[websockets] Error constructing or sending initial settings:', e) */;
       }
 
       const isCurrentModePixelfluxH264_ws = currentEncoderMode === 'x264enc' || currentEncoderMode === 'x264enc-striped';
       const isCurrentModeJpeg_ws = currentEncoderMode === 'jpeg';
       const isCurrentModeGStreamerPipeline_ws = !isCurrentModePixelfluxH264_ws && !isCurrentModeJpeg_ws;
     } else {
-        console.log("Shared mode: WebSocket opened. Waiting for 'MODE websockets' from server to start identification sequence.");
+        void 0 /* console.log("Shared mode: WebSocket opened. Waiting for 'MODE websockets' from server to start identification sequence.") */;
     }
     websocket.send('cr');
-    console.log('[websockets] Sent initial clipboard request (cr) to server.');
+    void 0 /* console.log('[websockets] Sent initial clipboard request (cr) to server.') */;
     isVideoPipelineActive = true;
     isAudioPipelineActive = (displayId === 'primary');
     window.postMessage({
@@ -2780,11 +2780,11 @@ function handleDecodedFrame(frame) {
         isMicrophoneActive = false;
         if (metricsIntervalId === null) {
           metricsIntervalId = setInterval(sendClientMetrics, METRICS_INTERVAL_MS);
-          console.log(`[websockets] Started sending client metrics every ${METRICS_INTERVAL_MS}ms.`);
+          void 0 /* console.log(`[websockets] Started sending client metrics every ${METRICS_INTERVAL_MS}ms.`) */;
         }
         if (backpressureIntervalId === null) {
           backpressureIntervalId = setInterval(sendBackpressureAck, BACKPRESSURE_INTERVAL_MS);
-          console.log(`[websockets] Started sending backpressure ACKs every ${BACKPRESSURE_INTERVAL_MS}ms.`);
+          void 0 /* console.log(`[websockets] Started sending backpressure ACKs every ${BACKPRESSURE_INTERVAL_MS}ms.`) */;
         }
     }
   };
@@ -2807,12 +2807,12 @@ function handleDecodedFrame(frame) {
                 clearSharedModeProbingTimeout();
                 sharedProbingAttempts = 0;
                 identifiedEncoderModeForShared = identifiedType;
-                console.log(`Shared mode: Identified video encoding type as '${identifiedEncoderModeForShared}' from first packet (type 0x${dataTypeByte.toString(16)}). State: configuring.`);
+                void 0 /* console.log(`Shared mode: Identified video encoding type as '${identifiedEncoderModeForShared}' from first packet (type 0x${dataTypeByte.toString(16)}). State: configuring.`) */;
                 sharedClientState = 'configuring';
 
-                console.log("Shared mode: Cleaning up existing video pipeline elements for reconfiguration.");
+                void 0 /* console.log("Shared mode: Cleaning up existing video pipeline elements for reconfiguration.") */;
                 if (decoder && decoder.state !== 'closed') {
-                    try { decoder.close(); } catch (e) { console.warn("Shared mode: Error closing main H.264 decoder during cleanup:", e); }
+                    try { decoder.close(); } catch (e) { void 0 /* console.warn("Shared mode: Error closing main H.264 decoder during cleanup:", e) */; }
                     decoder = null;
                 }
                 clearAllVncStripeDecoders();
@@ -2821,40 +2821,40 @@ function handleDecodedFrame(frame) {
                 decodedStripesQueue = [];
 
                 if (canvasContext && canvas) {
-                    console.log("Shared mode: Resetting canvas display.");
+                    void 0 /* console.log("Shared mode: Resetting canvas display.") */;
                     canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
                 }
 
                 currentEncoderMode = identifiedEncoderModeForShared;
-                console.log(`Shared mode: Set global currentEncoderMode to '${currentEncoderMode}'.`);
+                void 0 /* console.log(`Shared mode: Set global currentEncoderMode to '${currentEncoderMode}'.`) */;
 
                 if (identifiedEncoderModeForShared === 'h264_full_frame') {
-                    console.log("Shared mode: Initializing main H.264 decoder for the identified type.");
+                    void 0 /* console.log("Shared mode: Initializing main H.264 decoder for the identified type.") */;
                     triggerInitializeDecoder().then(success => {
                         if (success) {
-                            console.log("Shared mode: H.264 decoder configured. Requesting fresh video stream.");
+                            void 0 /* console.log("Shared mode: H.264 decoder configured. Requesting fresh video stream.") */;
                             sharedClientState = 'ready';
-                            console.log(`Shared mode: Client is now ready to process video of type '${identifiedEncoderModeForShared}'.`);
+                            void 0 /* console.log(`Shared mode: Client is now ready to process video of type '${identifiedEncoderModeForShared}'.`) */;
                         } else {
-                            console.error("Shared mode: Main H.264 decoder failed to initialize or configure. Entering error state.");
+                            void 0 /* console.error("Shared mode: Main H.264 decoder failed to initialize or configure. Entering error state.") */;
                             sharedClientState = 'error';
                         }
                     }).catch(initError => {
-                        console.error("Shared mode: Exception during H.264 decoder initialization. Entering error state.", initError);
+                        void 0 /* console.error("Shared mode: Exception during H.264 decoder initialization. Entering error state.", initError) */;
                         sharedClientState = 'error';
                     });
                 } else if (identifiedEncoderModeForShared === 'jpeg' || identifiedEncoderModeForShared === 'x264enc-striped') {
-                    console.log(`Shared mode: Configured for ${identifiedEncoderModeForShared}. Specific decoders (if any) are managed on-demand or not needed centrally.`);
+                    void 0 /* console.log(`Shared mode: Configured for ${identifiedEncoderModeForShared}. Specific decoders (if any) are managed on-demand or not needed centrally.`) */;
                     if (manual_width && manual_height && manual_width > 0 && manual_height > 0) {
                          applyManualCanvasStyle(manual_width, manual_height, true);
                     }
-                    console.log("Shared mode: Reconfiguration process for non-H264 initiated. Requesting fresh video stream from server.");
+                    void 0 /* console.log("Shared mode: Reconfiguration process for non-H264 initiated. Requesting fresh video stream from server.") */;
                     sharedClientState = 'ready';
-                    console.log(`Shared mode: Client is now ready to process video of type '${identifiedEncoderModeForShared}'.`);
+                    void 0 /* console.log(`Shared mode: Client is now ready to process video of type '${identifiedEncoderModeForShared}'.`) */;
                 }
             } else if (dataTypeByte !== 1) {
-                console.warn(`Shared mode (awaiting_identification): Received non-identifying binary packet type 0x${dataTypeByte.toString(16)}. Still waiting for a video packet.`);
+                void 0 /* console.warn(`Shared mode (awaiting_identification): Received non-identifying binary packet type 0x${dataTypeByte.toString(16)}. Still waiting for a video packet.`) */;
                 return;
             }
         } else if (sharedClientState === 'ready') {
@@ -2866,14 +2866,14 @@ function handleDecodedFrame(frame) {
                 else if (identifiedEncoderModeForShared === 'x264enc-striped' && dataTypeByte === 0x04) packetMatchesIdentifiedType = true;
 
                 if (!packetMatchesIdentifiedType) {
-                    console.warn(`Shared mode (ready): Received video packet type 0x${dataTypeByte.toString(16)} which does NOT match identified type '${identifiedEncoderModeForShared}'. Discarding packet.`);
+                    void 0 /* console.warn(`Shared mode (ready): Received video packet type 0x${dataTypeByte.toString(16)} which does NOT match identified type '${identifiedEncoderModeForShared}'. Discarding packet.`) */;
                     return;
                 }
             }
         } else if (sharedClientState === 'configuring' || sharedClientState === 'error' || sharedClientState === 'idle') {
             let packetIsVideo = (dataTypeByte === 0 || dataTypeByte === 0x03 || dataTypeByte === 0x04);
             if (packetIsVideo) {
-                 console.log(`Shared mode: Video packet (type 0x${dataTypeByte.toString(16)}) received while in state '${sharedClientState}'. Discarding.`);
+                 void 0 /* console.log(`Shared mode: Video packet (type 0x${dataTypeByte.toString(16)}) received while in state '${sharedClientState}'. Discarding.`) */;
                  return;
             }
         }
@@ -2895,10 +2895,10 @@ function handleDecodedFrame(frame) {
         if (canProcessFullH264) {
           if (isSharedMode && !sharedClientHasReceivedKeyframe) {
             if (frameTypeFlag === 1) {
-              console.log("Shared mode: First keyframe received. Opening the gate for video decoding.");
+              void 0 /* console.log("Shared mode: First keyframe received. Opening the gate for video decoding.") */;
               sharedClientHasReceivedKeyframe = true;
             } else {
-              console.log("Shared mode: Gate is closed. Discarding non-keyframe packet.");
+              void 0 /* console.log("Shared mode: Gate is closed. Discarding non-keyframe packet.") */;
               return;
             }
           }
@@ -2922,13 +2922,13 @@ function handleDecodedFrame(frame) {
             }
           } else {
             if (!isSharedMode && (!decoder || decoder.state === 'closed' || decoder.state === 'unconfigured')) {
-              console.warn(`Main decoder not ready for Full H.264 frame (mode: ${currentEncoderMode}, state: ${decoder ? decoder.state : 'null'}). Attempting init. Frame might be dropped.`);
+              void 0 /* console.warn(`Main decoder not ready for Full H.264 frame (mode: ${currentEncoderMode}, state: ${decoder ? decoder.state : 'null'}). Attempting init. Frame might be dropped.`) */;
               initializeDecoder();
             } else if (isSharedMode && (!decoder || decoder.state === 'closed' || decoder.state === 'unconfigured')) {
-                 console.error(`Shared mode: Main H.264 decoder not available or not configured when expected. State: ${sharedClientState}. Decoder state: ${decoder ? decoder.state : 'null'}. Entering error state.`);
+                 void 0 /* console.error(`Shared mode: Main H.264 decoder not available or not configured when expected. State: ${sharedClientState}. Decoder state: ${decoder ? decoder.state : 'null'}. Entering error state.`) */;
                  sharedClientState = 'error';
             } else {
-              console.warn(`Main decoder exists but not configured (state: ${decoder.state}). Full H.264 frame dropped.`);
+              void 0 /* console.warn(`Main decoder exists but not configured (state: ${decoder.state}). Full H.264 frame dropped.`) */;
             }
           }
         }
@@ -2943,7 +2943,7 @@ function handleDecodedFrame(frame) {
         if ((isAudioPipelineActive || isSharedMode)) {
           if (audioDecoderWorker) {
             if (audioContext && audioContext.state !== 'running') {
-              audioContext.resume().catch(e => console.error("Error resuming audio context", e));
+              audioContext.resume().catch(e => void 0 /* console.error("Error resuming audio context", e) */);
             }
             const opusDataArrayBuffer = arrayBuffer.slice(audioHeaderLength);
             if (opusDataArrayBuffer.byteLength > 0) {
@@ -2959,7 +2959,7 @@ function handleDecodedFrame(frame) {
               }, [opusDataArrayBuffer]);
             }
           } else {
-            console.warn("AudioDecoderWorker not ready. Attempting to initialize audio pipeline.");
+            void 0 /* console.warn("AudioDecoderWorker not ready. Attempting to initialize audio pipeline.") */;
             initializeAudio().then(() => {
               if (audioDecoderWorker) {
                 const opusDataArrayBuffer = arrayBuffer.slice(audioHeaderLength);
@@ -3015,10 +3015,10 @@ function handleDecodedFrame(frame) {
         if (canProcessVncStripe) {
             if (isSharedMode && !sharedClientHasReceivedKeyframe) {
                 if (video_frame_type_byte === 0x01) {
-                    console.log("Shared mode: First keyframe received for striped video. Opening the gate.");
+                    void 0 /* console.log("Shared mode: First keyframe received for striped video. Opening the gate.") */;
                     sharedClientHasReceivedKeyframe = true;
                 } else {
-                    console.log("Shared mode: Gate is closed. Discarding non-keyframe striped packet.");
+                    void 0 /* console.log("Shared mode: Gate is closed. Discarding non-keyframe striped packet.") */;
                     return;
                 }
             }
@@ -3033,7 +3033,7 @@ function handleDecodedFrame(frame) {
                 (decoderInfo.decoder.state === 'configured' && (decoderInfo.width !== stripeWidth || decoderInfo.height !== stripeHeight))) {
 
                 if(decoderInfo && decoderInfo.decoder.state !== 'closed') {
-                    try { decoderInfo.decoder.close(); } catch(e) { console.warn("Error closing old VNC stripe decoder:", e); }
+                    try { decoderInfo.decoder.close(); } catch(e) { void 0 /* console.warn("Error closing old VNC stripe decoder:", e) */; }
                 }
 
                 const newStripeDecoder = new VideoDecoder({
@@ -3060,7 +3060,7 @@ function handleDecodedFrame(frame) {
                         if (support.supported) {
                             return newStripeDecoder.configure(decoderConfig);
                         } else {
-                            console.error(`VNC stripe decoder config not supported for Y=${vncStripeYStart}:`, decoderConfig);
+                            void 0 /* console.error(`VNC stripe decoder config not supported for Y=${vncStripeYStart}:`, decoderConfig) */;
                             delete vncStripeDecoders[vncStripeYStart];
                             return Promise.reject("Config not supported");
                         }
@@ -3069,7 +3069,7 @@ function handleDecodedFrame(frame) {
                         processPendingChunksForStripe(vncStripeYStart);
                     })
                     .catch(e => {
-                        console.error(`Error configuring VNC stripe decoder Y=${vncStripeYStart}:`, e);
+                        void 0 /* console.error(`Error configuring VNC stripe decoder Y=${vncStripeYStart}:`, e) */;
                         if (vncStripeDecoders[vncStripeYStart] && vncStripeDecoders[vncStripeYStart].decoder === newStripeDecoder) {
                             try { if (newStripeDecoder.state !== 'closed') newStripeDecoder.close(); } catch (_) {}
                             delete vncStripeDecoders[vncStripeYStart];
@@ -3097,19 +3097,19 @@ function handleDecodedFrame(frame) {
                 } else if (decoderInfo.decoder.state === "unconfigured" || decoderInfo.decoder.state === "configuring") {
                     decoderInfo.pendingChunks.push(chunkData);
                 } else {
-                     console.warn(`VNC stripe decoder for Y=${vncStripeYStart} in unexpected state: ${decoderInfo.decoder.state}. Dropping chunk.`);
+                     void 0 /* console.warn(`VNC stripe decoder for Y=${vncStripeYStart} in unexpected state: ${decoderInfo.decoder.state}. Dropping chunk.`) */;
                 }
             }
         }
 
 
       } else {
-        console.warn('Unknown binary data payload type received:', dataTypeByte);
+        void 0 /* console.warn('Unknown binary data payload type received:', dataTypeByte) */;
       }
     } else if (typeof event.data === 'string') {
       if (event.data.startsWith('KILL ')) {
         const reason = event.data.substring(5);
-        console.error(`Received KILL message from server: ${reason}`);
+        void 0 /* console.error(`Received KILL message from server: ${reason}`) */;
         if (reconnectIntervalId) clearInterval(reconnectIntervalId);
         if (websocket) {
             websocket.onclose = () => {};
@@ -3126,11 +3126,11 @@ function handleDecodedFrame(frame) {
         const permissions = JSON.parse(payloadStr);
         clientRole = permissions.role;
         clientSlot = permissions.slot;
-        console.log(`Authentication successful. Received Role: ${clientRole}, Slot: ${clientSlot}`);
+        void 0 /* console.log(`Authentication successful. Received Role: ${clientRole}, Slot: ${clientSlot}`) */;
         window.postMessage({ type: 'clientRoleUpdate', role: clientRole }, window.location.origin);
 
         if (clientRole === 'viewer') {
-            console.log("Token-based client is a 'viewer'. Applying shared mode compatibility settings.");
+            void 0 /* console.log("Token-based client is a 'viewer'. Applying shared mode compatibility settings.") */;
             isSharedMode = true;
             if (window.webrtcInput) {
                 window.webrtcInput.setSharedMode(true);
@@ -3153,7 +3153,7 @@ function handleDecodedFrame(frame) {
             updateUIForSharedMode();
 
             if (initializationComplete) {
-                console.log("Post-init sync: Forcing shared mode state because 'MODE websockets' was handled before auth.");
+                void 0 /* console.log("Post-init sync: Forcing shared mode state because 'MODE websockets' was handled before auth.") */;
                 sharedClientState = 'awaiting_identification';
                 sharedProbingAttempts = 0;
                 identifiedEncoderModeForShared = null;
@@ -3163,7 +3163,7 @@ function handleDecodedFrame(frame) {
                      setTimeout(() => {
                         if (websocket && websocket.readyState === WebSocket.OPEN) {
                             websocket.send('START_VIDEO');
-                            console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO.");
+                            void 0 /* console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO.") */;
                         }
                     }, 250);
                 }
@@ -3176,7 +3176,7 @@ function handleDecodedFrame(frame) {
         const permissions = JSON.parse(payloadStr);
         clientRole = permissions.role;
         clientSlot = permissions.slot;
-        console.log(`Authentication successful. Received Role: ${clientRole}, Slot: ${clientSlot}`);
+        void 0 /* console.log(`Authentication successful. Received Role: ${clientRole}, Slot: ${clientSlot}`) */;
         window.postMessage({ type: 'clientRoleUpdate', role: clientRole }, window.location.origin);
 
         if (window.webrtcInput && typeof window.webrtcInput.updateControllerSlot === 'function') {
@@ -3184,7 +3184,7 @@ function handleDecodedFrame(frame) {
         }
 
         if (clientRole === 'viewer') {
-            console.log("Token-based client is a 'viewer'. Applying shared mode compatibility settings.");
+            void 0 /* console.log("Token-based client is a 'viewer'. Applying shared mode compatibility settings.") */;
             isSharedMode = true;
             detectedSharedModeType = 'shared';
 
@@ -3206,7 +3206,7 @@ function handleDecodedFrame(frame) {
             updateUIForSharedMode();
 
             if (initializationComplete) {
-                console.log("Post-init sync: Forcing shared mode state because 'MODE websockets' was handled before auth.");
+                void 0 /* console.log("Post-init sync: Forcing shared mode state because 'MODE websockets' was handled before auth.") */;
                 sharedClientState = 'awaiting_identification';
                 sharedProbingAttempts = 0;
                 identifiedEncoderModeForShared = null;
@@ -3216,7 +3216,7 @@ function handleDecodedFrame(frame) {
                      setTimeout(() => {
                         if (websocket && websocket.readyState === WebSocket.OPEN) {
                             websocket.send('START_VIDEO');
-                            console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO to sync stream.");
+                            void 0 /* console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO to sync stream.") */;
                         }
                     }, 250);
                 }
@@ -3227,16 +3227,16 @@ function handleDecodedFrame(frame) {
       if (event.data.startsWith('MK_ACCESS,')) {
         const accessLevel = parseInt(event.data.split(',')[1]);
         const hasAccess = (accessLevel === 1);
-        console.log(`Received MK_ACCESS update: ${hasAccess}`);
+        void 0 /* console.log(`Received MK_ACCESS update: ${hasAccess}`) */;
         
         if (window.webrtcInput) {
             if (hasAccess) {
                 if (!window.webrtcInput.isInputAttached()) {
-                    console.log("MK Access Granted: Attaching input context.");
+                    void 0 /* console.log("MK Access Granted: Attaching input context.") */;
                     window.webrtcInput.attach_context();
                 }
             } else {
-                console.log("MK Access Revoked: Detaching input context.");
+                void 0 /* console.log("MK Access Revoked: Detaching input context.") */;
                 window.webrtcInput.detach_context();
             }
         }
@@ -3247,10 +3247,10 @@ function handleDecodedFrame(frame) {
           const payloadStr = event.data.substring(12);
           newPermissions = JSON.parse(payloadStr);
         } catch (e) {
-          console.error("Failed to parse ROLE_UPDATE message:", e);
+          void 0 /* console.error("Failed to parse ROLE_UPDATE message:", e) */;
           return;
         }
-        console.log(`Received role update. New role: ${newPermissions.role}, New slot: ${newPermissions.slot}`);
+        void 0 /* console.log(`Received role update. New role: ${newPermissions.role}, New slot: ${newPermissions.slot}`) */;
         const oldSlot = clientSlot;
         clientRole = newPermissions.role;
         clientSlot = newPermissions.slot;
@@ -3261,21 +3261,21 @@ function handleDecodedFrame(frame) {
 
         if (oldSlot !== null && clientSlot === null) {
             if (window.webrtcInput && window.webrtcInput.gamepadManager) {
-                console.log("Controller slot revoked, disabling gamepad polling.");
+                void 0 /* console.log("Controller slot revoked, disabling gamepad polling.") */;
                 window.webrtcInput.gamepadManager.disable();
             }
         } else if (oldSlot === null && clientSlot !== null) {
             if (window.webrtcInput && window.webrtcInput.gamepadManager && isGamepadEnabled) {
-                console.log("Controller slot granted and global gamepad toggle is ON. Enabling gamepad polling.");
+                void 0 /* console.log("Controller slot granted and global gamepad toggle is ON. Enabling gamepad polling.") */;
                 window.webrtcInput.gamepadManager.enable();
             } else if (window.webrtcInput && window.webrtcInput.gamepadManager) {
-                console.log("Controller slot granted, but global gamepad toggle is OFF. Polling remains disabled.");
+                void 0 /* console.log("Controller slot granted, but global gamepad toggle is OFF. Polling remains disabled.") */;
             }
         }
       }
       if (event.data === 'MODE websockets') {
         clientMode = 'websockets';
-        console.log('[websockets] Switched to websockets mode.');
+        void 0 /* console.log('[websockets] Switched to websockets mode.') */;
         status = 'initializing';
         loadingText = 'Initializing WebSocket mode...';
         updateStatusDisplay();
@@ -3293,7 +3293,7 @@ function handleDecodedFrame(frame) {
                 clientSlot = 1;
                 playerInputTargetIndex = 0;
             }
-            console.log(`Legacy mode detected. Role from hash: ${clientRole}, Slot: ${clientSlot}`);
+            void 0 /* console.log(`Legacy mode detected. Role from hash: ${clientRole}, Slot: ${clientSlot}`) */;
             initializeInput();
         }
 
@@ -3331,7 +3331,7 @@ function handleDecodedFrame(frame) {
         if (trackpadMode) {
           if (websocket && websocket.readyState === WebSocket.OPEN) {
             websocket.send("SET_NATIVE_CURSOR_RENDERING,1");
-            console.log('[websockets] Applied trackpad mode on initialization.');
+            void 0 /* console.log('[websockets] Applied trackpad mode on initialization.') */;
           }
         }
 
@@ -3344,13 +3344,13 @@ function handleDecodedFrame(frame) {
             sharedClientState = 'awaiting_identification';
             sharedProbingAttempts = 0;
             identifiedEncoderModeForShared = null;
-            console.log("Shared mode: Received 'MODE websockets'. Requesting initial stream with STOP/START_VIDEO. State: awaiting_identification.");
+            void 0 /* console.log("Shared mode: Received 'MODE websockets'. Requesting initial stream with STOP/START_VIDEO. State: awaiting_identification.") */;
             if (websocket && websocket.readyState === WebSocket.OPEN) {
                  websocket.send('STOP_VIDEO');
                  setTimeout(() => {
                     if (websocket && websocket.readyState === WebSocket.OPEN) {
                         websocket.send('START_VIDEO');
-                        console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO.");
+                        void 0 /* console.log("Shared mode: Sent START_VIDEO after initial STOP_VIDEO.") */;
                     }
                 }, 250);
             }
@@ -3370,7 +3370,7 @@ function handleDecodedFrame(frame) {
           try {
             obj = JSON.parse(event.data);
           } catch (e) {
-            console.error('Error parsing JSON:', e);
+            void 0 /* console.error('Error parsing JSON:', e) */;
             return;
           }
           if (obj.type === 'system_stats') window.system_stats = obj;
@@ -3378,7 +3378,7 @@ function handleDecodedFrame(frame) {
           else if (obj.type === 'network_stats') window.network_stats = obj;
           else if (obj.type === 'server_settings') {
               if (displayId !== 'primary' && obj.settings.second_screen && obj.settings.second_screen.value === false) {
-                  console.error("Server configuration prohibits secondary displays. This client will not function.");
+                  void 0 /* console.error("Server configuration prohibits secondary displays. This client will not function.") */;
                   if (statusDisplayElement) {
                       statusDisplayElement.textContent = 'Error: Secondary displays are disabled on the server.';
                       statusDisplayElement.classList.remove('hidden');
@@ -3396,25 +3396,25 @@ function handleDecodedFrame(frame) {
               const changes = sanitizeAndStoreSettings(obj.settings);
               window.postMessage({ type: 'serverSettings', payload: obj.settings }, window.location.origin);
               if (Object.keys(changes).length > 0) {
-                  console.log('Client settings were sanitized by server rules. Sending updates back to server:', changes);
+                  void 0 /* console.log('Client settings were sanitized by server rules. Sending updates back to server:', changes) */;
                   handleSettingsMessage(changes);
               }
               if (obj.settings && obj.settings.is_manual_resolution_mode && obj.settings.is_manual_resolution_mode.value === true) {
-                  console.log("Server settings payload confirms manual mode. Switching to manual resize handlers.");
+                  void 0 /* console.log("Server settings payload confirms manual mode. Switching to manual resize handlers.") */;
                   const serverWidth = obj.settings.manual_width ? parseInt(obj.settings.manual_width.value, 10) : 0;
                   const serverHeight = obj.settings.manual_height ? parseInt(obj.settings.manual_height.value, 10) : 0;
                   if (serverWidth > 0 && serverHeight > 0) {
-                      console.log(`Applying server-enforced manual resolution: ${serverWidth}x${serverHeight}`);
+                      void 0 /* console.log(`Applying server-enforced manual resolution: ${serverWidth}x${serverHeight}`) */;
                       window.is_manual_resolution_mode = true;
                       manual_width = serverWidth;
                       manual_height = serverHeight;
                       applyManualCanvasStyle(manual_width, manual_height, scaleLocallyManual);
                   } else {
-                      console.warn("Server dictated manual mode but did not provide valid dimensions.");
+                      void 0 /* console.warn("Server dictated manual mode but did not provide valid dimensions.") */;
                   }
                   disableAutoResize();
               } else {
-                  console.log("Server settings payload confirms auto mode. Switching to auto resize handlers.");
+                  void 0 /* console.log("Server settings payload confirms auto mode. Switching to auto resize handlers.") */;
                   enableAutoResize();
               }
           }
@@ -3453,7 +3453,7 @@ function handleDecodedFrame(frame) {
            if (isSharedMode) {
              const dpr_for_conversion = useCssScaling ? 1 : (window.devicePixelRatio || 1);
              if (sharedClientState === 'error' || sharedClientState === 'idle') {
-               console.log(`Shared mode: Received stream_resolution while in state '${sharedClientState}'. Ignoring.`);
+               void 0 /* console.log(`Shared mode: Received stream_resolution while in state '${sharedClientState}'. Ignoring.`) */;
              } else {
                const physicalNewWidth = parseInt(obj.width, 10);
                const physicalNewHeight = parseInt(obj.height, 10);
@@ -3467,29 +3467,29 @@ function handleDecodedFrame(frame) {
                  let dimensionsChanged = (manual_width !== logicalNewWidth || manual_height !== logicalNewHeight);
 
                  if (dimensionsChanged) {
-                   console.log(`Shared mode: Received new stream resolution ${logicalNewWidth.toFixed(2)}x${logicalNewHeight.toFixed(2)} (logical).`);
+                   void 0 /* console.log(`Shared mode: Received new stream resolution ${logicalNewWidth.toFixed(2)}x${logicalNewHeight.toFixed(2)} (logical).`) */;
                    manual_width = logicalNewWidth;
                    manual_height = logicalNewHeight;
                    applyManualCanvasStyle(manual_width, manual_height, true);
                  }
 
                  if (sharedClientState === 'ready' && dimensionsChanged && identifiedEncoderModeForShared === 'h264_full_frame') {
-                   console.log(`Shared mode: Triggering main decoder re-init for new resolution.`);
+                   void 0 /* console.log(`Shared mode: Triggering main decoder re-init for new resolution.`) */;
                    triggerInitializeDecoder();
                  } else if (sharedClientState === 'ready' && dimensionsChanged) {
-                   console.log(`Shared mode: Clearing canvas due to resolution change.`);
+                   void 0 /* console.log(`Shared mode: Clearing canvas due to resolution change.`) */;
                    if (canvasContext && canvas.width > 0 && canvas.height > 0) {
                      canvasContext.setTransform(1, 0, 0, 1, 0, 0);
                      canvasContext.clearRect(0, 0, canvas.width, canvas.height);
                    }
                  }
                } else {
-                 console.warn(`Shared mode: Received invalid stream_resolution dimensions: ${obj.width}x${obj.height}`);
+                 void 0 /* console.warn(`Shared mode: Received invalid stream_resolution dimensions: ${obj.width}x${obj.height}`) */;
                }
              }
            }
          } else {
-            console.warn(`Unexpected JSON message type:`, obj.type, obj);
+            void 0 /* console.warn(`Unexpected JSON message type:`, obj.type, obj) */;
           }
         } else if (event.data.startsWith('cursor,')) {
           try {
@@ -3504,7 +3504,7 @@ function handleDecodedFrame(frame) {
             //     "hoty": 2,
             //     "handle": 66
             // };
-            console.log('Received cursor data from server:', cursorData);
+            void 0 /* console.log('Received cursor data from server:', cursorData) */;
 
             // if (window.webrtcInput && typeof window.webrtcInput.updateServerCursor === 'function') {
             //     window.webrtcInput.updateServerCursor(cursorData);
@@ -3529,7 +3529,7 @@ function handleDecodedFrame(frame) {
             
             // cursorCanvas.style.display = 'none';
           } catch (e) {
-            console.error('Error parsing cursor data:', e);
+            void 0 /* console.error('Error parsing cursor data:', e) */;
           }
         } else if (event.data.startsWith('clipboard_start,')) {
             const parts = event.data.split(',');
@@ -3538,7 +3538,7 @@ function handleDecodedFrame(frame) {
             multipartClipboard.receivedSize = 0;
             multipartClipboard.data = [];
             multipartClipboard.inProgress = true;
-            console.log(`Starting multi-part clipboard download: ${multipartClipboard.mimeType}, total size: ${multipartClipboard.totalSize}`);
+            void 0 /* console.log(`Starting multi-part clipboard download: ${multipartClipboard.mimeType}, total size: ${multipartClipboard.totalSize}`) */;
         } else if (event.data.startsWith('clipboard_data,')) {
             if (multipartClipboard.inProgress) {
                 try {
@@ -3552,35 +3552,35 @@ function handleDecodedFrame(frame) {
                     multipartClipboard.data.push(bytes);
                     multipartClipboard.receivedSize += bytes.byteLength;
                 } catch (e) {
-                    console.error('Error processing multi-part clipboard chunk:', e);
+                    void 0 /* console.error('Error processing multi-part clipboard chunk:', e) */;
                     multipartClipboard.inProgress = false;
                 }
             }
         } else if (event.data === 'clipboard_finish') {
             if (multipartClipboard.inProgress) {
-                console.log(`Finished multi-part clipboard download. Received ${multipartClipboard.receivedSize} of ${multipartClipboard.totalSize} bytes.`);
+                void 0 /* console.log(`Finished multi-part clipboard download. Received ${multipartClipboard.receivedSize} of ${multipartClipboard.totalSize} bytes.`) */;
                 if (multipartClipboard.receivedSize !== multipartClipboard.totalSize) {
-                    console.error('Multipart clipboard size mismatch. Aborting.');
+                    void 0 /* console.error('Multipart clipboard size mismatch. Aborting.') */;
                 } else {
                     try {
                         const blob = new Blob(multipartClipboard.data, { type: multipartClipboard.mimeType });
                         if (multipartClipboard.mimeType === 'text/plain') {
                             blob.text().then(text => {
-                                navigator.clipboard.writeText(text).catch(err => console.error('Could not copy server clipboard text to local: ' + err));
+                                navigator.clipboard.writeText(text).catch(err => void 0 /* console.error('Could not copy server clipboard text to local: ' + err) */);
                                 window.postMessage({ type: 'clipboardContentUpdate', text: text }, window.location.origin);
                             });
                         } else {
                             const clipboardItem = new ClipboardItem({ [multipartClipboard.mimeType]: blob });
                             navigator.clipboard.write([clipboardItem]).then(() => {
-                                console.log(`Successfully wrote multi-part image (${multipartClipboard.mimeType}) from server to local clipboard.`);
+                                void 0 /* console.log(`Successfully wrote multi-part image (${multipartClipboard.mimeType}) from server to local clipboard.`) */;
                                 const uiText = `Image (${multipartClipboard.mimeType}) received from session and copied to clipboard.`;
                                 window.postMessage({ type: 'clipboardContentUpdate', text: uiText }, window.location.origin);
                             }).catch(err => {
-                                console.error('Failed to write multi-part image to clipboard:', err);
+                                void 0 /* console.error('Failed to write multi-part image to clipboard:', err) */;
                             });
                         }
                     } catch (e) {
-                        console.error('Error assembling final clipboard content:', e);
+                        void 0 /* console.error('Error assembling final clipboard content:', e) */;
                     }
                 }
                 // Reset state
@@ -3589,13 +3589,13 @@ function handleDecodedFrame(frame) {
             }
         } else if (event.data.startsWith('clipboard_binary,')) {
             if (!enable_binary_clipboard) {
-                console.warn("Received binary clipboard data from server, but feature is disabled on client. Ignoring.");
+                void 0 /* console.warn("Received binary clipboard data from server, but feature is disabled on client. Ignoring.") */;
                 return;
             }
             try {
                 const parts = event.data.split(',');
                 if (parts.length < 3) {
-                    console.error('Malformed binary clipboard message from server:', event.data);
+                    void 0 /* console.error('Malformed binary clipboard message from server:', event.data) */;
                     return;
                 }
                 const mimeType = parts[1];
@@ -3609,14 +3609,14 @@ function handleDecodedFrame(frame) {
                 const blob = new Blob([bytes], { type: mimeType });
                 const clipboardItem = new ClipboardItem({ [mimeType]: blob });
                 navigator.clipboard.write([clipboardItem]).then(() => {
-                    console.log(`Successfully wrote image (${mimeType}) from server to local clipboard.`);
+                    void 0 /* console.log(`Successfully wrote image (${mimeType}) from server to local clipboard.`) */;
                     const uiText = `Image (${mimeType}) received from session and copied to clipboard.`;
                     window.postMessage({ type: 'clipboardContentUpdate', text: uiText }, window.location.origin);
                 }).catch(err => {
-                    console.error('Failed to write image to clipboard:', err);
+                    void 0 /* console.error('Failed to write image to clipboard:', err) */;
                 });
             } catch (e) {
-                console.error('Error processing binary clipboard data from server:', e);
+                void 0 /* console.error('Error processing binary clipboard data from server:', e) */;
             }
         } else if (event.data.startsWith('clipboard,')) {
           try {
@@ -3628,50 +3628,50 @@ function handleDecodedFrame(frame) {
                 bytes[i] = binaryString.charCodeAt(i);
             }
             const decodedText = new TextDecoder().decode(bytes);
-            navigator.clipboard.writeText(decodedText).catch(err => console.error('Could not copy server clipboard to local: ' + err));
+            navigator.clipboard.writeText(decodedText).catch(err => void 0 /* console.error('Could not copy server clipboard to local: ' + err) */);
             window.postMessage({
               type: 'clipboardContentUpdate',
               text: decodedText
             }, window.location.origin);
 
           } catch (e) {
-            console.error('Error processing clipboard data:', e);
+            void 0 /* console.error('Error processing clipboard data:', e) */;
           }
         } else if (event.data.startsWith('system,')) {
           try {
             const systemMsg = JSON.parse(event.data.substring(7));
             if (systemMsg.action === 'reload') window.location.reload();
           } catch (e) {
-            console.error('Error parsing system data:', e);
+            void 0 /* console.error('Error parsing system data:', e) */;
           }
         } else if (event.data === 'VIDEO_STARTED' && !isSharedMode) {
           isVideoPipelineActive = true;
           window.postMessage({ type: 'pipelineStatusUpdate', video: true }, window.location.origin);
         }
         else if (event.data === 'VIDEO_STOPPED' && !isSharedMode) {
-          console.log("Client: Received VIDEO_STOPPED. Updating isVideoPipelineActive=false. Expecting PIPELINE_RESETTING from server for full state reset.");
+          void 0 /* console.log("Client: Received VIDEO_STOPPED. Updating isVideoPipelineActive=false. Expecting PIPELINE_RESETTING from server for full state reset.") */;
           isVideoPipelineActive = false;
           window.postMessage({ type: 'pipelineStatusUpdate', video: false }, window.location.origin);
         }
         else if (event.data.startsWith('PIPELINE_RESETTING ')) {
             const parts = event.data.split(' ');
             const resetDisplayId = parts.length > 1 ? parts[1] : 'primary';
-            console.log(`[websockets] Received PIPELINE_RESETTING for display '${resetDisplayId}'.`);
+            void 0 /* console.log(`[websockets] Received PIPELINE_RESETTING for display '${resetDisplayId}'.`) */;
             if ((isSharedMode && resetDisplayId === 'primary') || (!isSharedMode && resetDisplayId === displayId)) {
                 performServerInitiatedVideoReset(`PIPELINE_RESETTING from server for display '${resetDisplayId}'`);
 
                 if (isSharedMode) {
-                    console.log(`Shared mode: Primary pipeline reset. Re-entering identification state.`);
+                    void 0 /* console.log(`Shared mode: Primary pipeline reset. Re-entering identification state.`) */;
                     sharedClientState = 'awaiting_identification';
                     clearSharedModeProbingTimeout();
                     identifiedEncoderModeForShared = null;
                     sharedProbingAttempts = 0;
                     startSharedModeProbingTimeout();
                 } else {
-                    console.log(`Display '${displayId}': Video reset complete.`);
+                    void 0 /* console.log(`Display '${displayId}': Video reset complete.`) */;
                 }
             } else {
-                console.log(`Ignoring PIPELINE_RESETTING for '${resetDisplayId}' as this client is '${isSharedMode ? 'shared' : displayId}'.`);
+                void 0 /* console.log(`Ignoring PIPELINE_RESETTING for '${resetDisplayId}' as this client is '${isSharedMode ? 'shared' : displayId}'.`) */;
             }
         }
         else if (event.data.startsWith('DISPLAY_CONFIG_UPDATE,')) {
@@ -3682,13 +3682,13 @@ function handleDecodedFrame(frame) {
                 if (displayId === 'primary') {
                     const secondaryConnected = payload.displays.includes('display2');
                     if (isSecondaryDisplayConnected !== secondaryConnected) {
-                        console.log(`Secondary display connection status changed to: ${secondaryConnected}`);
+                        void 0 /* console.log(`Secondary display connection status changed to: ${secondaryConnected}`) */;
                         isSecondaryDisplayConnected = secondaryConnected;
                         applyEffectiveCursorSetting();
                     }
                 }
             } catch (e) {
-                console.error('Error parsing DISPLAY_CONFIG_UPDATE:', e, 'Original data:', event.data);
+                void 0 /* console.error('Error parsing DISPLAY_CONFIG_UPDATE:', e, 'Original data:', event.data) */;
             }
         }
         else if (event.data === 'AUDIO_STARTED' && !isSharedMode) {
@@ -3709,7 +3709,7 @@ function handleDecodedFrame(frame) {
   };
 
   websocket.onerror = (event) => {
-    console.error('[websockets] Error:', event);
+    void 0 /* console.error('[websockets] Error:', event) */;
     status = 'error';
     loadingText = 'WebSocket connection error.';
     updateStatusDisplay();
@@ -3723,7 +3723,7 @@ function handleDecodedFrame(frame) {
     }
     releaseWakeLock();
     if (isSharedMode) {
-        console.error("Shared mode: WebSocket error. Resetting shared state to 'error'.");
+        void 0 /* console.error("Shared mode: WebSocket error. Resetting shared state to 'error'.") */;
         sharedClientState = 'error';
         clearSharedModeProbingTimeout();
         sharedProbingAttempts = 0;
@@ -3731,16 +3731,16 @@ function handleDecodedFrame(frame) {
   };
 
   websocket.onclose = (event) => {
-    console.log('[websockets] Connection closed', event);
+    void 0 /* console.log('[websockets] Connection closed', event) */;
     if (event.code === 4001) {
-        console.error("Server rejected connection: Invalid token. Disabling reconnect.");
+        void 0 /* console.error("Server rejected connection: Invalid token. Disabling reconnect.") */;
         if (reconnectIntervalId) clearInterval(reconnectIntervalId);
         reconnectIntervalId = null;
         loadingText = 'Connection Failed: Invalid Token';
         updateStatusDisplay();
         return;
     } else if (event.code === 4002) {
-        console.log("Server closed connection due to permission change. Reconnecting...");
+        void 0 /* console.log("Server closed connection due to permission change. Reconnecting...") */;
     }
     status = 'disconnected';
     loadingText = 'WebSocket disconnected. Attempting to reconnect...';
@@ -3775,7 +3775,7 @@ function handleDecodedFrame(frame) {
       audio: false
     }, window.location.origin);
     if (isSharedMode) {
-        console.log("Shared mode: WebSocket closed. Resetting shared state to 'idle'.");
+        void 0 /* console.log("Shared mode: WebSocket closed. Resetting shared state to 'idle'.") */;
         sharedClientState = 'idle';
         clearSharedModeProbingTimeout();
         sharedProbingAttempts = 0;
@@ -3786,7 +3786,7 @@ function handleDecodedFrame(frame) {
         if (websocket && (websocket.readyState === WebSocket.OPEN || websocket.readyState === WebSocket.CONNECTING)) {
           // Pass
         } else {
-          console.log("WebSocket disconnected, reloading page to reconnect.");
+          void 0 /* console.log("WebSocket disconnected, reloading page to reconnect.") */;
           location.reload();
         }
       }, 5000);
@@ -3805,7 +3805,7 @@ function cleanupVideoBuffer() {
       /* ignore */
     }
   }
-  if (closedCount > 0) console.log(`Cleanup: Closed ${closedCount} video frames from main buffer.`);
+  if (closedCount > 0) void 0 /* console.log(`Cleanup: Closed ${closedCount} video frames from main buffer.`) */;
 }
 
 function cleanupJpegStripeQueue() {
@@ -3821,7 +3821,7 @@ function cleanupJpegStripeQueue() {
       }
     }
   }
-  if (closedCount > 0) console.log(`Cleanup: Closed ${closedCount} JPEG stripe images.`);
+  if (closedCount > 0) void 0 /* console.log(`Cleanup: Closed ${closedCount} JPEG stripe images.`) */;
 }
 
 const audioDecoderWorkerCode = `
@@ -3842,7 +3842,7 @@ const audioDecoderWorkerCode = `
     decoderAudio = new AudioDecoder({
       output: handleDecodedAudioFrameInWorker,
       error: (e) => {
-        console.error('[AudioWorker] AudioDecoder error:', e.message, e);
+        void 0 /* console.error('[AudioWorker] AudioDecoder error:', e.message, e) */;
         currentDecodeQueueSize = Math.max(0, currentDecodeQueueSize -1);
         if (e.message.includes('fatal') || (decoderAudio && (decoderAudio.state === 'closed' || decoderAudio.state === 'unconfigured'))) {
           // initializeDecoderInWorker(); // Avoid rapid re-init loops on persistent errors
@@ -3965,7 +3965,7 @@ registerProcessor('mic-worklet-processor', MicWorkletProcessor);
 
 async function startMicrophoneCapture() {
   if (isSharedMode) {
-    console.log("Shared mode: Microphone capture blocked.");
+    void 0 /* console.log("Shared mode: Microphone capture blocked.") */;
     isMicrophoneActive = false;
     postSidebarButtonUpdate();
     return;
@@ -4024,16 +4024,16 @@ async function startMicrophoneCapture() {
         try {
           websocket.send(messageBuffer);
         } catch (e) {
-          console.error("Error sending mic data:", e);
+          void 0 /* console.error("Error sending mic data:", e) */;
         }
       }
     };
-    micWorkletNode.port.onmessageerror = (event) => console.error("Error from mic worklet:", event);
+    micWorkletNode.port.onmessageerror = (event) => void 0 /* console.error("Error from mic worklet:", event) */;
     micSourceNode.connect(micWorkletNode);
     isMicrophoneActive = true;
     postSidebarButtonUpdate();
   } catch (error) {
-    console.error('Failed to start microphone capture:', error);
+    void 0 /* console.error('Failed to start microphone capture:', error) */;
     alert(`Microphone error: ${error.name} - ${error.message}`);
     stopMicrophoneCapture();
   }
@@ -4067,7 +4067,7 @@ function stopMicrophoneCapture() {
   }
   if (micAudioContext) {
     if (micAudioContext.state !== 'closed') {
-      micAudioContext.close().catch(e => console.error('Error closing mic AudioContext:', e)).finally(() => micAudioContext = null);
+      micAudioContext.close().catch(e => void 0 /* console.error('Error closing mic AudioContext:', e) */).finally(() => micAudioContext = null);
     } else {
       micAudioContext = null;
     }
@@ -4090,7 +4090,7 @@ function cleanup() {
   releaseWakeLock();
   if (window.isCleaningUp) return;
   window.isCleaningUp = true;
-  console.log("Cleanup: Starting cleanup process...");
+  void 0 /* console.log("Cleanup: Starting cleanup process...") */;
   if (!isSharedMode) stopMicrophoneCapture();
 
   if (websocket) {
@@ -4102,7 +4102,7 @@ function cleanup() {
     websocket = null;
   }
   if (audioContext) {
-    if (audioContext.state !== 'closed') audioContext.close().catch(e => console.error('Cleanup error:', e));
+    if (audioContext.state !== 'closed') audioContext.close().catch(e => void 0 /* console.error('Cleanup error:', e) */);
     audioContext = null;
     audioWorkletNode = null;
     audioWorkletProcessorPort = null;
@@ -4138,7 +4138,7 @@ function cleanup() {
   window.fps = 0;
   frameCount = 0;
   lastFpsUpdateTime = performance.now();
-  console.log("Cleanup: Finished cleanup process.");
+  void 0 /* console.log("Cleanup: Finished cleanup process.") */;
   window.isCleaningUp = false;
 }
 
@@ -4156,7 +4156,7 @@ async function handleDrop(ev) {
   ev.preventDefault();
   ev.stopPropagation();
   if (isSharedMode) {
-    console.log("Shared mode: File upload via drag-drop blocked.");
+    void 0 /* console.log("Shared mode: File upload via drag-drop blocked.") */;
     return;
   }
   if (!websocket || websocket.readyState !== WebSocket.OPEN) {
@@ -4210,10 +4210,10 @@ async function handleDroppedEntry(entry, basePathFallback = "") {
     if (pathToSend.startsWith('/')) {
         pathToSend = pathToSend.substring(1);
     }
-    console.log(`Using entry.fullPath: "${pathToSend}" for entry.name: "${entry.name}"`);
+    void 0 /* console.log(`Using entry.fullPath: "${pathToSend}" for entry.name: "${entry.name}"`) */;
   } else {
     pathToSend = basePathFallback ? `${basePathFallback}/${entry.name}` : entry.name;
-    console.log(`Constructed path: "${pathToSend}" for entry.name: "${entry.name}" (basePathFallback: "${basePathFallback}")`);
+    void 0 /* console.log(`Constructed path: "${pathToSend}" for entry.name: "${entry.name}" (basePathFallback: "${basePathFallback}")`) */;
   }
 
   if (entry.isFile) {
@@ -4221,7 +4221,7 @@ async function handleDroppedEntry(entry, basePathFallback = "") {
       const file = await getFileFromEntry(entry);
       await uploadFileObject(file, pathToSend);
     } catch (err) {
-      console.error(`Error processing file ${pathToSend}: ${err}`);
+      void 0 /* console.error(`Error processing file ${pathToSend}: ${err}`) */;
        window.postMessage({
         type: 'fileUpload',
         payload: { status: 'error', fileName: pathToSend, message: `Error processing file: ${err.message || err}` }
@@ -4231,7 +4231,7 @@ async function handleDroppedEntry(entry, basePathFallback = "") {
       }
     }
   } else if (entry.isDirectory) {
-    console.log(`Processing directory: ${pathToSend}`);
+    void 0 /* console.log(`Processing directory: ${pathToSend}`) */;
     const dirReader = entry.createReader();
     let entries;
     do {
@@ -4363,15 +4363,15 @@ function uploadFileObject(file, pathToSend) {
 }
 
 function performServerInitiatedVideoReset(reason = "unknown") {
-  console.log(`Performing server-initiated video reset. Reason: ${reason}. Current lastReceivedVideoFrameId before reset: ${lastReceivedVideoFrameId}`);
+  void 0 /* console.log(`Performing server-initiated video reset. Reason: ${reason}. Current lastReceivedVideoFrameId before reset: ${lastReceivedVideoFrameId}`) */;
 
   if (isSharedMode) {
     sharedClientHasReceivedKeyframe = false;
-    console.log("  Shared mode reset: Gate closed. Waiting for a new keyframe.");
+    void 0 /* console.log("  Shared mode reset: Gate closed. Waiting for a new keyframe.") */;
   }
 
   lastReceivedVideoFrameId = -1;
-  console.log(`  Reset lastReceivedVideoFrameId to ${lastReceivedVideoFrameId}.`);
+  void 0 /* console.log(`  Reset lastReceivedVideoFrameId to ${lastReceivedVideoFrameId}.`) */;
 
   cleanupVideoBuffer();
   cleanupJpegStripeQueue();
@@ -4381,37 +4381,37 @@ function performServerInitiatedVideoReset(reason = "unknown") {
     clearAllVncStripeDecoders();
   } else if (currentEncoderMode !== 'jpeg') {
     if (decoder && decoder.state !== 'closed') {
-      console.log("  Closing main video decoder due to server reset.");
-      try { decoder.close(); } catch(e) { console.warn("  Error closing main video decoder during reset:", e); }
+      void 0 /* console.log("  Closing main video decoder due to server reset.") */;
+      try { decoder.close(); } catch(e) { void 0 /* console.warn("  Error closing main video decoder during reset:", e) */; }
     }
     decoder = null;
-    console.log("  Main video decoder instance set to null.");
+    void 0 /* console.log("  Main video decoder instance set to null.") */;
   }
 
   if (canvasContext && canvas && !(currentEncoderMode === 'x264enc' || currentEncoderMode === 'x264enc-striped')) {
     try {
       canvasContext.setTransform(1, 0, 0, 1, 0, 0);
       canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-      console.log("  Cleared canvas during server-initiated reset.");
+      void 0 /* console.log("  Cleared canvas during server-initiated reset.") */;
     } catch (e) {
-      console.error("  Error clearing canvas during server-initiated reset:", e);
+      void 0 /* console.error("  Error clearing canvas during server-initiated reset:", e) */;
     }
   }
 
   if (!isSharedMode) {
     if (currentEncoderMode !== 'jpeg' && currentEncoderMode !== 'x264enc' && currentEncoderMode !== 'x264enc-striped') {
-      console.log("  Ensuring main video decoder is re-initialized after server reset.");
+      void 0 /* console.log("  Ensuring main video decoder is re-initialized after server reset.") */;
       if (isVideoPipelineActive) {
          triggerInitializeDecoder();
       } else {
-        console.log("  isVideoPipelineActive is false, decoder re-initialization deferred until video is enabled by user.");
+        void 0 /* console.log("  isVideoPipelineActive is false, decoder re-initialization deferred until video is enabled by user.") */;
       }
     }
   }
 }
 
 function initiateFallback(error, context) {
-    console.error(`FATAL DECODER ERROR (Context: ${context}).`, error);
+    void 0 /* console.error(`FATAL DECODER ERROR (Context: ${context}).`, error) */;
     if (window.isFallingBack) return;
     window.isFallingBack = true;
     if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -4423,13 +4423,13 @@ function initiateFallback(error, context) {
       metricsIntervalId = null;
     }
     if (isSharedMode) {
-        console.log("Shared client fallback: Reloading page to re-sync with the stream.");
+        void 0 /* console.log("Shared client fallback: Reloading page to re-sync with the stream.") */;
         if (statusDisplayElement) {
             statusDisplayElement.textContent = 'A video error occurred. Reloading to re-sync with the stream...';
             statusDisplayElement.classList.remove('hidden');
         }
     } else {
-        console.log("Primary client fallback: Forcing client settings to safe defaults.");
+        void 0 /* console.log("Primary client fallback: Forcing client settings to safe defaults.") */;
         const crashKey = `${storageAppName}_crash_count`;
         let crashCount = parseInt(window.localStorage.getItem(crashKey) || '0');
         crashCount++;
@@ -4471,7 +4471,7 @@ function applyCssDpiFromDpr() {
   // NB: usa il nome parametro già presente nel progetto (qui è un esempio).
   setIntParam('scaling_dpi', dpi);
   sendFullSettingsUpdateToServer();
-  console.log("Scaling resolution: " + dpi + " DPI (DPR: " + dpr + ")");
+  void 0 /* console.log("Scaling resolution: " + dpi + " DPI (DPR: " + dpr + ")") */;
 
   // Se Selkies ricalcola lo scaling su resize, forzalo.
   // (Se nel file hai già una funzione resize handler, richiamala qui)
@@ -4499,7 +4499,7 @@ function watchDevicePixelRatio() {
 function runPreflightChecks() {
     initializeUI();
     if (!window.isSecureContext) {
-        console.error("FATAL: Not in a secure context. WebCodecs require HTTPS.");
+        void 0 /* console.error("FATAL: Not in a secure context. WebCodecs require HTTPS.") */;
         if (statusDisplayElement) {
             statusDisplayElement.textContent = 'Error: This application requires a secure connection (HTTPS). Please check the URL.';
             statusDisplayElement.classList.remove('hidden');
@@ -4509,7 +4509,7 @@ function runPreflightChecks() {
     }
 
     if (typeof window.VideoDecoder === 'undefined') {
-        console.error("FATAL: Browser does not support the VideoDecoder API.");
+        void 0 /* console.error("FATAL: Browser does not support the VideoDecoder API.") */;
         if (statusDisplayElement) {
             statusDisplayElement.textContent = 'Error: Your browser does not support the WebCodecs API required for video streaming.';
             statusDisplayElement.classList.remove('hidden');
@@ -4518,7 +4518,7 @@ function runPreflightChecks() {
         return false;
     }
 
-    console.log("Pre-flight checks passed: Secure context and VideoDecoder API are available.");
+    void 0 /* console.log("Pre-flight checks passed: Secure context and VideoDecoder API are available.") */;
     watchDevicePixelRatio();
     return true;
 }
