@@ -22,8 +22,8 @@ python3 p-bitm.py COMMAND
 | `setup --rotate-dns-secrets` | Replace configured DNS credentials |
 | `up` | Build missing images and start services |
 | `up --build` | Force all configured image rebuilds |
-| `down` | Stop the selected Compose stack |
-| `down --volumes` | Also request Compose volume removal |
+| `down` | Terminate the Compose stack and all dynamic campaign workloads |
+| `down --volumes` | Perform the same terminal shutdown and also remove Compose volumes |
 | `status [--format table\|json]` | Show service and image status |
 | `doctor [--strict] [--format table\|json]` | Run read-only diagnostics |
 | `cleanup [--campaigns]` | Remove app-owned participant workloads; optionally campaigns |

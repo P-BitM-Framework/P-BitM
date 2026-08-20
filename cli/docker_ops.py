@@ -148,6 +148,24 @@ def compose_down(volumes=False):
             return False
 
 
+def compose_stop():
+    """Stop the control plane while keeping its networks available for teardown."""
+    compose_cmd = get_docker_compose_command()
+    if not compose_cmd:
+        return False
+
+    cmd = compose_cmd + ["-f", str(COMPOSE_FILE), "stop"]
+    with console.status(
+        "[bold cyan]Stopping the control plane...",
+        spinner="dots",
+    ):
+        if run_command(cmd):
+            return True
+
+    error("Failed to stop the control plane")
+    return False
+
+
 def compose_ps():
     """List compose services with status"""
     compose_cmd = get_docker_compose_command()

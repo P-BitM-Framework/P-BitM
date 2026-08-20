@@ -759,6 +759,7 @@ def cleanup_campaign_containers():
     """
     console.print("[cyan]Cleaning up campaign workloads...[/]")
 
+    failures = []
     try:
         result = subprocess.run(
             [
@@ -773,22 +774,32 @@ def cleanup_campaign_containers():
             check=True
         )
 
-        campaign_ids = result.stdout.strip().split('\n')
-        campaign_ids = [cid for cid in campaign_ids if cid]
+        container_ids = [
+            cid for cid in result.stdout.strip().splitlines() if cid
+        ]
 
-        if campaign_ids:
-            for cid in campaign_ids:
-                subprocess.run(
-                    ["docker", "rm", "-f", cid],
-                    capture_output=True,
-                    check=True,
-                )
-            success(f"Cleaned up {len(campaign_ids)} campaign workloads")
+        if container_ids:
+            removed_count = 0
+            for cid in container_ids:
+                try:
+                    subprocess.run(
+                        ["docker", "rm", "-f", cid],
+                        capture_output=True,
+                        check=True,
+                    )
+                    removed_count += 1
+                except (subprocess.CalledProcessError, OSError) as exc:
+                    failures.append(f"container {cid}: {exc}")
+            if removed_count:
+                success(f"Cleaned up {removed_count} campaign workloads")
         else:
             info("No campaign workloads found")
+    except (subprocess.CalledProcessError, OSError) as exc:
+        failures.append(f"campaign workload discovery: {exc}")
 
-        network_ids = []
-        for role in ("campaign-private", "campaign-egress"):
+    network_ids = set()
+    for role in ("campaign-private", "campaign-egress"):
+        try:
             network_result = subprocess.run(
                 [
                     "docker",
@@ -797,29 +808,44 @@ def cleanup_campaign_containers():
                     "-q",
                     "--filter",
                     f"label=bitm.role={role}",
+                    "--filter",
+                    "label=bitm.campaign.id",
                 ],
                 capture_output=True,
                 text=True,
                 check=True,
             )
-            network_ids.extend(
+            network_ids.update(
                 network_id
                 for network_id in network_result.stdout.strip().splitlines()
                 if network_id
             )
-        for network_id in network_ids:
+        except (subprocess.CalledProcessError, OSError) as exc:
+            failures.append(f"{role} network discovery: {exc}")
+
+    removed_networks = 0
+    for network_id in sorted(network_ids):
+        try:
             subprocess.run(
                 ["docker", "network", "rm", network_id],
                 capture_output=True,
                 check=True,
             )
-        if network_ids:
-            success(f"Cleaned up {len(network_ids)} campaign networks")
-        else:
-            info("No campaign networks found")
+            removed_networks += 1
+        except (subprocess.CalledProcessError, OSError) as exc:
+            failures.append(f"network {network_id}: {exc}")
 
-    except subprocess.CalledProcessError as e:
-        warning(f"Failed to cleanup some campaign resources: {e}")
+    if removed_networks:
+        success(f"Cleaned up {removed_networks} campaign networks")
+    elif not network_ids:
+        info("No campaign networks found")
+
+    if failures:
+        for failure in failures:
+            warning(f"Failed to clean up {failure}")
+        return False
+
+    return True
 
 
 def remove_all_images():

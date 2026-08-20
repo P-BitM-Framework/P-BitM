@@ -45,12 +45,13 @@ Create the reusable resources in this order:
 
 Use only approved test recipients and infrastructure.
 
-## Stop the base stack
+## Stop the complete runtime
 
 ```bash
 python3 p-bitm.py down
 ```
 
-Campaign and browser containers are dynamic workloads. Stop or remove active
-campaigns from the dashboard or with the documented campaign CLI commands
-before planned shutdown.
+This is a terminal shutdown: active, paused, and scheduled campaigns are marked
+completed, and all app-owned campaign, browser, and egress containers are
+removed. Running `up` later starts only the control plane; it does not resume
+those campaigns.

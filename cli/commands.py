@@ -21,7 +21,7 @@ from cli.utils import (
 )
 from cli.doctor import CheckStatus, DoctorRunner
 from cli.docker_ops import (
-    check_docker, compose_up, compose_down, get_status_data,
+    check_docker, compose_up, compose_stop, compose_down, get_status_data,
     show_status, get_campaign_container_logs,
     get_victim_container_logs, start_campaign_container,
     stop_campaign_container, start_victim_container,
@@ -29,6 +29,7 @@ from cli.docker_ops import (
 )
 from cli.database import (
     AdminBootstrapState, admin_password_matches, get_admin_bootstrap_state,
+    finalize_campaigns_for_shutdown,
     get_campaigns, get_campaign_by_id, get_victims, get_victim_by_id,
     show_campaigns_table, show_campaign_details, show_victims_table,
     show_victim_details, dump_campaign_data, get_users, create_local_user,
@@ -232,13 +233,45 @@ def cmd_up(build=False):
 
 
 def cmd_down(volumes=False):
-    """Stop services"""
+    """Terminate all P-BitM services and dynamic campaign workloads."""
     if volumes and config.get('cli.confirm_destructive', True):
         if not Confirm.ask("⚠️  This will delete all data. Continue?"):
             info("Cancelled")
             return False
 
-    return compose_down(volumes=volumes)
+    console.print("\n[cyan]🛑 Terminating all P-BitM workloads...[/]")
+
+    control_plane_stopped = compose_stop()
+    campaign_workloads_removed = cleanup_campaign_containers()
+    compose_removed = compose_down(volumes=volumes)
+
+    if not (
+        control_plane_stopped
+        and campaign_workloads_removed
+        and compose_removed
+    ):
+        warning("Retrying the final shutdown sweep")
+        campaign_workloads_removed = cleanup_campaign_containers()
+        if not compose_removed:
+            compose_removed = compose_down(volumes=volumes)
+
+    database_finalized = False
+    if campaign_workloads_removed and compose_removed:
+        database_finalized = finalize_campaigns_for_shutdown()
+    else:
+        warning(
+            "Campaign database state was left unchanged because runtime "
+            "teardown did not complete safely"
+        )
+
+    if campaign_workloads_removed and compose_removed and database_finalized:
+        success("All P-BitM workloads are down")
+        return True
+
+    error(
+        "Shutdown was incomplete; review the errors above and run `down` again"
+    )
+    return False
 
 
 def cmd_status(output_format='table'):

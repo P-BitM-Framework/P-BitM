@@ -107,8 +107,15 @@ def create_parser():
     up_parser.add_argument('--build', action='store_true', help='Force rebuild images')
 
     # down
-    down_parser = subparsers.add_parser('down', help='Stop all services')
-    down_parser.add_argument('--volumes', action='store_true', help='Remove volumes')
+    down_parser = subparsers.add_parser(
+        'down',
+        help='Terminate all services and campaign workloads',
+    )
+    down_parser.add_argument(
+        '--volumes',
+        action='store_true',
+        help='Also remove Compose volumes after the terminal shutdown',
+    )
 
     # status
     status_parser = subparsers.add_parser('status', help='Show global status')

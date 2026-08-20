@@ -9,7 +9,8 @@ mounted into the admin backend at `/storage`.
 ## Consistent backup
 
 1. Stop or pause active campaigns.
-2. Stop the base stack with `python3 p-bitm.py down`.
+2. Stop the complete runtime with `python3 p-bitm.py down`; this terminally
+   completes running, paused, and scheduled campaigns.
 3. Copy the complete `storage/` directory to an approved encrypted location.
 4. Record the application version and backup checksum.
 5. Restart with `python3 p-bitm.py up`.

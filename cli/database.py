@@ -155,6 +155,87 @@ def get_db_connection():
         return None
 
 
+def finalize_campaigns_for_shutdown(db_path=None) -> bool:
+    """Make every resumable campaign terminal after a global shutdown."""
+    resolved_path = _resolve_db_path(db_path)
+    if not resolved_path.is_file():
+        info("No campaign database found; no runtime state needed updating")
+        return True
+
+    connection = None
+    try:
+        connection = sqlite3.connect(str(resolved_path), timeout=30.0)
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA busy_timeout=30000")
+        connection.execute("BEGIN IMMEDIATE")
+
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        if "campaigns" not in tables:
+            connection.commit()
+            info("No campaign records found; no runtime state needed updating")
+            return True
+
+        terminalized_ids = [
+            row[0]
+            for row in connection.execute(
+                """
+                SELECT id
+                FROM campaigns
+                WHERE status IN ('active', 'paused', 'scheduled')
+                """
+            ).fetchall()
+        ]
+        if not terminalized_ids:
+            connection.commit()
+            info("No active, paused, or scheduled campaigns to complete")
+            return True
+
+        placeholders = ", ".join("?" for _ in terminalized_ids)
+        if "victims" in tables:
+            connection.execute(
+                f"""
+                UPDATE victims
+                SET is_active = 0, container_status = 'stopped'
+                WHERE campaign_id IN ({placeholders})
+                """,
+                terminalized_ids,
+            )
+
+        completed_at = (
+            datetime.now(timezone.utc)
+            .replace(tzinfo=None)
+            .isoformat(sep=" ")
+        )
+        connection.execute(
+            f"""
+            UPDATE campaigns
+            SET status = 'completed',
+                container_status = 'stopped',
+                completed_at = COALESCE(completed_at, ?)
+            WHERE id IN ({placeholders})
+            """,
+            [completed_at, *terminalized_ids],
+        )
+        connection.commit()
+        success(
+            f"Completed {len(terminalized_ids)} campaign(s) after shutdown"
+        )
+        return True
+    except sqlite3.Error as exc:
+        if connection is not None:
+            connection.rollback()
+        error(f"Failed to finalize campaign state after shutdown: {exc}")
+        return False
+    finally:
+        if connection is not None:
+            connection.close()
+
+
 def get_campaigns() -> List[Dict]:
     """Get all campaigns from database"""
     conn = get_db_connection()
