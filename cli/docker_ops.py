@@ -13,9 +13,14 @@ from cli.utils import (
     get_docker_compose_command, check_docker_image,
     build_all_images, copy_certs_to_containers,
     check_compose_images_exist,
+    docker_image_matches_runtime_identity,
     docker_buildkit_is_disabled, docker_engine_is_supported,
     get_docker_buildx_version,
     get_docker_compose_version, MIN_DOCKER_ENGINE_VERSION,
+)
+from cli.runtime_identity import (
+    resolve_runtime_identity,
+    runtime_subprocess_environment,
 )
 
 console = Console()
@@ -100,6 +105,7 @@ def compose_up(build=False, detach=True):
         return False
 
     console.print("\n[cyan]🚀 Starting services...[/]")
+    identity = resolve_runtime_identity()
 
     # Copy certificates into the frontend build context with deterministic
     # host-side modes. The Dockerfile assigns its private copy to nginx.
@@ -123,7 +129,14 @@ def compose_up(build=False, detach=True):
         for image_data in images_config.values():
             if image_data.get('enabled', True):
                 image_name = image_data.get('name')
-                if not check_docker_image(image_name):
+                image_is_current = check_docker_image(image_name) and (
+                    not image_data.get('runtime_identity', False)
+                    or docker_image_matches_runtime_identity(
+                        image_name,
+                        identity,
+                    )
+                )
+                if not image_is_current:
                     missing_images.append(image_name)
 
         if missing_images:
@@ -152,7 +165,11 @@ def compose_up(build=False, detach=True):
     cmd.append("--remove-orphans")
 
     with console.status("[bold cyan]Starting containers...", spinner="dots"):
-        if run_command(cmd, quiet=True):
+        if run_command(
+            cmd,
+            quiet=True,
+            env=runtime_subprocess_environment(identity),
+        ):
             success("Services started successfully")
 
             # Show dashboard URL

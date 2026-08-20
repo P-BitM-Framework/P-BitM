@@ -118,8 +118,16 @@ class ExtensionPackagingTests(unittest.TestCase):
         user_switch = dockerfile.index("USER bitm")
         self.assertLess(install, user_switch)
         self.assertLess(app_directory, user_switch)
-        self.assertIn("groupadd --gid 1000 bitm", dockerfile)
-        self.assertIn("useradd --uid 1000 --gid bitm", dockerfile)
+        self.assertIn("ARG PBITM_UID=1000", dockerfile)
+        self.assertIn("ARG PBITM_GID=1000", dockerfile)
+        self.assertIn(
+            'groupadd --non-unique --gid "${PBITM_GID}" bitm',
+            dockerfile,
+        )
+        self.assertIn(
+            'useradd --non-unique --uid "${PBITM_UID}" --gid bitm',
+            dockerfile,
+        )
         self.assertIn("supervisor pynput websocket_server", dockerfile)
         self.assertNotIn("ENV PATH=/home/bitm/.local/bin", dockerfile)
 
@@ -182,8 +190,10 @@ class ExtensionPackagingTests(unittest.TestCase):
             PROJECT_ROOT / "bitm-images/selkies/scripts/startSelkies.sh"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("ENV PUID=1000", dockerfile)
-        self.assertIn("PGID=1000", dockerfile)
+        self.assertIn("ARG PBITM_UID=1000", dockerfile)
+        self.assertIn("ARG PBITM_GID=1000", dockerfile)
+        self.assertIn("ENV PUID=${PBITM_UID}", dockerfile)
+        self.assertIn("PGID=${PBITM_GID}", dockerfile)
         self.assertIn(
             'chown -R "${PUID}:${PGID}" /config /bitm',
             dockerfile,

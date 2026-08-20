@@ -32,8 +32,9 @@ bounded evidence collection.
 
 Requirements: Python 3.9+, Docker Engine 23.0+, Docker Buildx and Compose
 plugins, Git, and OpenSSL. The standalone `docker-compose` command is not
-supported. On rootful Linux, run P-BitM without `sudo` as the trusted
-current user with UID/GID `1000:1000` and access to Docker.
+supported. On Linux, the current user should normally have direct access to
+Docker; P-BitM automatically aligns its unprivileged containers with the
+selected host UID/GID when bind-mounted storage is used.
 
 ```bash
 python3 -m venv .venv

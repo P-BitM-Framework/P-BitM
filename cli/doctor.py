@@ -23,6 +23,10 @@ import yaml
 
 from cli import __version__
 from cli.runtime_env import get_runtime_env_errors, read_env_file
+from cli.runtime_identity import (
+    resolve_runtime_identity,
+    runtime_subprocess_environment,
+)
 from cli.utils import (
     MIN_DOCKER_ENGINE_VERSION,
     docker_buildkit_is_disabled,
@@ -463,6 +467,20 @@ class DoctorRunner:
         fallback_gid = getattr(os, "getegid", lambda: -1)()
         return getattr(metadata, "st_gid", fallback_gid)
 
+    @property
+    def expected_storage_uid(self) -> int:
+        """Use the selected container UID for Linux bind-mounted storage."""
+        if platform.system() == "Linux":
+            return resolve_runtime_identity(self.project_root).uid
+        return getattr(os, "geteuid", lambda: self.expected_owner_uid)()
+
+    @property
+    def expected_storage_gid(self) -> int:
+        """Use the selected container GID for Linux bind-mounted storage."""
+        if platform.system() == "Linux":
+            return resolve_runtime_identity(self.project_root).gid
+        return getattr(os, "getegid", lambda: self.expected_owner_gid)()
+
     def _check_configuration(self) -> None:
         path = Path(self.config.config_path)
         if not path.exists():
@@ -770,9 +788,9 @@ class DoctorRunner:
                     _metadata_errors(
                         path,
                         label,
-                        self.expected_owner_uid,
+                        self.expected_storage_uid,
                         0o700,
-                        self.expected_owner_gid,
+                        self.expected_storage_gid,
                     )
                 )
             if path.is_dir() and not path.is_symlink() and not os.access(
@@ -787,8 +805,8 @@ class DoctorRunner:
                 CheckStatus.FAIL,
                 "; ".join(errors),
                 (
-                    "Run as the current non-root user and correct the "
-                    "storage ownership before startup."
+                    "Correct storage ownership for the selected runtime "
+                    "identity, then rerun setup."
                 ),
             )
             return
@@ -835,8 +853,9 @@ class DoctorRunner:
         metadata_errors = _metadata_errors(
             path,
             _relative(path, self.project_root),
-            self.expected_owner_uid,
+            self.expected_storage_uid,
             0o644,
+            self.expected_storage_gid,
         )
         if metadata_errors:
             self.add(
@@ -1111,6 +1130,9 @@ class DoctorRunner:
                 capture_output=True,
                 text=True,
                 timeout=30,
+                env=runtime_subprocess_environment(
+                    resolve_runtime_identity(self.project_root)
+                ),
             )
         except (OSError, subprocess.SubprocessError) as exc:
             self.add(
@@ -1192,19 +1214,29 @@ class DoctorRunner:
                 and image.get("name")
             ):
                 configured_images.append(
-                    (str(image["name"]), image.get("context"))
+                    (
+                        str(image["name"]),
+                        image.get("context"),
+                        bool(image.get("runtime_identity", False)),
+                    )
                 )
+        compose_identity_images = set(
+            self.config.get("docker.compose_runtime_identity_images", []) or []
+        )
         configured_images.extend(
             (
                 str(name),
                 _compose_build_context(self.compose_config, str(name)),
+                str(name) in compose_identity_images,
             )
             for name in self.config.get("docker.compose_images", []) or []
         )
 
         missing = []
         stale = []
-        for name, context in configured_images:
+        identity_mismatches = []
+        identity = resolve_runtime_identity(self.project_root)
+        for name, context, uses_runtime_identity in configured_images:
             try:
                 image = self.docker_client.images.get(name)
             except docker.errors.ImageNotFound:
@@ -1213,6 +1245,14 @@ class DoctorRunner:
             except Exception:
                 missing.append(name)
                 continue
+
+            if uses_runtime_identity:
+                labels = image.attrs.get("Config", {}).get("Labels", {}) or {}
+                if (
+                    labels.get("org.pbitm.runtime.uid") != str(identity.uid)
+                    or labels.get("org.pbitm.runtime.gid") != str(identity.gid)
+                ):
+                    identity_mismatches.append(name)
 
             if context:
                 source_root = self.path(context)
@@ -1229,11 +1269,16 @@ class DoctorRunner:
 
         self.add(
             "Required images",
-            CheckStatus.FAIL if missing else CheckStatus.PASS,
+            CheckStatus.FAIL if missing or identity_mismatches else CheckStatus.PASS,
             (
                 f"missing: {', '.join(sorted(missing))}"
                 if missing
-                else f"{len(configured_images)} application image(s) available"
+                else (
+                    "built for a different host UID/GID: "
+                    + ", ".join(sorted(identity_mismatches))
+                    if identity_mismatches
+                    else f"{len(configured_images)} application image(s) available"
+                )
             ),
             "Run `python3 p-bitm.py up --build` before release.",
         )

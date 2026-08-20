@@ -37,6 +37,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        PBITM_UID: "${PBITM_UID:-1000}"
+        PBITM_GID: "${PBITM_GID:-1000}"
     expose:
       - "8443"
     env_file:

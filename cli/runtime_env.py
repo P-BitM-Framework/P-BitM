@@ -34,6 +34,10 @@ def get_runtime_env_errors(values: dict) -> list:
     for name in ("HOST_STORAGE_PATH", "IP"):
         if not values.get(name, "").strip():
             errors.append(f"missing {name}")
+    for name in ("PBITM_UID", "PBITM_GID"):
+        value = values.get(name, "")
+        if not value.isdecimal() or not 1 <= int(value, 10) <= 2_147_483_647:
+            errors.append(f"invalid {name}")
     return errors
 
 

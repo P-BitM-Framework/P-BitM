@@ -49,6 +49,7 @@ docker:
       name: "bitm-vnc:latest"
       dockerfile: "bitm-images/vnc/Dockerfile"
       context: "bitm-images"
+      runtime_identity: true
       enabled: true
 
     # BitM Selkies Container (multi-arch)
@@ -56,6 +57,7 @@ docker:
       name: "bitm-selkies:latest"
       dockerfile: "bitm-images/selkies/Dockerfile"
       context: "bitm-images"
+      runtime_identity: true
       enabled: true
 
     # Backend Phishing Container
@@ -63,6 +65,7 @@ docker:
       name: "p-bitm:latest"
       dockerfile: "server/backend-phishing/Dockerfile"
       context: "server/backend-phishing"
+      runtime_identity: true
       enabled: true
 
     egress_proxy:
@@ -74,6 +77,8 @@ docker:
   # Images built by Docker Compose
   compose_images:
     - "server-frontend"
+    - "server-backend"
+  compose_runtime_identity_images:
     - "server-backend"
 
 # ============================================================================

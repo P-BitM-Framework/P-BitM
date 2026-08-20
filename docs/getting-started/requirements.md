@@ -55,10 +55,10 @@ docker compose version
 
 ### Docker access and runtime ownership
 
-Run the P-BitM CLI as the current non-root user that owns the repository
-directory, never through `sudo`. On the supported rootful Linux deployment,
-that user must use
-UID/GID `1000:1000`, matching the unprivileged backend and browser processes:
+Run the P-BitM CLI as the current user whenever possible. That user can have
+any normal positive UID/GID. On rootful Linux, P-BitM automatically builds its
+unprivileged `bitm` and `abc` container users with matching numeric IDs so they
+can write the private bind-mounted storage:
 
 ```bash
 id -u
@@ -74,9 +74,23 @@ root-level control of the Docker host, so do not add untrusted users:
 sudo usermod -aG docker "$USER"
 ```
 
-The checkout and `storage/` must remain owned by that operator. P-BitM creates
-storage directories with mode `0700`; other host users do not need direct
-access.
+Running the CLI through `sudo` is supported when direct Docker access is not
+available: the CLI uses `SUDO_UID` and `SUDO_GID` to preserve the original
+user identity. A direct root launch also keeps every application container
+non-root; it uses a non-root repository owner when available and otherwise
+falls back to `1000:1000` inside the images. Running as the current user is
+still simpler because it avoids root-owned generated files and unnecessary
+host privilege.
+
+The `storage/` tree must belong to the selected operator identity. P-BitM
+creates its top-level directories with mode `0700` and safely repairs entries
+left by an earlier root launch when root performs setup. It refuses to take
+over data owned by an unrelated non-root user. Image labels record the chosen
+IDs, allowing startup to rebuild incompatible local images automatically.
+
+Docker Desktop uses its Linux VM to mediate bind mounts, so macOS keeps the
+images' default `1000:1000` identity while host files remain owned by the macOS
+user.
 
 No BuildKit environment variables are required. A supported Engine uses
 BuildKit by default, and P-BitM invokes Buildx explicitly for custom images.

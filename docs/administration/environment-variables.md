@@ -12,6 +12,8 @@ rerunning `setup` over hand-editing generated values.
 | `HOST_STORAGE_PATH` | Absolute host storage path | generated |
 | `STORAGE_PATH` | Storage path inside containers | `/storage` |
 | `DB_PATH` | SQLite file inside storage | `/storage/p-bitm.db` |
+| `PBITM_UID` | Non-root numeric UID used by storage-writing containers | selected by CLI |
+| `PBITM_GID` | Non-root numeric GID used by storage-writing containers | selected by CLI |
 | `ADMIN_USERNAME` | Initial administrator username | `config.yaml` |
 | `ADMIN_PASSWORD` | Initial administrator password | generated |
 | `ADMIN_EMAIL` | Initial administrator email | `config.yaml` |

@@ -17,7 +17,8 @@ from cli.utils import (
     get_local_ip, generate_ssl_certs, update_env_file,
     cleanup_victim_containers, cleanup_campaign_containers,
     remove_all_images, ensure_dns_challenge, show_admin_credentials,
-    ensure_storage_directories, read_env_file, StorageOwnershipError
+    ensure_storage_directories, read_env_file, StorageOwnershipError,
+    adopt_generated_path
 )
 from cli.doctor import CheckStatus, DoctorRunner
 from cli.docker_ops import (
@@ -147,6 +148,7 @@ def cmd_setup(rotate_dns_secrets=False, prerequisites_checked=False):
     for directory in [certs_dir, letsencrypt_dir]:
         directory.mkdir(parents=True, exist_ok=True)
         directory.chmod(0o755)
+        adopt_generated_path(directory)
         info(f"Created directory: {directory}")
     for directory in [storage_dir, campaigns_dir]:
         info(f"Created directory: {directory}")
@@ -182,6 +184,8 @@ def cmd_setup(rotate_dns_secrets=False, prerequisites_checked=False):
                 return False
         cert_path.chmod(0o644)
         key_path.chmod(0o600)
+        adopt_generated_path(cert_path)
+        adopt_generated_path(key_path)
 
     success("\n✅ Setup completed successfully!")
     if get_admin_bootstrap_state() == AdminBootstrapState.REQUIRED:
