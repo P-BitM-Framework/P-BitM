@@ -12,10 +12,8 @@ async function setClipboardCopyData(textToCopy){
     if (navigator.clipboard && window.isSecureContext) {
         try {
             await navigator.clipboard.writeText(textToCopy);
-            console.log('✅ Copiato (Clipboard API)');
             return true;
         } catch (err) {
-            console.warn('Clipboard API failed:', err);
         }
     }
     return fallbackCopyTextToClipboard(textToCopy);
