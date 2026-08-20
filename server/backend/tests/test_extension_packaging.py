@@ -184,6 +184,11 @@ class ExtensionPackagingTests(unittest.TestCase):
 
         self.assertIn("ENV PUID=1000", dockerfile)
         self.assertIn("PGID=1000", dockerfile)
+        self.assertIn(
+            'chown -R "${PUID}:${PGID}" /config /bitm',
+            dockerfile,
+        )
+        self.assertNotIn("chown -R abc:abc /config /bitm", dockerfile)
         self.assertIn('storage_uid="${PUID:-1000}"', startup)
         self.assertIn('storage_gid="${PGID:-1000}"', startup)
         self.assertIn(
