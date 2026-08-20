@@ -19,8 +19,9 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 # Setup dbus
 RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
-# Creating user bitm
-RUN adduser --disabled-password --gecos "" bitm && \
+# Use the same numeric identity as every service that writes shared storage.
+RUN groupadd --gid 1000 bitm && \
+    useradd --uid 1000 --gid bitm --create-home --shell /bin/bash bitm && \
     echo 'bitm:bitm' | chpasswd
 
 # Install Python runtime dependencies system-wide. The container entrypoint

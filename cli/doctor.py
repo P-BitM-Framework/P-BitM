@@ -355,6 +355,7 @@ def _metadata_errors(
     label: str,
     expected_uid: int,
     expected_mode: int,
+    expected_gid: int | None = None,
 ) -> list[str]:
     """Validate host ownership and exact POSIX mode for one existing path."""
     metadata = path.stat()
@@ -370,6 +371,12 @@ def _metadata_errors(
         errors.append(
             f"{label} owner UID must be {expected_uid} "
             f"(found {actual_uid})"
+        )
+    actual_gid = getattr(metadata, "st_gid", expected_gid)
+    if expected_gid is not None and actual_gid != expected_gid:
+        errors.append(
+            f"{label} owner GID must be {expected_gid} "
+            f"(found {actual_gid})"
         )
     return errors
 
@@ -444,10 +451,17 @@ class DoctorRunner:
 
     @property
     def expected_owner_uid(self) -> int:
-        """Use the checkout owner even when doctor was invoked through sudo."""
+        """Use the repository owner even when doctor was invoked through sudo."""
         metadata = self.project_root.stat()
         fallback_uid = getattr(os, "geteuid", lambda: -1)()
         return getattr(metadata, "st_uid", fallback_uid)
+
+    @property
+    def expected_owner_gid(self) -> int:
+        """Use the repository group even when doctor was invoked through sudo."""
+        metadata = self.project_root.stat()
+        fallback_gid = getattr(os, "getegid", lambda: -1)()
+        return getattr(metadata, "st_gid", fallback_gid)
 
     def _check_configuration(self) -> None:
         path = Path(self.config.config_path)
@@ -757,7 +771,8 @@ class DoctorRunner:
                         path,
                         label,
                         self.expected_owner_uid,
-                        0o755,
+                        0o700,
+                        self.expected_owner_gid,
                     )
                 )
             if path.is_dir() and not path.is_symlink() and not os.access(
@@ -771,7 +786,10 @@ class DoctorRunner:
                 "Storage",
                 CheckStatus.FAIL,
                 "; ".join(errors),
-                "Run setup and correct host directory ownership.",
+                (
+                    "Run as the current non-root user and correct the "
+                    "storage ownership before startup."
+                ),
             )
             return
 

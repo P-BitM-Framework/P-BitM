@@ -53,6 +53,31 @@ docker buildx version
 docker compose version
 ```
 
+### Docker access and runtime ownership
+
+Run the P-BitM CLI as the current non-root user that owns the repository
+directory, never through `sudo`. On the supported rootful Linux deployment,
+that user must use
+UID/GID `1000:1000`, matching the unprivileged backend and browser processes:
+
+```bash
+id -u
+id -g
+docker info
+```
+
+If Docker access requires elevation, add the dedicated P-BitM operator to the
+`docker` group and start a new login session. Membership in that group grants
+root-level control of the Docker host, so do not add untrusted users:
+
+```bash
+sudo usermod -aG docker "$USER"
+```
+
+The checkout and `storage/` must remain owned by that operator. P-BitM creates
+storage directories with mode `0700`; other host users do not need direct
+access.
+
 No BuildKit environment variables are required. A supported Engine uses
 BuildKit by default, and P-BitM invokes Buildx explicitly for custom images.
 `COMPOSE_DOCKER_CLI_BUILD` is unsupported by Compose v2.

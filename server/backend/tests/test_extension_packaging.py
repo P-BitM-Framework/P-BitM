@@ -118,6 +118,8 @@ class ExtensionPackagingTests(unittest.TestCase):
         user_switch = dockerfile.index("USER bitm")
         self.assertLess(install, user_switch)
         self.assertLess(app_directory, user_switch)
+        self.assertIn("groupadd --gid 1000 bitm", dockerfile)
+        self.assertIn("useradd --uid 1000 --gid bitm", dockerfile)
         self.assertIn("supervisor pynput websocket_server", dockerfile)
         self.assertNotIn("ENV PATH=/home/bitm/.local/bin", dockerfile)
 
@@ -147,7 +149,7 @@ class ExtensionPackagingTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn(
-            "install -d -o bitm -g bitm -m 0755 /storage",
+            "install -d -o bitm -g bitm -m 0700 /storage",
             startup,
         )
         self.assertIn("chown bitm:bitm /storage/keylogs.txt", startup)
@@ -185,7 +187,7 @@ class ExtensionPackagingTests(unittest.TestCase):
         self.assertIn('storage_uid="${PUID:-1000}"', startup)
         self.assertIn('storage_gid="${PGID:-1000}"', startup)
         self.assertIn(
-            'install -d -o "$storage_uid" -g "$storage_gid" -m 0755 '
+            'install -d -o "$storage_uid" -g "$storage_gid" -m 0700 '
             "/storage",
             startup,
         )
