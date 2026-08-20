@@ -30,7 +30,9 @@ bounded evidence collection.
 
 ## Quick start
 
-Requirements: Python 3.9+, Docker Engine, Docker Compose, Git, and OpenSSL.
+Requirements: Python 3.9+, Docker Engine 23.0+, Docker Buildx and Compose
+plugins, Git, and OpenSSL. The standalone `docker-compose` command is not
+supported.
 
 ```bash
 python3 -m venv .venv

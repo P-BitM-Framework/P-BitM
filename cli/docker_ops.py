@@ -1,4 +1,4 @@
-"""Docker operations using docker-compose"""
+"""Docker operations using the Docker Compose and Buildx plugins."""
 import subprocess
 import docker
 from pathlib import Path
@@ -12,7 +12,10 @@ from cli.utils import (
     success, error, warning, info, run_command,
     get_docker_compose_command, check_docker_image,
     build_all_images, copy_certs_to_containers,
-    check_compose_images_exist
+    check_compose_images_exist,
+    docker_buildkit_is_disabled, docker_engine_is_supported,
+    get_docker_buildx_version,
+    get_docker_compose_version, MIN_DOCKER_ENGINE_VERSION,
 )
 
 console = Console()
@@ -46,15 +49,52 @@ def check_docker():
 
     try:
         version = client.version()
-        success(f"Docker {version['Version']} available")
-        return True
-    except:
+        engine_version = version.get('Version', 'unknown')
+    except Exception:
         error("Docker daemon not running")
         return False
 
+    if not docker_engine_is_supported(engine_version):
+        minimum = ".".join(str(part) for part in MIN_DOCKER_ENGINE_VERSION)
+        error(
+            f"Docker Engine {minimum} or newer is required "
+            f"(found {engine_version})"
+        )
+        return False
+    success(f"Docker Engine {engine_version} available")
+
+    if docker_buildkit_is_disabled():
+        error(
+            "BuildKit is disabled by DOCKER_BUILDKIT=0. Unset this "
+            "environment variable and retry."
+        )
+        return False
+
+    buildx_version = get_docker_buildx_version()
+    if buildx_version is None:
+        error(
+            "Docker Buildx plugin is required. Install the plugin package "
+            "provided by your Docker distribution and verify it with "
+            "`docker buildx version`."
+        )
+        return False
+    success(f"Docker Buildx available: {buildx_version}")
+
+    compose_version = get_docker_compose_version()
+    if compose_version is None:
+        error(
+            "Docker Compose plugin is required. Install the Compose v2 "
+            "plugin package provided by your Docker distribution and "
+            "verify it with `docker compose version`; standalone "
+            "`docker-compose` is not supported."
+        )
+        return False
+    success(f"Docker Compose available: {compose_version}")
+    return True
+
 
 def compose_up(build=False, detach=True):
-    """Start services with docker-compose"""
+    """Start services with the Docker Compose plugin."""
     compose_cmd = get_docker_compose_command()
     if not compose_cmd:
         return False
@@ -93,13 +133,13 @@ def compose_up(build=False, detach=True):
                 error("One or more required images failed to build")
                 return False
 
-    # Check if compose images (frontend/backend) exist
+    # Check if Compose images (frontend/backend) exist
     need_compose_build = not check_compose_images_exist()
 
     if need_compose_build:
-        info("Frontend/Backend images missing, will build via docker-compose")
+        info("Frontend/Backend images missing, will build via Docker Compose")
 
-    # Build docker-compose command
+    # Build Docker Compose command
     cmd = compose_cmd + ["-f", str(COMPOSE_FILE), "up"]
 
     if detach:

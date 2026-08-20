@@ -1,5 +1,9 @@
 # Development setup
 
+Development uses the same Docker baseline as deployment: Docker Engine 23.0
+or newer with the Buildx and Compose plugins. Verify `docker buildx version`
+and `docker compose version` before starting the stack.
+
 ## Frontend toolchain
 
 Running P-BitM through Docker does not require Node.js or npm on the host.

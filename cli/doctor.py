@@ -23,6 +23,13 @@ import yaml
 
 from cli import __version__
 from cli.runtime_env import get_runtime_env_errors, read_env_file
+from cli.utils import (
+    MIN_DOCKER_ENGINE_VERSION,
+    docker_buildkit_is_disabled,
+    docker_engine_is_supported,
+    get_docker_buildx_version,
+    get_docker_compose_version,
+)
 
 
 MIN_FREE_STORAGE_BYTES = 5 * 1024**3
@@ -960,20 +967,46 @@ class DoctorRunner:
             "Install the missing command-line tools.",
         )
 
-        self.compose_command = _detect_compose_command()
+        buildx_version = get_docker_buildx_version()
         self.add(
-            "Docker Compose",
+            "Docker Buildx",
+            CheckStatus.PASS if buildx_version else CheckStatus.FAIL,
+            buildx_version or "not available",
+            (
+                "Install the Buildx plugin package provided by your Docker "
+                "distribution."
+            ),
+        )
+
+        buildkit_disabled = docker_buildkit_is_disabled()
+        self.add(
+            "BuildKit configuration",
+            CheckStatus.FAIL if buildkit_disabled else CheckStatus.PASS,
+            (
+                "disabled by DOCKER_BUILDKIT=0"
+                if buildkit_disabled
+                else "enabled by default"
+            ),
+            "Unset DOCKER_BUILDKIT instead of forcing the legacy builder.",
+        )
+
+        compose_version = get_docker_compose_version()
+        self.compose_command = (
+            ["docker", "compose"] if compose_version else None
+        )
+        self.add(
+            "Docker Compose plugin",
             (
                 CheckStatus.PASS
                 if self.compose_command
                 else CheckStatus.FAIL
             ),
+            compose_version or "not available",
             (
-                " ".join(self.compose_command)
-                if self.compose_command
-                else "not available"
+                "Install the Compose v2 plugin package provided by your "
+                "Docker distribution; standalone `docker-compose` is not "
+                "supported."
             ),
-            "Install the Docker Compose plugin.",
         )
 
     def _check_tracked_secrets(self) -> None:
@@ -1013,10 +1046,15 @@ class DoctorRunner:
                 "Start Docker and verify access to its socket.",
             )
             return
+        supported = docker_engine_is_supported(version)
+        minimum = ".".join(
+            str(part) for part in MIN_DOCKER_ENGINE_VERSION
+        )
         self.add(
             "Docker daemon",
-            CheckStatus.PASS,
+            CheckStatus.PASS if supported else CheckStatus.FAIL,
             f"version {version}",
+            f"Upgrade Docker Engine to version {minimum} or newer.",
         )
 
     def _check_compose(self) -> None:
@@ -1229,16 +1267,6 @@ def _run_text(command: list[str]) -> str | None:
     if result.returncode != 0:
         return None
     return result.stdout
-
-
-def _detect_compose_command() -> list[str] | None:
-    for command in (
-        ["docker", "compose", "version"],
-        ["docker-compose", "--version"],
-    ):
-        if _run_text(command) is not None:
-            return command[:2] if command[0] == "docker" else command[:1]
-    return None
 
 
 def _parse_docker_timestamp(value: Any) -> datetime | None:

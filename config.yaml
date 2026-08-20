@@ -42,7 +42,7 @@ docker:
   # Timeout for Docker operations (seconds)
   timeout: 30
 
-  # Custom images to build (before docker-compose up)
+  # Custom images to build before Docker Compose starts the stack
   images:
     # BitM VNC Container
     vnc:
@@ -71,7 +71,7 @@ docker:
       context: "server/egress-proxy"
       enabled: true
 
-  # Images built by docker-compose
+  # Images built by Docker Compose
   compose_images:
     - "server-frontend"
     - "server-backend"
