@@ -28,8 +28,10 @@ separate discovery subset with mutation methods disabled.
 | VNC session | `bitm-vnc:latest` | Admin backend |
 | Selkies session | `bitm-selkies:latest` | Admin backend |
 
-Dynamic workloads are not Compose services and are not guaranteed to stop when
-the base Compose project is brought down.
+Dynamic workloads are not Compose services, but the P-BitM CLI includes them in
+`python3 p-bitm.py down`. The command force-removes campaign, participant, and
+egress containers and their campaign-scoped networks before completing the
+global shutdown.
 
 ## Healthchecks
 

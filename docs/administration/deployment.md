@@ -38,11 +38,18 @@ unless source or dependencies changed.
 
 ## Stop
 
-Stop or complete active campaigns first, then run:
+Run the global shutdown command:
 
 ```bash
 python3 p-bitm.py down
 ```
 
-The base Compose stack and dynamic campaign workloads have separate
-lifecycles; `down` is not an emergency stop for every campaign.
+`down` is terminal for the current runtime. It stops the control plane,
+force-removes every app-owned campaign, participant, and campaign-egress
+container, removes campaign networks, and marks active, paused, or scheduled
+campaigns as completed. A later `up` does not resume them.
+
+If any dynamic campaign resource cannot be removed, the command exits
+unsuccessfully and leaves campaign state unchanged so an operator is not given
+a false completed status. Resolve the reported Docker error and run `down`
+again.
