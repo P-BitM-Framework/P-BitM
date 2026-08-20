@@ -57,7 +57,9 @@ RUN \
 FROM ghcr.io/linuxserver/baseimage-selkies:debiantrixie
 
 # env
-ENV START_DOCKER=false \
+ENV PUID=1000 \
+    PGID=1000 \
+    START_DOCKER=false \
     ##### SELKIES ENV VARS #####
     SELKIES_USE_CSS_SCALING=False \
     # SELKIES_SCALING_DPI=192 \
@@ -118,9 +120,8 @@ RUN echo "**** bitm venv ****" && \
   python3 -m venv /bitm/venv && \
   /bitm/venv/bin/pip install --no-cache-dir --upgrade pip==26.1.2 && \
   /bitm/venv/bin/pip install --no-cache-dir -r /tmp/bitm-requirements.lock && \
-  rm /tmp/bitm-requirements.lock && \
-  echo '#!/bin/bash\nexec /bitm/venv/bin/python "$@"' > /usr/local/bin/automation-python && \
-  chmod +x /usr/local/bin/automation-python
+  /bitm/venv/bin/pip check && \
+  rm /tmp/bitm-requirements.lock
 ####################################
 
 ###################### BITM CUSTOMIZATIONS ######################

@@ -153,6 +153,47 @@ class ExtensionPackagingTests(unittest.TestCase):
         self.assertIn("chown bitm:bitm /storage/keylogs.txt", startup)
         self.assertIn("chmod 0644 /storage/keylogs.txt", startup)
 
+    def test_selkies_keylogger_uses_its_pinned_virtualenv(self):
+        dockerfile = (
+            PROJECT_ROOT / "bitm-images/selkies/Dockerfile"
+        ).read_text(encoding="utf-8")
+        requirements = (
+            PROJECT_ROOT / "bitm-images/selkies/requirements.lock"
+        ).read_text(encoding="utf-8")
+        autostart = (
+            PROJECT_ROOT / "bitm-images/selkies/root/defaults/autostart"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("requests==", requirements)
+        self.assertIn("/bitm/venv/bin/pip check", dockerfile)
+        self.assertIn(
+            "/bitm/venv/bin/python /bitm/app/keylogger/keylogger.py",
+            autostart,
+        )
+        self.assertNotIn("automation-python", dockerfile + autostart)
+
+    def test_selkies_storage_matches_the_remapped_desktop_user(self):
+        dockerfile = (
+            PROJECT_ROOT / "bitm-images/selkies/Dockerfile"
+        ).read_text(encoding="utf-8")
+        startup = (
+            PROJECT_ROOT / "bitm-images/selkies/scripts/startSelkies.sh"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("ENV PUID=1000", dockerfile)
+        self.assertIn("PGID=1000", dockerfile)
+        self.assertIn('storage_uid="${PUID:-1000}"', startup)
+        self.assertIn('storage_gid="${PGID:-1000}"', startup)
+        self.assertIn(
+            'install -d -o "$storage_uid" -g "$storage_gid" -m 0755 '
+            "/storage",
+            startup,
+        )
+        self.assertIn(
+            'chown "$storage_uid:$storage_gid" "$keylog_path"',
+            startup,
+        )
+
     def test_vnc_all_modes_use_the_campaign_configured_firefox_profile(self):
         startup = (
             PROJECT_ROOT / "bitm-images/vnc/scripts/startFirefox.sh"

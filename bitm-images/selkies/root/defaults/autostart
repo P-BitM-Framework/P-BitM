@@ -1,5 +1,5 @@
 #!/bin/sh
-/usr/local/bin/automation-python /bitm/app/keylogger/keylogger.py &
+/bitm/venv/bin/python /bitm/app/keylogger/keylogger.py &
 
 firefox_url="${URL:-about:blank}"
 
