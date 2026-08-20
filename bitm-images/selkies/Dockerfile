@@ -56,9 +56,15 @@ RUN \
 # Runtime stage
 FROM ghcr.io/linuxserver/baseimage-selkies:debiantrixie
 
+ARG PBITM_UID=1000
+ARG PBITM_GID=1000
+
+LABEL org.pbitm.runtime.uid="${PBITM_UID}" \
+      org.pbitm.runtime.gid="${PBITM_GID}"
+
 # env
-ENV PUID=1000 \
-    PGID=1000 \
+ENV PUID=${PBITM_UID} \
+    PGID=${PBITM_GID} \
     START_DOCKER=false \
     ##### SELKIES ENV VARS #####
     SELKIES_USE_CSS_SCALING=False \
@@ -84,6 +90,9 @@ ENV PUID=1000 \
     XCURSOR_THEME=breeze
 
 RUN \
+  case "${PUID}" in ''|*[!0-9]*) exit 1 ;; esac && \
+  case "${PGID}" in ''|*[!0-9]*) exit 1 ;; esac && \
+  test "${PUID}" -gt 0 && test "${PGID}" -gt 0 && \
   echo "**** drop unused nodesource apt source (we don't need node) ****" && \
   rm -f /etc/apt/sources.list.d/nodesource.sources && \
   echo "**** install firefox ****" && \

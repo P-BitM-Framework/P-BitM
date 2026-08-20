@@ -3,6 +3,7 @@ import os
 import platform
 import re
 import socket
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -20,17 +21,48 @@ from cli.runtime_env import (
     is_secure_runtime_secret,
     read_env_file,
 )
+from cli.runtime_identity import (
+    RuntimeIdentity,
+    RuntimeIdentityError,
+    resolve_runtime_identity,
+)
 
 console = Console()
 
 MIN_DOCKER_ENGINE_VERSION = (23, 0)
-CONTAINER_RUNTIME_UID = 1000
-CONTAINER_RUNTIME_GID = 1000
 STORAGE_DIRECTORY_MODE = 0o700
+RUNTIME_UID_LABEL = "org.pbitm.runtime.uid"
+RUNTIME_GID_LABEL = "org.pbitm.runtime.gid"
 
 
 class StorageOwnershipError(RuntimeError):
     """Raised when host storage cannot be shared with unprivileged runtimes."""
+
+
+def adopt_generated_path(path: Path) -> None:
+    """Leave root-created runtime files with the represented host operator."""
+    if platform.system() != "Linux" or getattr(os, "geteuid", lambda: -1)() != 0:
+        return
+    identity = resolve_runtime_identity()
+    if identity.source == "root-default":
+        return
+    path = Path(path)
+    if path.is_symlink():
+        raise RuntimeError(f"Generated runtime path must not be a symlink: {path}")
+    metadata = path.lstat()
+    if metadata.st_uid == identity.uid and metadata.st_gid == identity.gid:
+        return
+    if (
+        metadata.st_uid not in {0, identity.uid}
+        or metadata.st_gid not in {0, identity.gid}
+    ):
+        raise RuntimeError(
+            f"Refusing to take over generated runtime path owned by "
+            f"{metadata.st_uid}:{metadata.st_gid}: {path}"
+        )
+    if stat.S_ISREG(metadata.st_mode) and metadata.st_nlink > 1:
+        raise RuntimeError(f"Generated runtime file must not be hard-linked: {path}")
+    os.chown(path, identity.uid, identity.gid, follow_symlinks=False)
 
 LOGO = """[bold red]
 ██████╗       ██████╗ ██╗████████╗███╗   ███╗
@@ -188,6 +220,8 @@ def generate_ssl_certs(ip: str, cert_path: str, key_path: str) -> bool:
 
     try:
         subprocess.run(cmd, check=True, capture_output=True)
+        adopt_generated_path(Path(cert_path))
+        adopt_generated_path(Path(key_path))
         return True
     except subprocess.CalledProcessError as e:
         error(f"Failed to generate SSL certificates: {e}")
@@ -208,6 +242,7 @@ def copy_certs_to_containers():
     frontend_certs = Path('./server/frontend/certs')
     frontend_certs.mkdir(parents=True, exist_ok=True)
     frontend_certs.chmod(0o755)
+    adopt_generated_path(frontend_certs)
 
     for file_name, mode in (("cert.pem", 0o644), ("key.pem", 0o600)):
         source = certs_dir / file_name
@@ -220,40 +255,36 @@ def copy_certs_to_containers():
             raise RuntimeError(f"Invalid TLS build-context path: {destination}")
         shutil.copyfile(source, destination)
         destination.chmod(mode)
+        adopt_generated_path(destination)
+
+
+def _storage_tree_entries(path: Path) -> list[Path]:
+    """Return a storage tree without accepting links that escape it."""
+    entries = [path]
+    for entry in path.rglob("*"):
+        if entry.is_symlink():
+            raise StorageOwnershipError(
+                f"Storage must not contain symbolic links: {entry}"
+            )
+        entries.append(entry)
+    return entries
 
 
 def ensure_storage_directories() -> tuple[Path, Path]:
-    """Create private storage owned by the current non-root user."""
+    """Create private storage writable by the selected container identity."""
     project_root = Path(__file__).parent.parent.resolve()
-    project_metadata = project_root.stat()
-    expected_uid = getattr(project_metadata, "st_uid", None)
-    expected_gid = getattr(project_metadata, "st_gid", None)
     effective_uid = getattr(os, "geteuid", lambda: None)()
     effective_gid = getattr(os, "getegid", lambda: None)()
+    try:
+        identity = resolve_runtime_identity(project_root)
+    except RuntimeIdentityError as exc:
+        raise StorageOwnershipError(str(exc)) from exc
 
-    if effective_uid == 0:
-        raise StorageOwnershipError(
-            "Refusing to prepare storage as root. Add your regular user to "
-            "the Docker group, then run p-bitm.py without sudo."
-        )
-
-    if effective_uid != expected_uid or effective_gid != expected_gid:
-        raise StorageOwnershipError(
-            "Run p-bitm.py as the current user that owns the repository "
-            f"directory ({expected_uid}:{expected_gid}); the active user is "
-            f"{effective_uid}:{effective_gid}."
-        )
-
-    if platform.system() == "Linux" and (
-        expected_uid != CONTAINER_RUNTIME_UID
-        or expected_gid != CONTAINER_RUNTIME_GID
-    ):
-        raise StorageOwnershipError(
-            "The current Linux deployment requires the current user and "
-            "repository directory to use UID/GID "
-            f"{CONTAINER_RUNTIME_UID}:{CONTAINER_RUNTIME_GID} (found "
-            f"{expected_uid}:{expected_gid})."
-        )
+    linux_host = platform.system() == "Linux"
+    if linux_host:
+        expected_uid, expected_gid = identity.uid, identity.gid
+    else:
+        expected_uid, expected_gid = effective_uid, effective_gid
 
     configured_paths = (
         config.get("paths.storage_dir", "./storage"),
@@ -270,6 +301,60 @@ def ensure_storage_directories() -> tuple[Path, Path]:
             )
         path = path.resolve()
         path.mkdir(parents=True, exist_ok=True, mode=STORAGE_DIRECTORY_MODE)
+        resolved_paths.append(path)
+
+    storage_entries: list[Path] = []
+    seen_entries: set[Path] = set()
+    for path in resolved_paths:
+        for entry in _storage_tree_entries(path):
+            if entry not in seen_entries:
+                storage_entries.append(entry)
+                seen_entries.add(entry)
+
+    ownership_errors = []
+    for entry in storage_entries:
+        metadata = entry.lstat()
+        actual_uid = getattr(metadata, "st_uid", expected_uid)
+        actual_gid = getattr(metadata, "st_gid", expected_gid)
+        if actual_uid == expected_uid and actual_gid == expected_gid:
+            continue
+        root_can_repair = (
+            linux_host
+            and effective_uid == 0
+            and actual_uid in {0, expected_uid}
+            and actual_gid in {0, expected_gid}
+        )
+        if (
+            root_can_repair
+            and stat.S_ISREG(metadata.st_mode)
+            and metadata.st_nlink > 1
+        ):
+            ownership_errors.append(
+                f"{entry} is a hard-linked file that cannot be adopted safely"
+            )
+            continue
+        if not root_can_repair:
+            ownership_errors.append(
+                f"{entry} is owned by {actual_uid}:{actual_gid}"
+            )
+
+    if ownership_errors:
+        details = "; ".join(ownership_errors[:3])
+        if len(ownership_errors) > 3:
+            details += f"; and {len(ownership_errors) - 3} more"
+        raise StorageOwnershipError(
+            "Storage must be owned by the selected runtime UID/GID "
+            f"{expected_uid}:{expected_gid}. {details}. Move the existing "
+            "storage aside or repair its ownership explicitly."
+        )
+
+    if linux_host and effective_uid == 0:
+        for entry in storage_entries:
+            metadata = entry.lstat()
+            if metadata.st_uid != expected_uid or metadata.st_gid != expected_gid:
+                os.chown(entry, expected_uid, expected_gid, follow_symlinks=False)
+
+    for path in resolved_paths:
         metadata = path.stat()
         actual_uid = getattr(metadata, "st_uid", expected_uid)
         actual_gid = getattr(metadata, "st_gid", expected_gid)
@@ -277,11 +362,9 @@ def ensure_storage_directories() -> tuple[Path, Path]:
             raise StorageOwnershipError(
                 f"Storage path {path} must be owned by UID/GID "
                 f"{expected_uid}:{expected_gid} (found "
-                f"{actual_uid}:{actual_gid}). Repair its ownership once, "
-                "then rerun p-bitm.py without sudo."
+                f"{actual_uid}:{actual_gid})."
             )
         path.chmod(STORAGE_DIRECTORY_MODE)
-        resolved_paths.append(path)
     return tuple(resolved_paths)
 
 
@@ -295,6 +378,7 @@ def generate_env_file():
     # subdirectories may legitimately be absent from a fresh checkout.
     project_root = Path(__file__).parent.parent.resolve()
     storage_path, _ = ensure_storage_directories()
+    identity = resolve_runtime_identity(project_root)
     env_file = project_root / "server" / ".env"
 
     # Preserve credentials generated by an earlier setup. Re-running setup must
@@ -377,6 +461,8 @@ DOCKER_SOCKET=/var/run/docker.sock
 DOCKER_NETWORK=server_bitm-network
 CAMPAIGN_IMAGE=p-bitm:latest
 EGRESS_IMAGE=p-bitm-egress:latest
+PBITM_UID={identity.uid}
+PBITM_GID={identity.gid}
 
 # Network
 IP=127.0.0.1
@@ -387,6 +473,7 @@ IP=127.0.0.1
     with open(env_file, 'w') as f:
         f.write(env_content)
     env_file.chmod(0o600)
+    adopt_generated_path(env_file)
 
     return {
         'env_file': env_file,
@@ -432,6 +519,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
 
     secrets_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     secrets_dir.chmod(0o700)
+    adopt_generated_path(secrets_dir)
     legacy_env = read_env_file(project_root / 'server' / '.env')
     legacy_duckdns_path = project_root / 'server' / '.secrets' / 'duckdns_token'
 
@@ -444,6 +532,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
         secret_path = secrets_dir / variable
         if not force and secret_path.exists() and secret_path.read_text().strip():
             secret_path.chmod(0o600)
+            adopt_generated_path(secret_path)
             continue
 
         # Migrate the original DuckDNS-specific file without exposing its value.
@@ -455,6 +544,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
         ):
             legacy_duckdns_path.replace(secret_path)
             secret_path.chmod(0o600)
+            adopt_generated_path(secret_path)
             info(f"Migrated {variable} to {secret_path.relative_to(project_root)}")
             continue
 
@@ -482,6 +572,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
 
         secret_path.write_text(f"{value}\n")
         secret_path.chmod(0o600)
+        adopt_generated_path(secret_path)
 
     env_lines = [
         "# Auto-generated by P-BitM CLI; contains paths, not secret values."
@@ -501,6 +592,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
     dns_env_path.parent.mkdir(parents=True, exist_ok=True)
     dns_env_path.write_text('\n'.join(env_lines) + '\n')
     dns_env_path.chmod(0o600)
+    adopt_generated_path(dns_env_path)
 
     if not template_path.exists():
         error(f"Traefik production template not found: {template_path}")
@@ -518,6 +610,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
     runtime_path.parent.mkdir(parents=True, exist_ok=True)
     runtime_path.write_text(yaml.safe_dump(runtime_config, sort_keys=False))
     runtime_path.chmod(0o644)
+    adopt_generated_path(runtime_path)
 
     success(
         f"DNS challenge configured for {provider} "
@@ -538,6 +631,7 @@ def update_env_file(ip: str):
         env_file.parent.mkdir(parents=True, exist_ok=True)
         env_file.write_text(f"IP={ip}\n")
         env_file.chmod(0o600)
+        adopt_generated_path(env_file)
         info(f"Created .env with IP={ip}")
         return
 
@@ -556,6 +650,7 @@ def update_env_file(ip: str):
 
     env_file.write_text('\n'.join(lines))
     env_file.chmod(0o600)
+    adopt_generated_path(env_file)
     info(f"Updated .env with IP={ip}")
 
 def show_admin_credentials(username, password):
@@ -584,17 +679,20 @@ def show_admin_credentials(username, password):
 def run_command(
     cmd: list,
     capture: bool = False,
-    quiet: bool = False
+    quiet: bool = False,
+    env: Optional[dict[str, str]] = None,
 ) -> Union[str, bool]:
     """Execute shell command with output control"""
     try:
+        run_options = {"env": env} if env is not None else {}
         if capture:
             result = subprocess.run(
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                **run_options,
             )
             return result.stdout.strip() if result.stdout else ""
         else:
@@ -604,10 +702,11 @@ def run_command(
                     check=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    text=True
+                    text=True,
+                    **run_options,
                 )
             else:
-                subprocess.run(cmd, check=True)
+                subprocess.run(cmd, check=True, **run_options)
             return True
 
     except subprocess.CalledProcessError as e:
@@ -677,7 +776,43 @@ def check_docker_image(image_name: str) -> bool:
         return False
 
 
-def build_docker_image(image_name: str, dockerfile: str, context: str) -> bool:
+def docker_image_matches_runtime_identity(
+    image_name: str,
+    identity: Optional[RuntimeIdentity] = None,
+) -> bool:
+    """Return whether an image was built for the selected numeric identity."""
+    selected = identity or resolve_runtime_identity()
+    try:
+        result = subprocess.run(
+            [
+                "docker",
+                "image",
+                "inspect",
+                image_name,
+                "--format",
+                "{{json .Config.Labels}}",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        import json
+
+        labels = json.loads(result.stdout.strip() or "null") or {}
+    except (OSError, subprocess.CalledProcessError, ValueError, TypeError):
+        return False
+    return (
+        labels.get(RUNTIME_UID_LABEL) == str(selected.uid)
+        and labels.get(RUNTIME_GID_LABEL) == str(selected.gid)
+    )
+
+
+def build_docker_image(
+    image_name: str,
+    dockerfile: str,
+    context: str,
+    identity: Optional[RuntimeIdentity] = None,
+) -> bool:
     """
     Build Docker image
 
@@ -695,8 +830,15 @@ def build_docker_image(image_name: str, dockerfile: str, context: str) -> bool:
         "docker", "buildx", "build", "--load",
         "-t", image_name,
         "-f", dockerfile,
-        context
     ]
+    if identity is not None:
+        cmd.extend(
+            [
+                "--build-arg", f"PBITM_UID={identity.uid}",
+                "--build-arg", f"PBITM_GID={identity.gid}",
+            ]
+        )
+    cmd.append(context)
 
     try:
         if not run_command(cmd, quiet=False):
@@ -735,6 +877,7 @@ def build_all_images(force: bool = False) -> bool:
 
     # Get images from config
     images_config = config.get('docker.images', {})
+    identity = resolve_runtime_identity()
 
     for image_key, image_data in images_config.items():
         if not image_data.get('enabled', True):
@@ -743,9 +886,14 @@ def build_all_images(force: bool = False) -> bool:
 
         image_name = image_data.get('name')
         context = image_data.get('context')
+        uses_runtime_identity = image_data.get('runtime_identity', False)
 
-        # Check if image already exists
-        if not force and check_docker_image(image_name):
+        # Reuse identity-sensitive images only when their build labels match.
+        image_is_current = check_docker_image(image_name) and (
+            not uses_runtime_identity
+            or docker_image_matches_runtime_identity(image_name, identity)
+        )
+        if not force and image_is_current:
             info(f"Image {image_name} already exists")
             continue
 
@@ -761,7 +909,12 @@ def build_all_images(force: bool = False) -> bool:
             dockerfile = image_data.get('dockerfile')
 
         # Build image
-        if not build_docker_image(image_name, dockerfile, context):
+        if not build_docker_image(
+            image_name,
+            dockerfile,
+            context,
+            identity if uses_runtime_identity else None,
+        ):
             all_success = False
 
     return all_success
@@ -778,8 +931,17 @@ def check_compose_images_exist() -> bool:
 
     compose_images = config.get('docker.compose_images', [])
 
+    identity_images = set(
+        config.get('docker.compose_runtime_identity_images', []) or []
+    )
+    identity = resolve_runtime_identity()
     for image in compose_images:
         if not check_docker_image(image):
+            return False
+        if (
+            image in identity_images
+            and not docker_image_matches_runtime_identity(image, identity)
+        ):
             return False
 
     return True

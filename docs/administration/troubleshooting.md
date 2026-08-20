@@ -58,25 +58,26 @@ python3 p-bitm.py doctor
 ```
 
 Setup recreates `storage/` and `storage/campaigns/` with mode `0700` for the
-current non-root user. Compose refuses to create a missing bind source on
-behalf of root. Runtime logs are available through Docker and the CLI rather
-than as duplicated files under storage.
+selected runtime identity. Compose refuses to create a missing bind source on
+behalf of the container runtime. Runtime logs are available through Docker and
+the CLI rather than as duplicated files under storage.
 
 ## Backend cannot open the database
 
 An error such as `sqlite3.OperationalError: unable to open database file`
-normally means P-BitM was previously run through `sudo`, leaving storage owned
-by root. Stop retrying the stack, inspect the numeric ownership, and repair it
-once for the dedicated UID/GID `1000:1000` operator:
+normally means storage was created by a different host identity. Stop retrying
+the stack and inspect the numeric ownership:
 
 ```bash
 stat -c '%u:%g %a %n' storage storage/p-bitm.db
-sudo chown -R 1000:1000 storage
-chmod 0700 storage storage/campaigns
 ```
 
-Then run `python3 p-bitm.py doctor` and restart without `sudo`. Do not use
-`chmod 777`; collected engagement data is private runtime state.
+Run setup again as the intended operator. When root is used, P-BitM can safely
+adopt entries left by root for the selected non-root runtime identity. It will
+not silently take over storage owned by another non-root user; move that tree
+aside or repair its ownership explicitly after confirming who owns the data.
+Then run `python3 p-bitm.py doctor` and restart. Do not use `chmod 777`;
+collected engagement data is private runtime state.
 
 ## Frontend cannot read `key.pem`
 

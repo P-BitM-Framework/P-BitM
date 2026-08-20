@@ -6,12 +6,14 @@ from cli.doctor import CheckStatus, DoctorRunner
 from cli.docker_ops import check_docker
 from cli.utils import (
     build_docker_image,
+    docker_image_matches_runtime_identity,
     docker_buildkit_is_disabled,
     docker_engine_is_supported,
     get_docker_compose_command,
     get_docker_compose_version,
     parse_docker_engine_version,
 )
+from cli.runtime_identity import RuntimeIdentity
 
 
 class DockerVersionTests(unittest.TestCase):
@@ -79,6 +81,46 @@ class DockerPluginTests(unittest.TestCase):
             quiet=False,
         )
         report_success.assert_called_once()
+
+    @patch("cli.utils.success")
+    @patch("cli.utils.run_command", return_value=True)
+    def test_identity_sensitive_builds_receive_numeric_build_arguments(
+        self, run_command, report_success
+    ):
+        identity = RuntimeIdentity(1001, 1002, "current-user")
+
+        self.assertTrue(
+            build_docker_image(
+                "example:latest",
+                "images/Dockerfile",
+                "images",
+                identity,
+            )
+        )
+
+        command = run_command.call_args.args[0]
+        self.assertIn("PBITM_UID=1001", command)
+        self.assertIn("PBITM_GID=1002", command)
+
+    @patch("cli.utils.subprocess.run")
+    def test_runtime_image_labels_must_match_the_selected_identity(self, run):
+        run.return_value.stdout = (
+            '{"org.pbitm.runtime.uid":"1001",'
+            '"org.pbitm.runtime.gid":"1002"}'
+        )
+
+        self.assertTrue(
+            docker_image_matches_runtime_identity(
+                "example:latest",
+                RuntimeIdentity(1001, 1002, "current-user"),
+            )
+        )
+        self.assertFalse(
+            docker_image_matches_runtime_identity(
+                "example:latest",
+                RuntimeIdentity(2001, 2002, "current-user"),
+            )
+        )
 
 
 class DockerPreflightTests(unittest.TestCase):

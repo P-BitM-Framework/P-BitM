@@ -5,12 +5,19 @@ directory.
 
 ## Ownership
 
-The current host user that owns the repository directory and every
-unprivileged container process that writes shared storage use the same numeric
-UID/GID, `1000:1000`, on rootful Linux. Linux checks those numbers rather than
-the account names (`bitm` or `abc`). The top-level storage and campaign
-directories use mode `0700`, so unrelated host users cannot traverse
-engagement data.
+On rootful Linux, P-BitM selects a positive host UID/GID and builds every
+unprivileged process that writes shared storage with those numeric IDs. A
+normal launch follows the current user, a `sudo` launch follows the original
+user, and a direct root launch still selects a non-root container identity.
+Linux checks numeric IDs rather than account names, so the containers can keep
+their internal names (`bitm` or `abc`) without requiring a host account with
+the same name.
+
+The host `storage/` directory remains a bind mount so operators can inspect,
+back up, and manage files directly. The admin backend receives the full tree;
+each campaign and victim container receives only its own scoped subdirectory
+at `/storage`. Top-level storage and campaign directories use mode `0700`, so
+unrelated host users cannot traverse engagement data.
 
 The admin backend owns the primary database, transactions, and stored
 artifacts. Campaign services send authenticated events to it instead of

@@ -10,6 +10,7 @@ from cli.utils import (
     StorageOwnershipError,
     ensure_storage_directories,
 )
+from cli.runtime_identity import RuntimeIdentity
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -55,10 +56,64 @@ class StorageDirectoryTests(unittest.TestCase):
                 STORAGE_DIRECTORY_MODE,
             )
 
-    def test_refuses_to_prepare_storage_as_root(self):
-        with patch("cli.utils.os.geteuid", return_value=0):
-            with self.assertRaisesRegex(StorageOwnershipError, "without sudo"):
-                ensure_storage_directories()
+    def test_accepts_sudo_while_preserving_the_original_user_identity(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            storage = Path(temporary_directory) / "storage"
+            campaigns = storage / "campaigns"
+            metadata = Path(temporary_directory).stat()
+            config_values = self._config_value(storage, campaigns)
+            with patch(
+                "cli.utils.config.get",
+                side_effect=config_values,
+            ), patch(
+                "cli.utils.os.geteuid",
+                return_value=0,
+            ), patch(
+                "cli.utils.platform.system",
+                return_value="Linux",
+            ), patch(
+                "cli.utils.resolve_runtime_identity",
+                return_value=RuntimeIdentity(
+                    metadata.st_uid,
+                    metadata.st_gid,
+                    "sudo-user",
+                ),
+            ):
+                resolved_storage, resolved_campaigns = ensure_storage_directories()
+
+            self.assertEqual(resolved_storage, storage.resolve())
+            self.assertEqual(resolved_campaigns, campaigns.resolve())
+
+    def test_refuses_storage_owned_by_an_unrelated_user(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            storage = Path(temporary_directory) / "storage"
+            campaigns = storage / "campaigns"
+            storage.mkdir()
+            campaigns.mkdir()
+            metadata = storage.stat()
+            config_values = self._config_value(storage, campaigns)
+            with patch(
+                "cli.utils.config.get",
+                side_effect=config_values,
+            ), patch(
+                "cli.utils.os.geteuid",
+                return_value=metadata.st_uid,
+            ), patch(
+                "cli.utils.platform.system",
+                return_value="Linux",
+            ), patch(
+                "cli.utils.resolve_runtime_identity",
+                return_value=RuntimeIdentity(
+                    metadata.st_uid + 1,
+                    metadata.st_gid + 1,
+                    "current-user",
+                ),
+            ):
+                with self.assertRaisesRegex(
+                    StorageOwnershipError,
+                    "unrelated|selected runtime UID/GID",
+                ):
+                    ensure_storage_directories()
 
 
 class ComposeStorageTests(unittest.TestCase):
