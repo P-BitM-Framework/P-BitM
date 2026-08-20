@@ -149,3 +149,35 @@ class BoundedExportTests(unittest.TestCase):
                     max_uncompressed_bytes=4,
                 )
             self.assertFalse(destination.exists())
+
+    def test_skips_live_firefox_lock_symlinks_without_dereferencing_them(self):
+        tar_buffer = io.BytesIO()
+        with tarfile.open(fileobj=tar_buffer, mode="w") as archive:
+            lock = tarfile.TarInfo("bitm-profile/lock")
+            lock.type = tarfile.SYMTYPE
+            lock.linkname = "/outside/profile"
+            archive.addfile(lock)
+
+            payload = b"session-data"
+            member = tarfile.TarInfo("bitm-profile/sessionstore.jsonlz4")
+            member.size = len(payload)
+            archive.addfile(member, io.BytesIO(payload))
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            destination = Path(temporary_directory) / "profile.zip"
+
+            convert_tar_to_zip(
+                iter([tar_buffer.getvalue()]),
+                destination,
+                max_uncompressed_bytes=1024,
+            )
+
+            with zipfile.ZipFile(destination) as archive:
+                self.assertEqual(
+                    archive.namelist(),
+                    ["bitm-profile/sessionstore.jsonlz4"],
+                )
+                self.assertEqual(
+                    archive.read("bitm-profile/sessionstore.jsonlz4"),
+                    payload,
+                )

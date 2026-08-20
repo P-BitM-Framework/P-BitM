@@ -122,9 +122,11 @@ def convert_tar_to_zip(
                     if member.isdir():
                         continue
                     if not member.isfile():
-                        raise ExportLimitError(
-                            "Firefox archive contains a non-regular file"
-                        )
+                        # A live Firefox profile contains transient lock
+                        # symlinks. Never dereference archive links or special
+                        # entries; omit them because they are not profile data
+                        # and ZIP has no safe portable representation for them.
+                        continue
 
                     total_uncompressed += member.size
                     if total_uncompressed > max_uncompressed_bytes:

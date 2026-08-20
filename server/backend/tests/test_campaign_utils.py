@@ -1,9 +1,13 @@
 import unittest
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-from utils.campaign import create_campaign_victims, get_selkies_env
+from utils.campaign import (
+    create_campaign_victims,
+    dump_firefox_data,
+    get_selkies_env,
+)
 
 
 class CampaignVictimCreationTests(unittest.TestCase):
@@ -78,6 +82,41 @@ class SelkiesEnvironmentTests(unittest.TestCase):
                 "SELKIES_FRAMERATE": "30",
             },
         )
+
+
+class FirefoxProfileDumpTests(unittest.IsolatedAsyncioTestCase):
+    @patch("utils.campaign.convert_tar_to_zip", return_value=123)
+    @patch("utils.campaign.get_container")
+    async def test_selects_the_profile_path_for_each_protocol(
+        self,
+        get_container,
+        convert_archive,
+    ):
+        container = MagicMock()
+        container.exec_run.return_value.exit_code = 0
+        container.get_archive.return_value = (iter([b"archive"]), {})
+        get_container.return_value = container
+
+        for protocol, expected_path in (
+            ("selkies", "/config/.mozilla/firefox/bitm-profile"),
+            ("vnc", "/bitm/.mozilla/firefox/bitm-profile"),
+        ):
+            with self.subTest(protocol=protocol):
+                result = await dump_firefox_data(
+                    "victim-container",
+                    MagicMock(),
+                    protocol=protocol,
+                )
+
+                self.assertEqual(result, 123)
+                container.exec_run.assert_called_with(
+                    f"test -d {expected_path}",
+                    stdout=False,
+                    stderr=False,
+                )
+                container.get_archive.assert_called_with(expected_path)
+                container.reset_mock()
+                convert_archive.reset_mock()
 
 
 if __name__ == "__main__":

