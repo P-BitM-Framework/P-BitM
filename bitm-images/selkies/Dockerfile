@@ -22,13 +22,15 @@ RUN \
 
 #### ADD CUSTOM SELKIES ####
 COPY selkies/selkies/selkies-core.js /src/addons/selkies-web-core/selkies-core.js
+COPY selkies/selkies/vite-web-core.quiet.config.js /src/addons/selkies-web-core/vite-web-core.quiet.config.js
+COPY selkies/selkies/vite-dashboard.quiet.config.js /src/addons/selkies-dashboard/vite-dashboard.quiet.config.js
 ###############################
 
 RUN \
   echo "**** build shared core library ****" && \
   cd /src/addons/selkies-web-core && \
   npm install && \
-  npm run build && \
+  npm run build -- --config vite-web-core.quiet.config.js && \
   echo "**** build selkies-dashboard (React UI + our core.js) ****" && \
   mkdir /buildout && \
   cd /src/addons/selkies-dashboard && \
@@ -37,10 +39,14 @@ RUN \
   export SELKIES_INJECT=1 && \
   export SELKIES_MODE=websockets && \
   export SELKIES_UPLOAD_DIR=/config && \
-  npm run build && \
+  npm run build -- --config vite-dashboard.quiet.config.js && \
   mkdir -p dist/src dist/nginx && \
   cp ../selkies-web-core/dist/selkies-core.js dist/src/ && \
-  cp ../universal-touch-gamepad/universalTouchGamepad.js dist/src/index-1337090834.js && \
+  ./node_modules/.bin/esbuild \
+    ../universal-touch-gamepad/universalTouchGamepad.js \
+    --minify \
+    --drop:console \
+    --outfile=dist/src/index-1337090834.js && \
   sed -i 's|src/universalTouchGamepad.js|src/index-1337090834.js|' dist/index.html && \
   cp ../selkies-web-core/nginx/* dist/nginx/ && \
   cp -r ../selkies-web-core/dist/jsdb dist/ && \
