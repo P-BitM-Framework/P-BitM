@@ -38,8 +38,8 @@ storage_gid="${PGID:-1000}"
 # The LinuxServer init remaps `abc` to PUID/PGID after this entrypoint hands
 # control to s6. Prepare the bind mount with those numeric IDs now so the
 # desktop user and the UID 1000 backend can both access session artifacts.
-install -d -o "$storage_uid" -g "$storage_gid" -m 0755 /storage
-install -d -o "$storage_uid" -g "$storage_gid" -m 0755 \
+install -d -o "$storage_uid" -g "$storage_gid" -m 0700 /storage
+install -d -o "$storage_uid" -g "$storage_gid" -m 0700 \
     /storage/files_hijacked
 for keylog_path in /storage/keylogs.txt /storage/keylogs.previous.txt; do
     if [ -L "$keylog_path" ] || { [ -e "$keylog_path" ] && [ ! -f "$keylog_path" ]; }; then

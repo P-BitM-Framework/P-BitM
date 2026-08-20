@@ -62,7 +62,11 @@ services:
     depends_on:
       - docker-proxy
     volumes:
-      - ../storage:/storage
+      - type: bind
+        source: ../storage
+        target: /storage
+        bind:
+          create_host_path: false
       - ../modules:/modules:ro
     networks:
       - bitm-network

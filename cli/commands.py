@@ -17,7 +17,7 @@ from cli.utils import (
     get_local_ip, generate_ssl_certs, update_env_file,
     cleanup_victim_containers, cleanup_campaign_containers,
     remove_all_images, ensure_dns_challenge, show_admin_credentials,
-    ensure_storage_directories, read_env_file
+    ensure_storage_directories, read_env_file, StorageOwnershipError
 )
 from cli.doctor import CheckStatus, DoctorRunner
 from cli.docker_ops import (
@@ -113,6 +113,12 @@ def cmd_setup(rotate_dns_secrets=False, prerequisites_checked=False):
         )
         return False
 
+    try:
+        storage_dir, campaigns_dir = ensure_storage_directories()
+    except (OSError, StorageOwnershipError) as exc:
+        error(f"Storage preflight failed: {exc}")
+        return False
+
     # Get IP
     if config.get('network.auto_detect_ip', True):
         ip = get_local_ip()
@@ -133,8 +139,8 @@ def cmd_setup(rotate_dns_secrets=False, prerequisites_checked=False):
     generate_env_file()
     update_env_file(ip)
 
-    # Create directories
-    storage_dir, campaigns_dir = ensure_storage_directories()
+    # Create non-storage runtime directories. Storage was validated before any
+    # secrets or generated configuration were written.
     certs_dir = Path(config.get('paths.certs_dir', './certs'))
     letsencrypt_dir = certs_dir / 'letsencrypt'
 
@@ -193,6 +199,12 @@ def cmd_up(build=False):
     # The command dispatcher already rendered the banner.
 
     if not check_docker():
+        return False
+
+    try:
+        ensure_storage_directories()
+    except (OSError, StorageOwnershipError) as exc:
+        error(f"Storage preflight failed: {exc}")
         return False
 
     admin_state_before_start = get_admin_bootstrap_state()

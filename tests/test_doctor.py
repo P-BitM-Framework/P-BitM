@@ -315,14 +315,31 @@ class HostMetadataTests(unittest.TestCase):
 
             self.assertTrue(any("owner UID" in error for error in errors))
 
-    def test_storage_requires_host_readable_0755_directories(self):
+    def test_detects_unexpected_owner_gid(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "runtime.env"
+            path.write_text("VALUE=secret\n")
+            path.chmod(0o600)
+            metadata = path.stat()
+
+            errors = _metadata_errors(
+                path,
+                "runtime.env",
+                metadata.st_uid,
+                0o600,
+                metadata.st_gid + 1,
+            )
+
+            self.assertTrue(any("owner GID" in error for error in errors))
+
+    def test_storage_requires_private_0700_directories(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
             storage = root / "storage"
             campaigns = storage / "campaigns"
             for directory in (storage, campaigns):
                 directory.mkdir(exist_ok=True)
-                directory.chmod(0o755)
+                directory.chmod(0o700)
             config_path = root / "config.yaml"
             config_path.write_text("{}")
             config = StubConfig(
@@ -344,7 +361,7 @@ class HostMetadataTests(unittest.TestCase):
 
             self.assertEqual(runner.checks[0].status, CheckStatus.PASS)
 
-            campaigns.chmod(0o775)
+            campaigns.chmod(0o755)
             runner.checks.clear()
             with patch(
                 "cli.doctor.shutil.disk_usage",
@@ -353,7 +370,7 @@ class HostMetadataTests(unittest.TestCase):
                 runner._check_storage()
 
             self.assertEqual(runner.checks[0].status, CheckStatus.FAIL)
-            self.assertIn("permissions must be 0755", runner.checks[0].detail)
+            self.assertIn("permissions must be 0700", runner.checks[0].detail)
 
 
 if __name__ == "__main__":

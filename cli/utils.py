@@ -24,6 +24,13 @@ from cli.runtime_env import (
 console = Console()
 
 MIN_DOCKER_ENGINE_VERSION = (23, 0)
+CONTAINER_RUNTIME_UID = 1000
+CONTAINER_RUNTIME_GID = 1000
+STORAGE_DIRECTORY_MODE = 0o700
+
+
+class StorageOwnershipError(RuntimeError):
+    """Raised when host storage cannot be shared with unprivileged runtimes."""
 
 LOGO = """[bold red]
 ██████╗       ██████╗ ██╗████████╗███╗   ███╗
@@ -216,8 +223,38 @@ def copy_certs_to_containers():
 
 
 def ensure_storage_directories() -> tuple[Path, Path]:
-    """Reconcile host storage paths required by every application start."""
+    """Create private storage owned by the current non-root user."""
     project_root = Path(__file__).parent.parent.resolve()
+    project_metadata = project_root.stat()
+    expected_uid = getattr(project_metadata, "st_uid", None)
+    expected_gid = getattr(project_metadata, "st_gid", None)
+    effective_uid = getattr(os, "geteuid", lambda: None)()
+    effective_gid = getattr(os, "getegid", lambda: None)()
+
+    if effective_uid == 0:
+        raise StorageOwnershipError(
+            "Refusing to prepare storage as root. Add your regular user to "
+            "the Docker group, then run p-bitm.py without sudo."
+        )
+
+    if effective_uid != expected_uid or effective_gid != expected_gid:
+        raise StorageOwnershipError(
+            "Run p-bitm.py as the current user that owns the repository "
+            f"directory ({expected_uid}:{expected_gid}); the active user is "
+            f"{effective_uid}:{effective_gid}."
+        )
+
+    if platform.system() == "Linux" and (
+        expected_uid != CONTAINER_RUNTIME_UID
+        or expected_gid != CONTAINER_RUNTIME_GID
+    ):
+        raise StorageOwnershipError(
+            "The current Linux deployment requires the current user and "
+            "repository directory to use UID/GID "
+            f"{CONTAINER_RUNTIME_UID}:{CONTAINER_RUNTIME_GID} (found "
+            f"{expected_uid}:{expected_gid})."
+        )
+
     configured_paths = (
         config.get("paths.storage_dir", "./storage"),
         config.get("paths.campaigns_dir", "./storage/campaigns"),
@@ -227,9 +264,23 @@ def ensure_storage_directories() -> tuple[Path, Path]:
         path = Path(configured_path)
         if not path.is_absolute():
             path = project_root / path
+        if path.is_symlink():
+            raise StorageOwnershipError(
+                f"Storage path must not be a symbolic link: {path}"
+            )
         path = path.resolve()
-        path.mkdir(parents=True, exist_ok=True)
-        path.chmod(0o755)
+        path.mkdir(parents=True, exist_ok=True, mode=STORAGE_DIRECTORY_MODE)
+        metadata = path.stat()
+        actual_uid = getattr(metadata, "st_uid", expected_uid)
+        actual_gid = getattr(metadata, "st_gid", expected_gid)
+        if actual_uid != expected_uid or actual_gid != expected_gid:
+            raise StorageOwnershipError(
+                f"Storage path {path} must be owned by UID/GID "
+                f"{expected_uid}:{expected_gid} (found "
+                f"{actual_uid}:{actual_gid}). Repair its ownership once, "
+                "then rerun p-bitm.py without sudo."
+            )
+        path.chmod(STORAGE_DIRECTORY_MODE)
         resolved_paths.append(path)
     return tuple(resolved_paths)
 

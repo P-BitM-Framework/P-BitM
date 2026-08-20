@@ -44,10 +44,10 @@ done
 # Set DISPLAY env
 export DISPLAY=:0
 # The bind-mounted storage directory is created by the control plane, but the
-# desktop processes run as `bitm`. Keep collected data host-readable while
-# allowing the keylogger to create and rotate its log.
-install -d -o bitm -g bitm -m 0755 /storage
-install -d -o bitm -g bitm -m 0755 /storage/files_hijacked
+# desktop processes run as `bitm`. Keep participant data private to the shared
+# runtime identity while allowing the keylogger to create and rotate its log.
+install -d -o bitm -g bitm -m 0700 /storage
+install -d -o bitm -g bitm -m 0700 /storage/files_hijacked
 if [ -e /storage/keylogs.txt ]; then
     chown bitm:bitm /storage/keylogs.txt
     chmod 0644 /storage/keylogs.txt

@@ -21,6 +21,11 @@ docker compose version
 The standalone `docker-compose` command is not supported. See the
 [requirements](requirements.md) for installation guidance.
 
+Run these checks and every P-BitM command as the current non-root user that
+owns the repository directory. On Linux, verify that the user reports UID/GID
+`1000:1000`; grant that trusted user Docker access as described in the
+requirements when `docker info` is denied. Do not use `sudo` for P-BitM.
+
 ## 3. Install the CLI dependencies
 
 ```bash
@@ -49,7 +54,8 @@ python3 p-bitm.py setup
 
 Setup checks Docker Engine, Buildx, and the Compose plugin; generates
 `server/.env`; provisions DNS credential files for production; creates storage
-directories; and generates local TLS certificates when they are missing.
+directories private to the current user; and generates local TLS
+certificates when they are missing. Setup refuses to prepare storage as root.
 
 DNS credentials are stored below the ignored `server/.secrets/dns/` directory
 with restrictive permissions. To replace them later:
