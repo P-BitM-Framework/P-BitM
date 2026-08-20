@@ -4,10 +4,58 @@
 
 - Linux host recommended for production deployments.
 - Python 3.9 or newer for the host CLI.
-- Docker Engine with a running daemon.
-- Docker Compose plugin or the legacy `docker-compose` executable.
+- Docker Engine 23.0 or newer with a running daemon. Use a currently supported
+  release for production.
+- Docker Buildx plugin, exposed as `docker buildx`.
+- Docker Compose plugin, exposed as `docker compose`.
 - Git and OpenSSL.
 - Enough disk space for browser images, campaign artifacts, and exports.
+
+The standalone `docker-compose` command and Docker's legacy image builder are
+not supported. P-BitM uses BuildKit features and checks the complete Docker
+toolchain before setup and startup.
+
+Docker Desktop includes Buildx and Compose. Linux package names depend on how
+Docker Engine was installed. Do not mix Ubuntu's Docker packages with Docker
+CE packages from Docker's repository.
+
+### Ubuntu packages
+
+If the host uses Ubuntu's `docker.io` package, install Ubuntu's plugin
+packages:
+
+```bash
+sudo apt-get update
+sudo apt-get install docker-buildx docker-compose-v2
+```
+
+These packages are distributed through Ubuntu's `universe` component, which
+is normally already enabled. If APT cannot locate them, check that component
+in the host's configured Ubuntu sources.
+
+### Docker CE packages
+
+If the host uses `docker-ce`, first configure
+[Docker's official Ubuntu repository](https://docs.docker.com/engine/install/ubuntu/),
+then install its plugin packages:
+
+```bash
+sudo apt-get update
+sudo apt-get install docker-buildx-plugin docker-compose-plugin
+```
+
+For a new production host, the Docker CE installation documented by Docker is
+recommended. Whichever package family is selected, verify the resulting CLI:
+
+```bash
+docker version --format '{{.Server.Version}}'
+docker buildx version
+docker compose version
+```
+
+No BuildKit environment variables are required. A supported Engine uses
+BuildKit by default, and P-BitM invokes Buildx explicitly for custom images.
+`COMPOSE_DOCKER_CLI_BUILD` is unsupported by Compose v2.
 
 The CLI supports `amd64` and `arm64` image selection. Actual browser streaming
 support still depends on the host, container runtime, and selected image.

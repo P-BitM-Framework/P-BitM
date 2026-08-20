@@ -1,6 +1,7 @@
 """Utility functions"""
 import os
 import platform
+import re
 import socket
 import subprocess
 import sys
@@ -11,7 +12,7 @@ from rich.align import Align
 from rich.text import Text
 from rich import box
 
-from typing import Union
+from typing import Optional, Union
 
 from cli.config import config
 from cli.runtime_env import (
@@ -21,6 +22,8 @@ from cli.runtime_env import (
 )
 
 console = Console()
+
+MIN_DOCKER_ENGINE_VERSION = (23, 0)
 
 LOGO = """[bold red]
 ██████╗       ██████╗ ██╗████████╗███╗   ███╗
@@ -564,6 +567,49 @@ def run_command(
         return "" if capture else False
 
 
+def parse_docker_engine_version(version: str) -> Optional[tuple]:
+    """Return the Docker Engine major/minor pair from a version string."""
+    match = re.match(r"^\s*(\d+)\.(\d+)", version or "")
+    if not match:
+        return None
+    return int(match.group(1)), int(match.group(2))
+
+
+def docker_engine_is_supported(version: str) -> bool:
+    """Return whether the daemon meets the supported Engine baseline."""
+    parsed = parse_docker_engine_version(version)
+    return parsed is not None and parsed >= MIN_DOCKER_ENGINE_VERSION
+
+
+def docker_buildkit_is_disabled() -> bool:
+    """Return whether the host explicitly disables Docker BuildKit."""
+    return os.environ.get("DOCKER_BUILDKIT", "").strip() == "0"
+
+
+def _docker_plugin_version(command: list) -> Optional[str]:
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    output = (result.stdout or result.stderr or "").strip()
+    return output.splitlines()[0] if output else "available"
+
+
+def get_docker_buildx_version() -> Optional[str]:
+    """Return the installed Docker Buildx version, if available."""
+    return _docker_plugin_version(["docker", "buildx", "version"])
+
+
+def get_docker_compose_version() -> Optional[str]:
+    """Return the installed Docker Compose plugin version, if available."""
+    return _docker_plugin_version(["docker", "compose", "version"])
 
 
 def check_docker_image(image_name: str) -> bool:
@@ -595,7 +641,7 @@ def build_docker_image(image_name: str, dockerfile: str, context: str) -> bool:
     console.print(f"\n[cyan]🔨 Building Docker image: {image_name}...[/]")
 
     cmd = [
-        "docker", "build",
+        "docker", "buildx", "build", "--load",
         "-t", image_name,
         "-f", dockerfile,
         context
@@ -622,6 +668,14 @@ def build_all_images(force: bool = False) -> bool:
     - p-bitm:latest
     """
     from cli.config import config
+
+    if get_docker_buildx_version() is None:
+        error(
+            "Docker Buildx plugin is required. Install the plugin package "
+            "provided by your Docker distribution and verify it with "
+            "`docker buildx version`."
+        )
+        return False
 
     arch = get_arch()
     console.print(f"\n[cyan]📦 Detected architecture: {arch}[/]")
@@ -680,36 +734,22 @@ def check_compose_images_exist() -> bool:
     return True
 
 
-def get_docker_compose_command() -> list:
+def get_docker_compose_command() -> Optional[list]:
     """
-    Get appropriate docker-compose command
+    Return the supported Docker Compose plugin command.
 
     Returns:
-        ['docker', 'compose'] or ['docker-compose']
+        ['docker', 'compose'] when the plugin is available
     """
-    # Try docker compose (plugin) first
-    try:
-        result = subprocess.run(
-            ["docker", "compose", "version"],
-            capture_output=True,
-            check=True
-        )
+    if get_docker_compose_version() is not None:
         return ["docker", "compose"]
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        pass
 
-    # Try docker-compose (standalone)
-    try:
-        result = subprocess.run(
-            ["docker-compose", "--version"],
-            capture_output=True,
-            check=True
-        )
-        return ["docker-compose"]
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        pass
-
-    error("Docker Compose not found! Install docker compose plugin or docker-compose")
+    error(
+        "Docker Compose plugin is required. Install the Compose v2 plugin "
+        "package provided by your Docker distribution and verify it with "
+        "`docker compose version`; standalone `docker-compose` is not "
+        "supported."
+    )
     return None
 
 

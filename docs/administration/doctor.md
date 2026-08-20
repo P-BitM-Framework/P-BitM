@@ -25,7 +25,8 @@ Doctor validates:
 - storage paths, ownership/accessibility, and disk capacity;
 - SQLite integrity;
 - certificate validity, key matching, and permissions;
-- Python, Docker, Compose, Git, and OpenSSL;
+- Python, Docker Engine 23.0+, Docker Buildx, BuildKit configuration, the
+  Docker Compose plugin, Git, and OpenSSL;
 - Compose rendering and network boundaries;
 - required images and non-blocking source-versus-image timestamp drift;
 - generated or sensitive paths accidentally tracked by Git.

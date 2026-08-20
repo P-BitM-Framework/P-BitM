@@ -106,14 +106,18 @@ class ExtensionPackagingTests(unittest.TestCase):
         self.assertIn("cookie.value || ''", background)
         self.assertIn("pendingCookies", background)
 
-    def test_vnc_python_runtime_is_available_before_user_switch(self):
+    def test_vnc_runtime_and_app_directory_are_ready_before_user_switch(self):
         dockerfile = (
             PROJECT_ROOT / "bitm-images/vnc/Dockerfile"
         ).read_text(encoding="utf-8")
 
         install = dockerfile.index("RUN python3 -m pip install")
+        app_directory = dockerfile.index(
+            "RUN install -d -m 0755 -o bitm -g bitm /bitm /bitm/app"
+        )
         user_switch = dockerfile.index("USER bitm")
         self.assertLess(install, user_switch)
+        self.assertLess(app_directory, user_switch)
         self.assertIn("supervisor pynput websocket_server", dockerfile)
         self.assertNotIn("ENV PATH=/home/bitm/.local/bin", dockerfile)
 

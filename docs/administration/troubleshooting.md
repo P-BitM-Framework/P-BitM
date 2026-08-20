@@ -1,5 +1,44 @@
 # Troubleshooting
 
+## Docker reports that the legacy builder is deprecated
+
+P-BitM requires BuildKit through the Docker Buildx plugin. The warning, or an
+error such as `the --chmod option requires BuildKit`, means the Docker CLI is
+falling back to the unsupported legacy builder.
+
+Package names depend on the installed Docker distribution. For Ubuntu's
+`docker.io` package:
+
+```bash
+sudo apt-get update
+sudo apt-get install docker-buildx docker-compose-v2
+```
+
+If APT cannot locate these Ubuntu packages, verify that the `universe`
+component is present in the configured Ubuntu sources.
+
+For `docker-ce`, configure
+[Docker's official Ubuntu repository](https://docs.docker.com/engine/install/ubuntu/)
+and install:
+
+```bash
+sudo apt-get update
+sudo apt-get install docker-buildx-plugin docker-compose-plugin
+```
+
+Do not mix the two package families. In both cases, verify:
+
+```bash
+docker buildx version
+docker compose version
+```
+
+No environment export is needed after the plugins are installed. Setting
+`DOCKER_BUILDKIT=1` does not install or replace a missing Buildx component; if
+Buildx is absent, it turns the fallback warning into a build error.
+`COMPOSE_DOCKER_CLI_BUILD` has no effect in Compose v2. Do not set
+`DOCKER_BUILDKIT=0`, because that explicitly selects the legacy builder.
+
 ## The CLI cannot import `rich`
 
 Activate the project virtual environment and install root dependencies:

@@ -99,15 +99,18 @@ def _show_initial_admin_credentials(timeout=15.0, poll_interval=0.25):
 # GLOBAL COMMANDS
 # =============================================================================
 
-def cmd_setup(rotate_dns_secrets=False):
+def cmd_setup(rotate_dns_secrets=False, prerequisites_checked=False):
     """Initial setup: generate certs, create directories"""
     # The command dispatcher already rendered the banner when needed.
 
     console.print("\n[bold cyan]🔧 Running initial setup...[/]\n")
 
     # Check Docker
-    if not check_docker():
-        error("Docker is required. Please install Docker first.")
+    if not prerequisites_checked and not check_docker():
+        error(
+            "Install the required Docker Engine and CLI plugins, then "
+            "rerun setup."
+        )
         return False
 
     # Get IP
@@ -189,6 +192,9 @@ def cmd_up(build=False):
     """Start services"""
     # The command dispatcher already rendered the banner.
 
+    if not check_docker():
+        return False
+
     admin_state_before_start = get_admin_bootstrap_state()
 
     # Run setup once when runtime prerequisites are missing. The database is
@@ -198,7 +204,7 @@ def cmd_up(build=False):
     if not env_file.exists() or not (certs_dir / 'cert.pem').exists():
         warning("Runtime configuration is incomplete, running setup first...")
         console.print()  # Spacing
-        if not cmd_setup():
+        if not cmd_setup(prerequisites_checked=True):
             return False
     else:
         if (

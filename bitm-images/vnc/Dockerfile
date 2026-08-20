@@ -6,10 +6,11 @@
 FROM debian:bookworm-slim
 
 # Install base packages
-RUN apt update && apt install -y \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
     adduser dbus-x11 procps zip \
     firefox-esr git curl python3 python3-pip jq python3-tk python3-dev gnome-screenshot \
-    openbox tigervnc-standalone-server autocutsel nginx &&\
+    openbox tigervnc-standalone-server autocutsel nginx && \
     rm -rf /var/lib/apt/lists/*
 
 # Setting python3
@@ -29,10 +30,10 @@ RUN python3 -m pip install \
     websockify numpy pyxdg supervisor pynput websocket_server \
     --break-system-packages --no-cache-dir
 
-# Setup user bitm
-USER bitm
+# Prepare the application directory before dropping build privileges.
+RUN install -d -m 0755 -o bitm -g bitm /bitm /bitm/app
 WORKDIR /bitm
-RUN mkdir -p /bitm/app
+USER bitm
 
 # Install noVNC
 RUN git clone --branch v1.7.0 --depth 1 https://github.com/novnc/noVNC.git /bitm/app/noVNC && \
@@ -41,7 +42,6 @@ RUN git clone --branch v1.7.0 --depth 1 https://github.com/novnc/noVNC.git /bitm
     sed -i '/encodings = \[/a\ \ \ \ rfb.encodings.raw,' /bitm/app/noVNC/core/rfb.js
 
 # Copy all necessary files
-RUN mkdir -p /bitm/app
 COPY vnc/scripts/startVNC.sh /bitm/app/startVNC.sh
 COPY vnc/scripts/startFirefox.sh /bitm/app/startFirefox.sh
 COPY vnc/conf/novnc.html /bitm/app/noVNC/index.html
