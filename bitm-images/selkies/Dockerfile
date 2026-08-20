@@ -165,6 +165,9 @@ COPY selkies/conf/nginx.conf /etc/nginx/conf.d/local-proxy.conf
 # Startup script
 RUN chmod +x /bitm/app/startSelkies.sh
 
-RUN chown -R abc:abc /config /bitm
+# `abc` starts as UID 911 in the base image and is remapped only when s6 runs.
+# Give application and Firefox state their final numeric ownership at build
+# time so the remapped desktop user can update its profile immediately.
+RUN chown -R "${PUID}:${PGID}" /config /bitm
 
 ENTRYPOINT ["/bitm/app/startSelkies.sh"]
