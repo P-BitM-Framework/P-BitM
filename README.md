@@ -1,7 +1,15 @@
 # Persistent Browser-In-The-Middle
 
 <p align="center">
-  <img src="/docs/assets/images/p-bitm-logo.png" alt="P-BitM Logo" width="220">
+  <img src="assets/readme/p-bitm-logo.png" alt="P-BitM Logo" width="220">
+</p>
+
+<p align="center">
+  <a href="https://github.com/P-BitM-Framework/P-BitM/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/P-BitM-Framework/P-BitM/ci.yml?branch=main&label=CI" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0--only-blue.svg" alt="License: GPL-3.0-only"></a>
+  <a href="config.yaml"><img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version 0.1.0"></a>
+  <a href="https://github.com/P-BitM-Framework/P-BitM/stargazers"><img src="https://img.shields.io/github/stars/P-BitM-Framework/P-BitM?style=flat" alt="GitHub stars"></a>
+  <a href="https://p-bitm-2269ecee.mintlify.site"><img src="https://img.shields.io/badge/documentation-P--BitM%20Docs-C4472D" alt="P-BitM documentation"></a>
 </p>
 
 P-BitM is a containerized platform for controlled browser-in-the-middle
@@ -11,6 +19,11 @@ bounded evidence collection.
 
 > [!CAUTION]
 > Use P-BitM only on systems you own or where you have explicit written authorization.
+> Read the [authorized-use policy](docs/security/authorized-use.md).
+
+<p align="center">
+  <img src="assets/readme/victim-dashboard.png" alt="P-BitM victim dashboard with demo data, live control, and evidence panels" width="1000">
+</p>
 
 > [!IMPORTANT]
 > P-BitM is under active development. Its modular architecture is designed to
@@ -27,6 +40,30 @@ bounded evidence collection.
 - Role-based administrative access
 - Restricted Docker socket proxies and isolated campaign networks
 - Campaign and per-session exports
+
+## Product demos
+
+The short recordings below show P-BitM in a controlled, authorized environment.
+Open the linked documentation pages for context and the complete video catalog.
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://p-bitm-2269ecee.mintlify.site/user-guide/campaigns#campaign-creation-demo">
+        <img src="assets/readme/campaign-creation-demo.jpg" alt="Thumbnail from the controlled campaign creation demo" width="100%">
+      </a>
+      <br>
+      <a href="https://p-bitm-2269ecee.mintlify.site/user-guide/campaigns#campaign-creation-demo">Watch the campaign creation demo</a>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://p-bitm-2269ecee.mintlify.site/user-guide/plugins#file-interception-demo">
+        <img src="assets/readme/file-hijacking-demo.jpg" alt="Thumbnail from the controlled file interception demo" width="100%">
+      </a>
+      <br>
+      <a href="https://p-bitm-2269ecee.mintlify.site/user-guide/plugins#file-interception-demo">Watch the file interception demo</a>
+    </td>
+  </tr>
+</table>
 
 ## Quick start
 
@@ -80,8 +117,9 @@ The source tree is organized around those boundaries:
 │   ├── common/              # Shared browser-runtime files
 │   ├── selkies/             # Selkies browser runtime
 │   └── vnc/                 # VNC/noVNC browser runtime
+├── assets/                  # Project and README visual assets
 ├── cli/                     # CLI implementation
-├── docs/                    # Project documentation
+├── docs/                    # Credits, use policy, and docs link
 ├── modules/                 # Built-in modules
 ├── server/
 │   ├── backend/             # Administrative control plane
@@ -107,22 +145,29 @@ The main codebase boundaries are:
 | `bitm-images/selkies/` | Selkies browser runtime using H.264 over WebSockets |
 | `modules/` | Built-in modules that can be seeded into the application |
 | `tests/` | CLI and shared regression tests; service-specific tests live beside their services |
-| `docs/` | Canonical project documentation |
+| `assets/` | Project and README visual assets |
+| `docs/` | Credits, authorized-use policy, and link to published docs |
 
 For a deeper walkthrough, read the
-[architecture](docs/concepts/architecture.md),
-[request flow](docs/concepts/request-flow.md), and
-[service reference](docs/reference/services.md). Contributors should start
-with the [development setup](docs/development/setup.md).
+[architecture](https://p-bitm-2269ecee.mintlify.site/concepts/architecture),
+[request flow](https://p-bitm-2269ecee.mintlify.site/concepts/request-flow), and
+[service reference](https://p-bitm-2269ecee.mintlify.site/reference/services).
+Contributors should start with the
+[development setup](https://p-bitm-2269ecee.mintlify.site/development/setup).
 
 ## Documentation
 
-- [Installation](docs/getting-started/installation.md)
-- [Quick start](docs/getting-started/quick-start.md)
-- [Architecture](docs/concepts/architecture.md)
-- [Deployment](docs/administration/deployment.md)
-- [CLI reference](docs/reference/cli.md)
-- [Security model](docs/concepts/security-model.md)
+The complete, current documentation is published at
+[P-BitM Docs](https://p-bitm-2269ecee.mintlify.site).
+
+- [Installation](https://p-bitm-2269ecee.mintlify.site/getting-started/installation)
+- [Quick start](https://p-bitm-2269ecee.mintlify.site/getting-started/quick-start)
+- [Video demos](https://p-bitm-2269ecee.mintlify.site/video-demos)
+- [Architecture](https://p-bitm-2269ecee.mintlify.site/concepts/architecture)
+- [Deployment](https://p-bitm-2269ecee.mintlify.site/administration/deployment)
+- [CLI reference](https://p-bitm-2269ecee.mintlify.site/reference/cli)
+- [Security model](https://p-bitm-2269ecee.mintlify.site/concepts/security-model)
+- [Authorized-use policy](docs/security/authorized-use.md)
 
 ## Development
 
@@ -135,9 +180,10 @@ PYTHONPATH=server/backend-phishing/app python3 -m pytest server/backend-phishing
 python3 scripts/release_checks.py
 ```
 
-See the [development guide](docs/development/setup.md). Contributions are
-welcome; read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull
-request.
+See the
+[development guide](https://p-bitm-2269ecee.mintlify.site/development/setup).
+Contributions are welcome; read [`CONTRIBUTING.md`](CONTRIBUTING.md) before
+opening a pull request.
 
 ## Security
 

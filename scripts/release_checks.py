@@ -10,7 +10,6 @@ from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = ROOT / "docs"
 HISTORICAL_RELEASE_PATHS = (
     ROOT / "bitm-images/selkies-v1",
     ROOT / "bitm-images/selkies-v2",
@@ -57,13 +56,15 @@ def fail(message: str) -> None:
 
 
 def markdown_files() -> list[Path]:
-    files = [
+    files = (
         ROOT / "README.md",
         ROOT / "CONTRIBUTING.md",
         ROOT / "SECURITY.md",
         ROOT / "THIRD_PARTY_NOTICES.md",
-    ]
-    files.extend(sorted(DOCS.rglob("*.md")))
+        ROOT / "docs/README.md",
+        ROOT / "docs/CREDITS.md",
+        ROOT / "docs/security/authorized-use.md",
+    )
     return [path for path in files if path.is_file()]
 
 
@@ -100,23 +101,6 @@ def validate_headings(files: list[Path]) -> None:
             seen.add(normalized)
     if duplicates:
         fail("duplicate Markdown headings:\n  " + "\n  ".join(duplicates))
-
-
-def validate_documentation_navigation() -> None:
-    summary_path = DOCS / "SUMMARY.md"
-    summary = summary_path.read_text(encoding="utf-8")
-    listed = {
-        (DOCS / unquote(target.strip().split()[0].strip("<>").split("#", 1)[0])).resolve()
-        for target in MARKDOWN_LINK.findall(summary)
-        if target and not target.startswith(("#", "http://", "https://", "mailto:"))
-    }
-    pages = {path.resolve() for path in DOCS.rglob("*.md")}
-    unlisted = sorted(pages - listed - {summary_path.resolve()})
-    if unlisted:
-        fail(
-            "documentation pages missing from SUMMARY.md:\n  "
-            + "\n  ".join(str(path.relative_to(ROOT)) for path in unlisted)
-        )
 
 
 def repository_files() -> list[Path]:
@@ -187,12 +171,11 @@ def main() -> None:
     files = markdown_files()
     validate_markdown_links(files)
     validate_headings(files)
-    validate_documentation_navigation()
     scan_for_secrets()
     validate_release_layout()
     print(
-        f"Release checks passed: {len(files)} Markdown files, documentation navigation, "
-        "secret scan, release layout, and protocol contract."
+        f"Release checks passed: {len(files)} repository Markdown files, secret scan, "
+        "release layout, and protocol contract."
     )
 
 

@@ -1,11 +1,11 @@
 # Frontend architecture
 
 The canonical frontend architecture and compatibility guidance is maintained
-in the project documentation:
+in the published documentation:
 
-- [Frontend development](../../../docs/development/frontend.md)
-- [Architecture](../../../docs/concepts/architecture.md)
-- [Testing](../../../docs/development/testing.md)
+- [Frontend development](https://p-bitm-2269ecee.mintlify.site/development/frontend)
+- [Architecture](https://p-bitm-2269ecee.mintlify.site/concepts/architecture)
+- [Testing](https://p-bitm-2269ecee.mintlify.site/development/testing)
 
 Keep this file only as a local entry point for contributors browsing the
 frontend directory.

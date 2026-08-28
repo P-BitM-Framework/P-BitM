@@ -21,8 +21,10 @@ collected data, or personal information.
 
 ## Development setup
 
-Follow the [development setup guide](docs/development/setup.md). Run the tests
-relevant to the area you changed. The main verification commands are:
+Follow the
+[development setup guide](https://p-bitm-2269ecee.mintlify.site/development/setup).
+Run the tests relevant to the area you changed. The main verification commands
+are:
 
 ```bash
 python3 -m pytest tests

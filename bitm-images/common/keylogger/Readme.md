@@ -11,6 +11,6 @@ operator-initiated action.
 
 See:
 
-- [Collected data](../../../docs/user-guide/collected-data.md)
-- [Storage and backups](../../../docs/administration/storage-and-backups.md)
+- [Actions and evidence](https://p-bitm-2269ecee.mintlify.site/user-guide/actions-and-evidence)
+- [Storage and backups](https://p-bitm-2269ecee.mintlify.site/administration/storage-and-backups)
 - [Authorized use](../../../docs/security/authorized-use.md)

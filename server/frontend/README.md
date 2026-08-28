@@ -14,6 +14,6 @@ and TLS.
 
 Canonical documentation:
 
-- [Frontend development](../../docs/development/frontend.md)
-- [Testing](../../docs/development/testing.md)
-- [Architecture](../../docs/concepts/architecture.md)
+- [Frontend development](https://p-bitm-2269ecee.mintlify.site/development/frontend)
+- [Testing](https://p-bitm-2269ecee.mintlify.site/development/testing)
+- [Architecture](https://p-bitm-2269ecee.mintlify.site/concepts/architecture)
