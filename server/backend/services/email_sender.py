@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import case, func
 from database import SessionLocal
 from models import Campaign, Victim, EmailTemplate, SMTPProfile, VictimStatus, CampaignStatus
+from utils.campaign_domains import find_public_domain_conflict
 from utils.email_sender import EmailSender
 from utils.docker import CampaignRuntimeStateError, set_campaign_runtime_started
 import logging
@@ -29,6 +30,19 @@ def activate_scheduled_campaigns(db: Session, now: datetime) -> int:
 
     activated = 0
     for campaign in campaigns:
+        domain_conflict = find_public_domain_conflict(
+            db,
+            campaign.public_url,
+            exclude_campaign_id=campaign.id,
+        )
+        if domain_conflict is not None:
+            logger.warning(
+                "Scheduled campaign %s is waiting for public domain held by %s",
+                campaign.id,
+                domain_conflict.id,
+            )
+            continue
+
         campaign.status = CampaignStatus.active
         campaign.container_status = "starting"
         if campaign.started_at is None:

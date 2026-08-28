@@ -1,7 +1,7 @@
 import asyncio
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -11,11 +11,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database import Base
-from models import Campaign, DataCollection, Victim, VictimEvent
+from models import Campaign, CampaignStatus, DataCollection, Victim, VictimEvent
 from models.victim_event import EventType
 from routes import campaigns as campaign_routes
 from routes import campaign_actions, campaign_common, campaign_victims
 from routes.email_templates import EmailTemplateCreate
+from utils.campaign_domains import find_public_domain_conflict
 from utils.request_models import CampaignModuleRequest
 from utils.tracking import update_victim_clicked
 
@@ -227,6 +228,34 @@ class CampaignModuleContractTests(unittest.TestCase):
 
 
 class CampaignDomainContractTests(unittest.TestCase):
+    def setUp(self):
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+        self.db = sessionmaker(bind=engine)()
+
+    def tearDown(self):
+        self.db.close()
+
+    def add_campaign(
+        self,
+        status: CampaignStatus,
+        *,
+        scheduled_start: datetime | None = None,
+        scheduled_end: datetime | None = None,
+    ) -> Campaign:
+        campaign = Campaign(
+            id=f"campaign-{status.value}",
+            name=f"Campaign {status.value}",
+            target_url="https://example.test",
+            public_url="https://campaign.example.test/",
+            status=status,
+            scheduled_start=scheduled_start,
+            scheduled_end=scheduled_end,
+        )
+        self.db.add(campaign)
+        self.db.commit()
+        return campaign
+
     def test_public_domain_is_canonicalized(self):
         self.assertEqual(
             campaign_common.normalize_public_domain(
@@ -257,6 +286,92 @@ class CampaignDomainContractTests(unittest.TestCase):
                 ),
                 "https://phish.example/",
             )
+
+    def test_active_and_paused_campaigns_reserve_the_public_domain(self):
+        for status in (CampaignStatus.active, CampaignStatus.paused):
+            with self.subTest(status=status.value):
+                campaign = self.add_campaign(status)
+
+                conflict = find_public_domain_conflict(
+                    self.db,
+                    "https://CAMPAIGN.example.test/",
+                )
+
+                self.assertEqual(conflict.id, campaign.id)
+                self.db.delete(campaign)
+                self.db.commit()
+
+    def test_schedules_reserve_each_calendar_day_in_their_window(self):
+        existing_start = datetime(2026, 9, 10, 8, 0, tzinfo=timezone.utc)
+        existing_end = datetime(2026, 9, 10, 18, 0, tzinfo=timezone.utc)
+        campaign = self.add_campaign(
+            CampaignStatus.scheduled,
+            scheduled_start=existing_start,
+            scheduled_end=existing_end,
+        )
+
+        candidate_windows = (
+            (existing_start, existing_end),
+            (
+                existing_end + timedelta(hours=1),
+                existing_end + timedelta(hours=2),
+            ),
+            (
+                existing_start - timedelta(hours=2),
+                existing_start - timedelta(hours=1),
+            ),
+            (
+                existing_start - timedelta(days=1),
+                existing_end + timedelta(days=1),
+            ),
+        )
+        for candidate_start, candidate_end in candidate_windows:
+            with self.subTest(candidate_start=candidate_start):
+                conflict = find_public_domain_conflict(
+                    self.db,
+                    campaign.public_url,
+                    scheduled_start=candidate_start,
+                    scheduled_end=candidate_end,
+                )
+
+                self.assertEqual(conflict.id, campaign.id)
+
+    def test_schedule_allows_the_same_domain_on_different_days(self):
+        existing_start = datetime(2026, 9, 10, 8, 0, tzinfo=timezone.utc)
+        existing_end = datetime(2026, 9, 10, 18, 0, tzinfo=timezone.utc)
+        campaign = self.add_campaign(
+            CampaignStatus.scheduled,
+            scheduled_start=existing_start,
+            scheduled_end=existing_end,
+        )
+
+        conflict = find_public_domain_conflict(
+            self.db,
+            campaign.public_url,
+            scheduled_start=existing_end + timedelta(hours=6),
+            scheduled_end=existing_end + timedelta(days=1),
+        )
+
+        self.assertIsNone(conflict)
+
+    def test_other_campaign_states_release_the_public_domain(self):
+        for status in (
+            CampaignStatus.draft,
+            CampaignStatus.scheduled,
+            CampaignStatus.completed,
+            CampaignStatus.error,
+        ):
+            with self.subTest(status=status.value):
+                campaign = self.add_campaign(status)
+
+                conflict = find_public_domain_conflict(
+                    self.db,
+                    "https://campaign.example.test/",
+                )
+
+                self.assertIsNone(conflict)
+                self.db.delete(campaign)
+                self.db.commit()
 
 
 class CampaignScheduleContractTests(unittest.TestCase):

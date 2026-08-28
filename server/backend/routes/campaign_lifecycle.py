@@ -38,7 +38,6 @@ from .campaign_common import (
     derive_campaign_api_key,
     derive_entry_path,
     find_free_port,
-    func,
     get_current_user_from_session,
     get_db,
     get_docker_client,
@@ -47,7 +46,6 @@ from .campaign_common import (
     json,
     logger,
     normalize_public_domain,
-    or_,
     os,
     process_landing_page,
     remove_campaign_runtime,
@@ -66,6 +64,7 @@ from .campaign_common import (
     valid_url,
     validate_plugin_files,
 )
+from utils.campaign_domains import find_public_domain_conflict
 from utils.runtime_identity import runtime_identity_environment
 
 router = APIRouter()
@@ -132,18 +131,16 @@ async def create_campaign(
         raise HTTPException(400, f"Campaign with name '{name}' already exists")
 
     if ENVIRONMENT == "production":
-        host_conflict = db.query(Campaign).filter(
-            func.lower(Campaign.public_url) == public_url.lower(),
-            Campaign.deleted_at == None,
-            or_(
-                Campaign.container_status.is_(None),
-                Campaign.container_status != "stopped",
-            ),
-        ).first()
+        host_conflict = find_public_domain_conflict(
+            db,
+            public_url,
+            scheduled_start=scheduled_start,
+            scheduled_end=scheduled_end,
+        )
         if host_conflict:
             raise HTTPException(
                 409,
-                f"Public domain '{campaign_host}' is already used by "
+                f"Public domain '{campaign_host}' is already used or reserved by "
                 f"campaign '{host_conflict.name}'",
             )
 

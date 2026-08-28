@@ -16,7 +16,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request, status, Query, F
 from fastapi.responses import JSONResponse, FileResponse
 from models.landing_page import LandingPage
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import docker

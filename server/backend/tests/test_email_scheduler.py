@@ -26,14 +26,21 @@ class EmailSchedulerTests(unittest.TestCase):
             status=CampaignStatus.scheduled,
             container_status="scheduled",
             started_at=None,
+            public_url="https://campaign.example.test/",
         )
         db = MagicMock()
         db.query.return_value.filter.return_value.all.return_value = [campaign]
         now = datetime(2026, 7, 25, 18, 0, tzinfo=timezone.utc)
 
-        with patch(
-            "services.email_sender.set_campaign_runtime_started"
-        ) as start_runtime:
+        with (
+            patch(
+                "services.email_sender.find_public_domain_conflict",
+                return_value=None,
+            ),
+            patch(
+                "services.email_sender.set_campaign_runtime_started"
+            ) as start_runtime,
+        ):
             activated = activate_scheduled_campaigns(db, now)
 
         self.assertEqual(activated, 1)
@@ -54,6 +61,7 @@ class EmailSchedulerTests(unittest.TestCase):
             status=CampaignStatus.scheduled,
             container_status="scheduled",
             started_at=None,
+            public_url="https://campaign.example.test/",
         )
         db = MagicMock()
         filtered = db.query.return_value.filter.return_value
@@ -61,15 +69,58 @@ class EmailSchedulerTests(unittest.TestCase):
         filtered.first.return_value = campaign
         now = datetime(2026, 7, 25, 18, 0, tzinfo=timezone.utc)
 
-        with patch(
-            "services.email_sender.set_campaign_runtime_started",
-            side_effect=CampaignRuntimeStateError("start failed"),
+        with (
+            patch(
+                "services.email_sender.find_public_domain_conflict",
+                return_value=None,
+            ),
+            patch(
+                "services.email_sender.set_campaign_runtime_started",
+                side_effect=CampaignRuntimeStateError("start failed"),
+            ),
         ):
             activated = activate_scheduled_campaigns(db, now)
 
         self.assertEqual(activated, 0)
         self.assertEqual(campaign.status, CampaignStatus.scheduled)
         self.assertEqual(campaign.container_status, "start_failed")
+        self.assertIsNone(campaign.started_at)
+
+    def test_due_campaign_waits_until_its_domain_is_available(self):
+        campaign = SimpleNamespace(
+            id="campaign",
+            name="Scheduled campaign",
+            container_name="p-bitm-campaign",
+            status=CampaignStatus.scheduled,
+            container_status="scheduled",
+            started_at=None,
+            public_url="https://campaign.example.test/",
+        )
+        domain_owner = SimpleNamespace(id="active-campaign")
+        db = MagicMock()
+        db.query.return_value.filter.return_value.all.return_value = [campaign]
+        now = datetime(2026, 7, 25, 18, 0, tzinfo=timezone.utc)
+
+        with (
+            patch(
+                "services.email_sender.find_public_domain_conflict",
+                return_value=domain_owner,
+            ) as find_conflict,
+            patch(
+                "services.email_sender.set_campaign_runtime_started"
+            ) as start_runtime,
+        ):
+            activated = activate_scheduled_campaigns(db, now)
+
+        self.assertEqual(activated, 0)
+        find_conflict.assert_called_once_with(
+            db,
+            campaign.public_url,
+            exclude_campaign_id=campaign.id,
+        )
+        start_runtime.assert_not_called()
+        self.assertEqual(campaign.status, CampaignStatus.scheduled)
+        self.assertEqual(campaign.container_status, "scheduled")
         self.assertIsNone(campaign.started_at)
 
     def test_reads_current_campaign_status_before_delivery(self):
