@@ -1,18 +1,21 @@
-const LOGOUT_LABEL = /^(log\s*-?\s*out|log\s*-?\s*off|sign\s*-?\s*out|sign\s*-?\s*off)(?:\s+now)?$/i;
-const LOGOUT_ROUTE = /(?:^|[\/_?&.=-])(?:log|sign)[ _-]?(?:out|off)(?:$|[\/_?&.=-])/i;
+const LOGOUT_MESSAGE = "logoutIntercepted";
+const LOGOUT_TEXT = /(?:^|\s)(?:(?:log|sign)\s*-?\s*(?:out|off)|(?:exit|disconnect|terminate)\s+session)(?:\s+now)?(?:$|\s)/i;
+const LOGOUT_ROUTE = /(?:^|[\/_?&.=-])(?:(?:log|sign)[ _-]?(?:out|off)|(?:exit|disconnect|terminate)[ _-]?session)(?:$|[\/_?&.=-])/i;
 
-function normalizedLabel(element) {
-    const value =
-        element.getAttribute("aria-label") ||
-        element.getAttribute("title") ||
-        element.value ||
-        element.textContent ||
-        "";
-    return value.trim().replace(/\s+/g, " ");
+function normalizedText(element) {
+    return [
+        element.getAttribute("aria-label"),
+        element.getAttribute("title"),
+        element.value,
+        element.textContent
+    ].filter(Boolean).join(" ").trim().replace(/\s+/g, " ");
 }
 
 function hasLogoutDestination(element) {
-    const destination = element.getAttribute("href") || element.getAttribute("formaction");
+    const destination =
+        element.getAttribute("href") ||
+        element.getAttribute("formaction") ||
+        element.getAttribute("action");
     if (!destination) return false;
     try {
         const url = new URL(destination, document.baseURI);
@@ -23,19 +26,35 @@ function hasLogoutDestination(element) {
     }
 }
 
+function isInteractive(element) {
+    return element.matches(
+        "a, button, input[type='button'], input[type='submit'], [role='button']"
+    ) || window.getComputedStyle(element).cursor === "pointer";
+}
+
 function isLogoutControl(element) {
-    return LOGOUT_LABEL.test(normalizedLabel(element)) || hasLogoutDestination(element);
+    return hasLogoutDestination(element) ||
+        LOGOUT_TEXT.test(normalizedText(element)) ||
+        (element.form && hasLogoutDestination(element.form));
+}
+
+function findLogoutControl(target) {
+    let element = target instanceof Element ? target : null;
+    while (element && element !== document.body) {
+        if (isInteractive(element) && isLogoutControl(element)) return element;
+        element = element.parentElement;
+    }
+    return null;
 }
 
 document.addEventListener("click", (event) => {
-    const control = event.target.closest(
-        "a, button, input[type='button'], input[type='submit'], [role='button']"
-    );
-    if (!control || !isLogoutControl(control)) return;
+    if (!findLogoutControl(event.target)) return;
 
     event.preventDefault();
     event.stopImmediatePropagation();
-    console.log("[persistence] Blocked logout control");
+    browser.runtime.sendMessage({ action: LOGOUT_MESSAGE }).catch((error) => {
+        console.error("[persistence] Could not clear the current cookie store", error);
+    });
 }, true);
 
 document.addEventListener("submit", (event) => {
@@ -44,5 +63,9 @@ document.addEventListener("submit", (event) => {
 
     event.preventDefault();
     event.stopImmediatePropagation();
-    console.log("[persistence] Blocked logout form");
+    browser.runtime.sendMessage({ action: LOGOUT_MESSAGE }).catch((error) => {
+        console.error("[persistence] Could not clear the current cookie store", error);
+    });
 }, true);
+
+console.log("[persistence] Logout click interceptor ready");

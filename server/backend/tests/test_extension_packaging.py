@@ -68,15 +68,26 @@ class ExtensionPackagingTests(unittest.TestCase):
                     manifest.get("background") or manifest.get("content_scripts")
                 )
 
-    def test_persistence_preserves_cookies_and_legacy_iban_is_absent(self):
+    def test_persistence_drops_logout_requests_and_clears_current_cookie_store(self):
         persistence = EXTENSIONS_ROOT / "persistence"
         manifest = json.loads(
             (persistence / "manifest.json").read_text(encoding="utf-8")
         )
         background = (persistence / "background.js").read_text(encoding="utf-8")
+        content = (persistence / "content.js").read_text(encoding="utf-8")
 
-        self.assertNotIn("cookies", manifest.get("permissions", []))
-        self.assertNotIn("cookies.remove", background)
+        self.assertIn("cookies", manifest.get("permissions", []))
+        self.assertIn("tabs", manifest.get("permissions", []))
+        self.assertIn("webRequest", manifest.get("permissions", []))
+        self.assertIn("webRequestBlocking", manifest.get("permissions", []))
+        self.assertIn("browser.cookies.getAll", background)
+        self.assertIn("browser.cookies.remove", background)
+        self.assertIn("browser.tabs.reload", background)
+        self.assertIn("browser.webRequest.onBeforeRequest", background)
+        self.assertIn("return { cancel: true }", background)
+        self.assertIn("content.js", json.dumps(manifest.get("content_scripts", [])))
+        self.assertIn("browser.runtime.sendMessage", content)
+        self.assertIn("event.preventDefault()", content)
         self.assertFalse((EXTENSIONS_ROOT / "iban-module").exists())
 
     def test_form_collector_only_accepts_trusted_user_submissions(self):
