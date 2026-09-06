@@ -6,9 +6,20 @@ licenses, copyright notices, or attribution requirements of third-party
 material.
 
 This document records third-party projects whose source is incorporated,
-adapted, or modified by the P-BitM build. It is not a generated inventory of
-every package installed through `apt`, `apk`, `pip`, or `npm`. Those packages
-remain under the licenses published by their respective maintainers.
+adapted, or modified by the P-BitM build, together with research that provides
+P-BitM's foundational attack model. It is not a generated inventory of every
+package installed through `apt`, `apk`, `pip`, or `npm`. Those packages remain
+under the licenses published by their respective maintainers.
+
+## Browser-in-the-Middle (BitM) research
+
+- **Paper:** [Browser-in-the-Middle (BitM) attack](https://link.springer.com/article/10.1007/s10207-021-00548-5)
+- **Authors:** Franco Tommasi, Christian Catalano and Ivan Taurino
+- **Relationship:** foundational research
+- **Influence:** Browser-in-the-Middle attack model on which P-BitM is based
+
+The paper describes the Browser-in-the-Middle attack model on which P-BitM is
+based.
 
 ## Selkies
 
