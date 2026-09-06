@@ -54,7 +54,8 @@ RUN \
   cp -ar dist/* /buildout/selkies-dashboard/
 
 # Runtime stage
-FROM ghcr.io/linuxserver/baseimage-selkies:debiantrixie
+# Last known-good ARM release before the s6 regression in the moving distro tag.
+FROM ghcr.io/linuxserver/baseimage-selkies:debiantrixie-47b9bee2-ls131
 
 ARG PBITM_UID=1000
 ARG PBITM_GID=1000
@@ -93,8 +94,11 @@ RUN \
   case "${PUID}" in ''|*[!0-9]*) exit 1 ;; esac && \
   case "${PGID}" in ''|*[!0-9]*) exit 1 ;; esac && \
   test "${PUID}" -gt 0 && test "${PGID}" -gt 0 && \
-  echo "**** drop unused nodesource apt source (we don't need node) ****" && \
-  rm -f /etc/apt/sources.list.d/nodesource.sources && \
+  echo "**** drop unused NodeSource and Docker apt sources ****" && \
+  rm -f \
+    /etc/apt/sources.list.d/nodesource.sources \
+    /etc/apt/sources.list.d/docker.list \
+    /etc/apt/sources.list.d/docker.sources && \
   echo "**** install firefox ****" && \
   curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg \
     -o /etc/apt/keyrings/packages.mozilla.org.asc && \
@@ -116,6 +120,7 @@ RUN \
     jq \
     python3-tk \
     python3-dev \
+    python3-venv \
     gnome-screenshot && \
   echo "**** cleanup ****" && \
   apt-get autoclean && \
