@@ -7,13 +7,16 @@ import shutil
 import tarfile
 import zipfile
 from pathlib import Path, PurePosixPath
-from typing import Iterable
+from typing import BinaryIO, Callable, Iterable
 
 from utils.export_files import ExportLimitError
 
 
 MAX_ARCHIVE_MEMBERS = 100_000
 TAR_STREAM_OVERHEAD_BYTES = 64 * 1024 * 1024
+
+ArchiveMemberFilter = Callable[[str], bool]
+ArchiveMemberTransform = Callable[[str, BinaryIO, BinaryIO], None]
 
 
 class _BoundedIteratorReader(io.RawIOBase):
@@ -82,11 +85,67 @@ def _safe_archive_name(name: str) -> str:
     return path.as_posix()
 
 
+def read_single_file_from_tar(
+    stream: Iterable[bytes],
+    *,
+    max_file_bytes: int,
+) -> bytes:
+    """Read one regular file from a bounded Docker archive stream."""
+    if max_file_bytes <= 0:
+        raise ValueError("max_file_bytes must be positive")
+
+    archive_limit = max_file_bytes + TAR_STREAM_OVERHEAD_BYTES
+    raw_reader = _BoundedIteratorReader(stream, archive_limit)
+    buffered_reader = io.BufferedReader(raw_reader, buffer_size=1024 * 1024)
+    member_count = 0
+    file_count = 0
+    contents: bytes | None = None
+    try:
+        with tarfile.open(fileobj=buffered_reader, mode="r|*") as tar_archive:
+            for member in tar_archive:
+                member_count += 1
+                if member_count > MAX_ARCHIVE_MEMBERS:
+                    raise ExportLimitError("Docker archive contains too many entries")
+                if member.isdir():
+                    continue
+                if not member.isfile():
+                    raise ExportLimitError("Docker archive contains a non-regular file")
+
+                _safe_archive_name(member.name)
+                file_count += 1
+                if file_count > 1:
+                    raise ExportLimitError("Docker archive contains multiple files")
+                if member.size > max_file_bytes:
+                    raise ExportLimitError(
+                        "Docker archive file exceeds the allowed size"
+                    )
+
+                source = tar_archive.extractfile(member)
+                if source is None:
+                    raise ExportLimitError("Docker archive contains an unreadable file")
+                with source:
+                    contents = source.read(max_file_bytes + 1)
+                if len(contents) != member.size or len(contents) > max_file_bytes:
+                    raise ExportLimitError(
+                        "Docker archive file could not be read safely"
+                    )
+
+        if file_count != 1 or contents is None:
+            raise ExportLimitError("Docker archive does not contain one regular file")
+        return contents
+    except (tarfile.TarError, OSError) as exc:
+        raise ExportLimitError("Docker archive could not be read") from exc
+    finally:
+        buffered_reader.close()
+
+
 def convert_tar_to_zip(
     stream: Iterable[bytes],
     destination: Path,
     *,
     max_uncompressed_bytes: int,
+    member_filter: ArchiveMemberFilter | None = None,
+    member_transform: ArchiveMemberTransform | None = None,
 ) -> int:
     """
     Convert a Docker tar stream to a ZIP without buffering either archive in RAM.
@@ -134,14 +193,23 @@ def convert_tar_to_zip(
                             "Firefox profile exceeds the maximum export size"
                         )
 
+                    archive_name = _safe_archive_name(member.name)
+                    if (
+                        member_filter is not None
+                        and not member_filter(archive_name)
+                    ):
+                        continue
+
                     source = tar_archive.extractfile(member)
                     if source is None:
                         raise ExportLimitError(
                             "Firefox archive contains an unreadable file"
                         )
-                    archive_name = _safe_archive_name(member.name)
                     with source, zip_archive.open(archive_name, mode="w") as target:
-                        shutil.copyfileobj(source, target, length=1024 * 1024)
+                        if member_transform is None:
+                            shutil.copyfileobj(source, target, length=1024 * 1024)
+                        else:
+                            member_transform(archive_name, source, target)
 
         temporary_destination.replace(destination)
         return destination.stat().st_size
