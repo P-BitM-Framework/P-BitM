@@ -121,6 +121,14 @@ class VictimScreenshotTests(unittest.TestCase):
         self.assertEqual(screenshot.content, content)
         self.assertEqual((screenshot.width, screenshot.height), (1920, 1080))
         capture_call = container.exec_run.call_args_list[0]
+        self.assertEqual(
+            capture_call.args[0][:3],
+            ["scrot", "--overwrite", "--silent"],
+        )
+        self.assertRegex(
+            capture_call.args[0][3],
+            r"^/tmp/pbitm-screenshot-[0-9a-f]{24}\.png$",
+        )
         self.assertEqual(capture_call.kwargs["user"], "abc")
         self.assertEqual(
             capture_call.kwargs["environment"],

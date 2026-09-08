@@ -121,7 +121,7 @@ RUN \
     python3-tk \
     python3-dev \
     python3-venv \
-    gnome-screenshot && \
+    scrot && \
   echo "**** cleanup ****" && \
   apt-get autoclean && \
   rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/* && \

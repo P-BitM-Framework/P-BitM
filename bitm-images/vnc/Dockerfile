@@ -15,7 +15,7 @@ LABEL org.pbitm.runtime.uid="${PBITM_UID}" \
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
     adduser dbus-x11 procps zip \
-    firefox-esr git curl python3 python3-pip jq python3-tk python3-dev gnome-screenshot \
+    firefox-esr git curl python3 python3-pip jq python3-tk python3-dev scrot \
     openbox tigervnc-standalone-server autocutsel nginx && \
     rm -rf /var/lib/apt/lists/*
 

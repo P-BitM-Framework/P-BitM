@@ -260,6 +260,17 @@ class ExtensionPackagingTests(unittest.TestCase):
                 self.assertIn('POLICIES_SOURCE="${POLICIES_FILE}.prod"', content)
                 self.assertIn('cp "$POLICIES_SOURCE" "$POLICIES_FILE"', content)
 
+    def test_active_images_include_noninteractive_screenshot_capture(self):
+        dockerfiles = (
+            PROJECT_ROOT / "bitm-images/vnc/Dockerfile",
+            *SELKIES_DOCKERFILES,
+        )
+        for dockerfile in dockerfiles:
+            content = dockerfile.read_text(encoding="utf-8")
+            with self.subTest(dockerfile=dockerfile.name):
+                self.assertIn("scrot", content)
+                self.assertNotIn("gnome-screenshot", content)
+
 
 if __name__ == "__main__":
     unittest.main()
