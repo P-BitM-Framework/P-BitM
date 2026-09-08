@@ -36,7 +36,7 @@
   </div>
 
   <div class="field">
-    <label for="url">URL to Clone <span class="required">*</span></label>
+    <label for="url">Target URL <span class="required">*</span></label>
     <InputText
       id="url"
       v-model="form.url"
