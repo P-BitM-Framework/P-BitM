@@ -88,21 +88,24 @@ ssl:
   # Automatically generate self-signed certificate if missing
   auto_generate: true
 
-  # Certificate details
-  country: "IT"
-  state: "Lombardy"
-  city: "Milan"
-  organization: "P-BitM"
-  common_name: "pbitm.local"
+  # Certificate details. Replace these placeholders before running setup when
+  # automatic local certificate generation is enabled.
+  country: "<COUNTRY_CODE>"  # ISO 3166-1 alpha-2 code, for example "US"
+  state: "<STATE_OR_PROVINCE>"
+  city: "<CITY>"
+  organization: "<ORGANIZATION>"
+  common_name: "<COMMON_NAME>"
   validity_days: 365
-  acme_email: "GiacoLenzo2109@proton.me"
+  # Required in production for ACME certificate notifications.
+  acme_email: "<ACME_EMAIL>"
   dns_challenge:
-    # Traefik/lego provider name.
-    provider: "duckdns"
-    # Environment variable names required by the selected provider. Their
-    # values are prompted securely and stored as separate local secret files.
+    # Replace this placeholder with the provider that manages your domain.
+    provider: "<DNS_PROVIDER>"
+    # Required in production: environment variable names required by the
+    # selected provider. Their values are prompted securely and stored as
+    # separate local secret files; do not place secret values in this file.
     credentials:
-      - "DUCKDNS_TOKEN"
+      - "<PROVIDER_REQUIRED_ENV_VAR>"
     # Optional non-secret provider variables, for example AWS_REGION.
     environment: {}
 

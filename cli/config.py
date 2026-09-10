@@ -62,14 +62,15 @@ class Config:
             'ssl': {
                 'auto_generate': True,
                 'validity_days': 365,
-                'country': 'IT',
-                'state': 'Lombardy',
-                'city': 'Milan',
-                'organization': 'P-BitM',
-                'acme_email': 'admin@example.com',
+                'country': '<COUNTRY_CODE>',
+                'state': '<STATE_OR_PROVINCE>',
+                'city': '<CITY>',
+                'organization': '<ORGANIZATION>',
+                'common_name': '<COMMON_NAME>',
+                'acme_email': '<ACME_EMAIL>',
                 'dns_challenge': {
-                    'provider': 'duckdns',
-                    'credentials': ['DUCKDNS_TOKEN'],
+                    'provider': '<DNS_PROVIDER>',
+                    'credentials': ['<PROVIDER_REQUIRED_ENV_VAR>'],
                     'environment': {}
                 }
             },

@@ -211,9 +211,9 @@ def generate_ssl_certs(ip: str, cert_path: str, key_path: str) -> bool:
         "-nodes",
         "-out", cert_path,
         "-keyout", key_path,
-        "-subj", f"/C={config.get('ssl.country', 'IT')}"
-                 f"/ST={config.get('ssl.state', 'Lombardy')}"
-                 f"/L={config.get('ssl.city', 'Milan')}"
+        "-subj", f"/C={config.get('ssl.country', 'US')}"
+                 f"/ST={config.get('ssl.state', 'Nevasa')}"
+                 f"/L={config.get('ssl.city', 'Las Vegas')}"
                  f"/O={config.get('ssl.organization', 'P-BitM')}"
                  f"/CN={ip}"
     ]
@@ -491,9 +491,14 @@ def ensure_dns_challenge(force: bool = False) -> bool:
 
     project_root = Path(__file__).parent.parent.resolve()
     dns_config = config.get('ssl.dns_challenge', {})
+    acme_email = config.get('ssl.acme_email', '').strip()
     provider = str(dns_config.get('provider', '')).strip()
     credentials = dns_config.get('credentials', [])
     public_environment = dns_config.get('environment', {})
+
+    if not acme_email or not re.fullmatch(r'[^@]+@[^@]+\.[^@]+', acme_email):
+        error("ssl.acme_email is missing or invalid in config.yaml")
+        return False
 
     if not provider or not re.fullmatch(r'[A-Za-z0-9_-]+', provider):
         error("ssl.dns_challenge.provider is missing or invalid in config.yaml")
@@ -601,7 +606,7 @@ def ensure_dns_challenge(force: bool = False) -> bool:
     runtime_config = yaml.safe_load(template_path.read_text()) or {}
     try:
         acme = runtime_config['certificatesResolvers']['letsencrypt']['acme']
-        acme['email'] = config.get('ssl.acme_email', 'admin@example.com')
+        acme['email'] = config.get('ssl.acme_email', '<ACME_EMAIL>')
         acme['dnsChallenge']['provider'] = provider
     except (KeyError, TypeError):
         error(f"Invalid Traefik production template: {template_path}")
