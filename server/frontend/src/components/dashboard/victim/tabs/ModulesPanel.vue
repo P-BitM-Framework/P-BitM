@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
 import Tag from 'primevue/tag'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -18,29 +17,10 @@ const props = defineProps({
 
 const toast = useToast()
 
-// Built-in, non-custom-module attack shortcuts shown alongside the victim's
-// modules (see the `presets.length > 0` section below and executeScript(),
-// which already special-cases `id === 'clickfix'`). Currently empty: the
-// ClickFix entry is disabled, so that path is unreachable from this panel
-// even though clickFixDialogVisible/sendClickFix() below still work if it's
-// ever re-enabled.
-const presets = ref([
-    // {
-    //     id: 'clickfix',
-    //     icon: '🍪',
-    //     name: 'ClickFix Attack',
-    //     description: 'Load ClickFix HTML template',
-    //     category: 'Social Engineering',
-    //     isBuiltIn: true
-    // }
-])
-
 const modules = ref([])
 const selectedModule = ref(null)
 const executeModuleDialogVisible = ref(false)
 const attackDialogVisible = ref(false)
-const clickFixDialogVisible = ref(false)
-const clickFixCommand = ref('')
 const moduleResultsDialogVisible = ref(false)
 const moduleResults = ref([])
 const selectedModuleForResults = ref(null)
@@ -83,7 +63,6 @@ async function loadModules() {
             description: module.description,
             category: module.category,
             inputs: module.inputs || [],
-            isBuiltIn: false
         }))
     } catch (error) {
         console.error('Failed to load modules:', error)
@@ -91,69 +70,13 @@ async function loadModules() {
 }
 
 async function executeScript(script) {
-    if (script.isBuiltIn && script.id === 'clickfix') {
-        clickFixDialogVisible.value = true
-        return
-    }
-
-    if (!script.isBuiltIn) {
-        selectedModule.value = script
-        executeModuleDialogVisible.value = true
-        return
-    }
+    selectedModule.value = script
+    executeModuleDialogVisible.value = true
 }
 
 function handleModuleExecuted() {
     executeModuleDialogVisible.value = false
     selectedModule.value = null
-}
-
-async function sendClickFix() {
-    if (!props.victim) {
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'No victim selected',
-            life: 3000
-        })
-        return
-    }
-
-    if (!clickFixCommand.value) {
-        toast.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'ClickFix command cannot be empty',
-            life: 3000
-        })
-        return
-    }
-
-    try {
-        await backendService.sendClickFix(
-            props.victim.campaign_id,
-            props.victim.id,
-            clickFixCommand.value
-        )
-
-        toast.add({
-            severity: 'success',
-            summary: 'ClickFix Sent',
-            detail: `ClickFix command sent to victim ${props.victim.id}`,
-            life: 3000
-        })
-
-        // Chiudi dialog e reset command
-        clickFixDialogVisible.value = false
-        clickFixCommand.value = ''
-    } catch (error) {
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to send ClickFix: ' + error.message,
-            life: 3000
-        })
-    }
 }
 
 function openCustomScriptDialog() {
@@ -359,37 +282,6 @@ function downloadJSON(data, filename) {
             />
         </div>
 
-        <!-- Built-in Presets -->
-        <div v-if="presets.length > 0" class="section">
-            <h5 class="section-title">Built-in Attacks</h5>
-            <div class="scripts-grid">
-                <div
-                    v-for="script in presets"
-                    :key="script.id"
-                    class="script-card"
-                    @click="executeScript(script)"
-                >
-                    <div class="card-icon">{{ script.icon }}</div>
-                    <div class="card-content">
-                        <h5>{{ script.name }}</h5>
-                        <p>{{ script.description }}</p>
-                        <Tag
-                            :value="script.category"
-                            :severity="getCategorySeverity(script.category)"
-                            class="category-tag"
-                        />
-                    </div>
-                    <Button
-                        icon="pi pi-play"
-                        rounded
-                        text
-                        size="small"
-                        class="execute-btn"
-                    />
-                </div>
-            </div>
-        </div>
-
         <!-- Modules -->
         <div v-if="modules.length > 0" class="section">
             <h5 class="section-title">Campaign Modules</h5>
@@ -442,44 +334,10 @@ function downloadJSON(data, filename) {
         </div>
 
         <!-- Empty State -->
-        <div v-if="presets.length === 0 && modules.length === 0" class="empty-state">
+        <div v-if="modules.length === 0" class="empty-state">
             <i class="pi pi-inbox" style="font-size: 3rem; color: var(--color-text-mute);"></i>
             <p>No attacks available</p>
         </div>
-
-        <!-- ClickFix Dialog -->
-        <Dialog
-            v-model:visible="clickFixDialogVisible"
-            header="Send ClickFix Attack"
-            :style="{ width: '500px' }"
-            modal
-            :draggable="false"
-        >
-            <div class="clickfix-console">
-                <p class="dialog-description">
-                    Enter the PowerShell command to execute on the victim's machine via ClickFix attack.
-                </p>
-                <InputText
-                    v-model="clickFixCommand"
-                    type="text"
-                    placeholder="Enter ClickFix command to execute on victim's client"
-                />
-            </div>
-
-            <template #footer>
-                <Button
-                    label="Cancel"
-                    text
-                    @click="clickFixDialogVisible = false"
-                />
-                <Button
-                    label="Send ClickFix"
-                    icon="pi pi-send"
-                    @click="sendClickFix"
-                    :disabled="!clickFixCommand"
-                />
-            </template>
-        </Dialog>
 
         <!-- Module Execution Dialog -->
         <ExecuteModuleDialog
@@ -773,15 +631,6 @@ function downloadJSON(data, filename) {
     flex-shrink: 0;
 }
 
-.execute-btn {
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.script-card:hover .execute-btn {
-    opacity: 1;
-}
-
 /* Empty State */
 .empty-state {
     display: flex;
@@ -801,21 +650,6 @@ function downloadJSON(data, filename) {
 
 .empty-state p {
     margin: 0.5rem 0;
-}
-
-/* ClickFix Dialog */
-.clickfix-console {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0;
-}
-
-.dialog-description {
-    font-size: 0.875rem;
-    color: var(--color-text-mute);
-    margin: 0 0 0.5rem 0;
-    line-height: 1.5;
 }
 
 /* Module Results Dialog */

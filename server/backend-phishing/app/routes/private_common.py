@@ -43,7 +43,6 @@ from core.request_models import (
     SiteInfoRequest,
     VictimDataRequest,
 )
-from utils.landing_page import get_template_content
 from utils.safe_remote import UnsafeRemoteURLError, validate_public_http_url
 
 logger = logging.getLogger(__name__)
